@@ -63,39 +63,86 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
     }
 
     /// <summary>
-    /// Gets or sets whether the alarm flag is set (indicating an alarm occurred)
+    ///  Gets or sets whether timer A is set (indicating a timer event occurred)
     /// </summary>
-    public bool IsAlarmFlagSet
+    public bool HasTimerAInterruptTriggered
     {
         get
         {
             var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
-            // AF (Alarm Flag) is Bit 5 of Control_2
+            return (reg & (1 << 6)) != 0;
+        }
+    }
+
+    /// <summary>
+    ///  Gets or sets whether timer B is set (indicating a timer event occurred)
+    /// </summary>
+    public bool HasTimerBInterruptTriggered
+    {
+        get
+        {
+            var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
             return (reg & (1 << 5)) != 0;
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether the alarm flag is set (indicating an alarm occurred)
+    /// </summary>
+    public bool IsAlarmInterruptGenerated
+    {
+        get
+        {
+            var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
+            return (reg & (1 << 3)) != 0;
         }
     }
 
     /// <summary>
     /// Gets or sets whether the delay timer interrupt is enabled.
     /// </summary>
-    public bool IsDelayInterruptEnabled
+    public bool IsTimerAInterruptEnabled
     {
         get
         {
             var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
-            // TBIE (Timer B Interrupt Enable) is Bit 2 of Control_2
-            return (reg & (1 << 2)) != 0;
+            return (reg & (1 << 1)) != 0;
         }
         set
         {
             var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
             if (value)
             {
-                reg |= (byte)(1 << 2); // Enable TBIE
+                reg |= (byte)(1 << 1);
             }
             else
             {
-                reg = (byte)(reg & ~(1 << 2)); // Disable TBIE
+                reg = (byte)(reg & ~(1 << 1));
+            }
+            i2CCommunications.WriteRegister((byte)Registers.Control_2, reg);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets whether the delay timer interrupt is enabled.
+    /// </summary>
+    public bool IsTimerBInterruptEnabled
+    {
+        get
+        {
+            var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
+            return (reg & (1 << 0)) != 0;
+        }
+        set
+        {
+            var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
+            if (value)
+            {
+                reg |= (byte)(1 << 0);
+            }
+            else
+            {
+                reg = (byte)(reg & ~(1 << 0));
             }
             i2CCommunications.WriteRegister((byte)Registers.Control_2, reg);
         }
@@ -112,7 +159,7 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
     /// <param name="i2cBus">The I2C bus</param>
     public Pcf8523(II2cBus i2cBus)
     {
-        this.i2CCommunications = new I2cCommunications(i2cBus, (byte)Addresses.Default, 20);
+        i2CCommunications = new I2cCommunications(i2cBus, (byte)Addresses.Default, 20);
         Initialize();
     }
 
@@ -188,7 +235,6 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
         i2CCommunications.Write(txBuffer);
     }
 
-
     /// <summary>
     /// Sets the alarm time.
     /// </summary>
@@ -221,24 +267,55 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
     /// </summary>
     /// <param name="value">The delay duration in seconds or minutes (1 - 255)</param>
     /// <param name="unit">The time unit for the delay.</param>
-    public void SetDelay(byte value, DelayTimeUnit unit)
+    public void SetTimerA(byte value, DelayTimeUnit unit)
     {
         byte frequencyControl = unit switch
         {
-            DelayTimeUnit.Seconds => 0b001,// Select 1 Hz clock for Timer B
-            DelayTimeUnit.Minutes => 0b010,// Select 1/60 Hz clock for Timer B
-            DelayTimeUnit.Hours => 0b011,// Select 1/3600 Hz clock for Timer B
+            DelayTimeUnit.Seconds => 0b010,// Select 1 Hz clock for Timer A
+            DelayTimeUnit.Minutes => 0b011,// Select 1/60 Hz clock for Timer A
+            DelayTimeUnit.Hours => 0b111,// Select 1/3600 Hz clock for Timer A
             _ => throw new ArgumentOutOfRangeException(nameof(unit)),
         };
 
-        // INT2 interrupt output is sourced only from timer B
-        i2CCommunications.WriteRegister((byte)Registers.Tmr_B_freq_ctrl, frequencyControl);
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_A_freq_ctrl, frequencyControl);
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_A_reg, value);
 
-        // Set timer B value
+        var control2 = i2CCommunications.ReadRegister((byte)Registers.Control_2);
+        control2 |= 1 << 1; // Enable Timer A interrupt
+        i2CCommunications.WriteRegister((byte)Registers.Control_2, control2);
+
+        var reg = i2CCommunications.ReadRegister((byte)Registers.Tmr_CLKOUT_ctrl);
+        reg = (byte)(reg & ~(1 << 7));
+        reg |= 0x02;
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_CLKOUT_ctrl, reg);
+    }
+
+    /// <summary>
+    /// Configures the delay interrupt timer B
+    /// </summary>
+    /// <param name="value">The delay duration in seconds or minutes (1 - 255)</param>
+    /// <param name="unit">The time unit for the delay.</param>
+    public void SetTimerB(byte value, DelayTimeUnit unit)
+    {
+        byte frequencyControl = unit switch
+        {
+            DelayTimeUnit.Seconds => 0b010,// Select 1 Hz clock for Timer B
+            DelayTimeUnit.Minutes => 0b011,// Select 1/60 Hz clock for Timer B
+            DelayTimeUnit.Hours => 0b111,// Select 1/3600 Hz clock for Timer B
+            _ => throw new ArgumentOutOfRangeException(nameof(unit)),
+        };
+
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_B_freq_ctrl, frequencyControl);
         i2CCommunications.WriteRegister((byte)Registers.Tmr_B_reg, value);
 
-        // Enable timer interrupt 
-        IsDelayInterruptEnabled = true;
+        var control2 = i2CCommunications.ReadRegister((byte)Registers.Control_2);
+        control2 |= 1 << 0; // Enable Timer B interrupt
+        i2CCommunications.WriteRegister((byte)Registers.Control_2, control2);
+
+        var reg = i2CCommunications.ReadRegister((byte)Registers.Tmr_CLKOUT_ctrl);
+        reg = (byte)(reg & ~(1 << 6));
+        reg |= 0x01;
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_CLKOUT_ctrl, reg);
     }
 
     /// <summary>
@@ -246,7 +323,9 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
     /// </summary>
     public void ClearFlags()
     {
-        i2CCommunications.WriteRegister((byte)Registers.Control_2, 0x00);
+        var reg = i2CCommunications.ReadRegister((byte)Registers.Control_2);
+        reg &= 0x07;
+        i2CCommunications.WriteRegister((byte)Registers.Control_2, reg);
     }
 
     private static byte ToBCD(ushort i)
