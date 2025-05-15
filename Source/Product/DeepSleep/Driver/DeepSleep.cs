@@ -11,6 +11,12 @@ public partial class DeepSleep
 {
     private readonly Pcf8523 _rtc;
 
+    public bool IsAlarmInterruptGenerated => _rtc.IsAlarmInterruptGenerated;
+
+    public bool IsTimerInterruptAGenerated => _rtc.HasTimerAInterruptTriggered;
+    public bool IsTimerInterruptBGenerated => _rtc.HasTimerBInterruptTriggered;
+
+
     /// <summary>
     /// Creates a new DeepSleep object
     /// </summary>
@@ -40,18 +46,28 @@ public partial class DeepSleep
         _rtc.SetAlarm(wakeTime);
     }
 
+    public void SetTimerA(byte delay, DelayTimeUnit unit)
+    {
+        _rtc.SetTimerA(delay, unit);
+    }
+
+    public void SetTimerB(byte delay, DelayTimeUnit unit)
+    {
+        _rtc.SetTimerB(delay, unit);
+    }
+
     /// <summary>
     /// Schedules a wake-up after a delay using the RTC timer
     /// </summary>
     /// <param name="delay">The delay count (1 - 255).</param>
     /// <param name="unit">The time unit for the delay.</param>
-    public void SetDelayWakeUp(byte delay, DelayTimeUnit unit)
+    public void SetSleepDelay(byte delay, DelayTimeUnit unit)
     {
-        _rtc.SetDelay(delay, unit);
+        _rtc.SetTimerB(delay, unit);
     }
 
     /// <summary>
     /// Clears both the alarm and delay flags on the RTC
     /// </summary>
-    public void ClearInterruptFlags() => _rtc.ClearFlags();
+    public void ResetInterrupts() => _rtc.ClearFlags();
 }
