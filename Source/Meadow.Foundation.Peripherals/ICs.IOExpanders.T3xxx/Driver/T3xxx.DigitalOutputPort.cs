@@ -1,4 +1,5 @@
 ﻿using Meadow.Hardware;
+using System.Linq;
 
 namespace Meadow.Foundation;
 
@@ -10,7 +11,34 @@ public abstract partial class T3xxx
         private readonly T3xxx _module;
         private bool? _lastSetState = null;
 
-        public bool InitialState => throw new System.NotImplementedException();
+        public bool InitialState { get; }
+
+        public IDigitalChannelInfo Channel { get; }
+
+        public IPin Pin { get; }
+
+        internal DigitalOutputPort(
+            T3xxx module,
+            IPin pin,
+            bool initialState,
+            ushort autoManualRegister,
+            ushort rangeRegister,
+            ushort outputRegister)
+        {
+            _module = module;
+            Pin = pin;
+            _outputRegister = outputRegister;
+
+            Channel = (IDigitalChannelInfo)pin.SupportedChannels.First(c => c is IDigitalChannelInfo);
+
+            // range set to on/off
+            _module.WriteHoldingRegister(rangeRegister, 1).Wait();
+
+            // mode must be set to 1 (manual)
+            _module.WriteHoldingRegister(autoManualRegister, 1).Wait();
+
+            State = InitialState = initialState;
+        }
 
         public bool State
         {
@@ -27,28 +55,6 @@ public abstract partial class T3xxx
                 }
                 return _lastSetState.Value;
             }
-        }
-
-        public IDigitalChannelInfo Channel => throw new System.NotImplementedException();
-
-        public IPin Pin { get; }
-
-        internal DigitalOutputPort(
-            T3xxx module,
-            IPin pin,
-            ushort autoManualRegister,
-            ushort rangeRegister,
-            ushort outputRegister)
-        {
-            _module = module;
-            Pin = pin;
-            _outputRegister = outputRegister;
-
-            // range set to on/off
-            _module.WriteHoldingRegister(rangeRegister, 1).Wait();
-
-            // mode must be set to 1 (manual)
-            _module.WriteHoldingRegister(autoManualRegister, 1).Wait();
         }
 
         public void Dispose()

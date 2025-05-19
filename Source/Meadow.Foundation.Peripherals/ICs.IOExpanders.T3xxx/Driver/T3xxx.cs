@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 
 namespace Meadow.Foundation;
 
-public abstract partial class T3xxx : IPinController
+public abstract partial class T3xxx
+    : IPinController
 {
     private T3ModuleModel? _model = null;
     private int? _serialNumber = null;
