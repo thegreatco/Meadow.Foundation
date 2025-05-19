@@ -151,7 +151,7 @@ public class V10x : ModbusPolledDevice
     /// </remarks>
     public async Task<byte> ReadModbusAddress()
     {
-        var registers = await base.ReadHoldingRegisters(9020, 1);
+        var registers = await base.ReadHoldingRegisters(0x9020, 1);
         return (byte)registers[0];
     }
 
@@ -163,7 +163,7 @@ public class V10x : ModbusPolledDevice
     /// </remarks>
     public async Task WriteModbusAddress(byte address)
     {
-        await base.WriteHoldingRegister(9020, address);
+        await base.WriteHoldingRegister(0x9020, address);
         base.BusAddress = address;
     }
 }
