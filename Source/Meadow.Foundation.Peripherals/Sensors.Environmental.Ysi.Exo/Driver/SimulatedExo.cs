@@ -8,6 +8,23 @@ namespace Meadow.Foundation.Sensors.Environmental.Ysi;
 /// </summary>
 public class SimulatedExo : IExoSonde
 {
+    private TimeSpan _samplePeriod = TimeSpan.FromSeconds(30);
+    private readonly ParameterCode[] _parameters = [ParameterCode.TemperatureF];
+    private readonly ParameterStatus[] _status = [ParameterStatus.Available];
+
+    /// <inheritdoc/>
+    public Task<TimeSpan> GetSamplePeriod()
+    {
+        return Task.FromResult(_samplePeriod);
+    }
+
+    /// <inheritdoc/>
+    public Task SetSamplePeriod(TimeSpan period)
+    {
+        _samplePeriod = period;
+        return Task.CompletedTask;
+    }
+
     /// <inheritdoc/>
     public Task ForceSample()
     {
@@ -17,25 +34,25 @@ public class SimulatedExo : IExoSonde
     /// <inheritdoc/>
     public Task<(ParameterCode ParameterCode, object Value)[]> GetCurrentData()
     {
-        throw new NotImplementedException();
+
+        var data = new (ParameterCode ParameterCode, object Value)[]
+        {
+            new (ParameterCode.TemperatureF, 72.1)
+        };
+
+        return Task.FromResult(data);
     }
 
     /// <inheritdoc/>
-    public Task<Exo.ParameterStatus[]> GetParameterStatus()
+    public Task<ParameterStatus[]> GetParameterStatus()
     {
-        throw new NotImplementedException();
+        return Task.FromResult(_status);
     }
 
     /// <inheritdoc/>
     public Task<ParameterCode[]> GetParametersToRead()
     {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc/>
-    public Task<TimeSpan> GetSamplePeriod()
-    {
-        throw new NotImplementedException();
+        return Task.FromResult(_parameters);
     }
 
     /// <inheritdoc/>
@@ -44,9 +61,4 @@ public class SimulatedExo : IExoSonde
         throw new NotImplementedException();
     }
 
-    /// <inheritdoc/>
-    public Task SetSamplePeriod(TimeSpan period)
-    {
-        throw new NotImplementedException();
-    }
 }
