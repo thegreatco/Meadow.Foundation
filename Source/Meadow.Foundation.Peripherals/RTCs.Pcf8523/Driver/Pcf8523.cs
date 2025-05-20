@@ -263,7 +263,7 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
     }
 
     /// <summary>
-    /// Configures the delay interrupt timer.
+    /// Configures the delay interrupt timer A and enables interrupt
     /// </summary>
     /// <param name="value">The delay duration in seconds or minutes (1 - 255)</param>
     /// <param name="unit">The time unit for the delay.</param>
@@ -291,7 +291,7 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
     }
 
     /// <summary>
-    /// Configures the delay interrupt timer B
+    /// Configures the delay interrupt timer B enables interrupt
     /// </summary>
     /// <param name="value">The delay duration in seconds or minutes (1 - 255)</param>
     /// <param name="unit">The time unit for the delay.</param>
@@ -304,6 +304,9 @@ public partial class Pcf8523 : II2cPeripheral, IRealTimeClock, IBatteryBackedPer
             DelayTimeUnit.Hours => 0b111,// Select 1/3600 Hz clock for Timer B
             _ => throw new ArgumentOutOfRangeException(nameof(unit)),
         };
+
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_A_freq_ctrl, frequencyControl);
+        i2CCommunications.WriteRegister((byte)Registers.Tmr_A_reg, value);
 
         i2CCommunications.WriteRegister((byte)Registers.Tmr_B_freq_ctrl, frequencyControl);
         i2CCommunications.WriteRegister((byte)Registers.Tmr_B_reg, value);
