@@ -21,12 +21,38 @@ public class Label : ClickableControl
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class with the specified dimensions.
     /// </summary>
+    /// <param name="width">The width of the label display control.</param>
+    /// <param name="height">The height of the label display control.</param>
+    /// <param name="text">The initial Text for the control</param>
+    public Label(int width, int height, string text = nameof(Label))
+        : this(0, 0, width, height, ScaleFactor.X1, text)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Label"/> class with the specified dimensions.
+    /// </summary>
+    /// <param name="width">The width of the label display control.</param>
+    /// <param name="height">The height of the label display control.</param>
+    /// <param name="scaleFactor">The scale factor used for drawing text</param>
+    /// <param name="text">The initial Text for the control</param>
+    public Label(int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label))
+        : this(0, 0, width, height)
+    {
+        ScaleFactor = scaleFactor;
+        Text = text;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Label"/> class with the specified dimensions.
+    /// </summary>
     /// <param name="left">The left coordinate of the label display control.</param>
     /// <param name="top">The top coordinate of the label display control.</param>
     /// <param name="width">The width of the label display control.</param>
     /// <param name="height">The height of the label display control.</param>
     /// <param name="scaleFactor">The scale factor used for drawing text</param>
-    public Label(int left, int top, int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1)
+    /// <param name="text">The initial Text for the control</param>
+    public Label(int left, int top, int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label))
         : base(left, top, width, height)
     {
         ScaleFactor = scaleFactor;
