@@ -21,7 +21,7 @@ namespace RTCs.Pcf8523_Sample
             return base.Initialize();
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
             var dateTime = new DateTimeOffset();
             var running = rtc.IsRunning;
@@ -52,7 +52,7 @@ namespace RTCs.Pcf8523_Sample
             Resolver.Log.Info("Setting Timer B for 2 seconds...");
             rtc.SetTimerB(2, DelayTimeUnit.Seconds);
 
-            Task.Delay(6000).Wait();
+            await Task.Delay(2000);
 
             if (rtc.HasTimerAInterruptTriggered)
             {
@@ -71,8 +71,6 @@ namespace RTCs.Pcf8523_Sample
             {
                 Resolver.Log.Info("Timer B FAILED");
             }
-
-            return base.Run();
         }
 
         //<!=SNOP=>
