@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Driver\ICs.IOExpanders.T3xxx.csproj" />
+    <ProjectReference Include="..\..\Driver\IOExpanders.T3xxx.csproj" />
   </ItemGroup>
 
 </Project>
