@@ -4,6 +4,11 @@ using Meadow.Units;
 
 namespace Meadow.Foundation.IOExpanders;
 
+/// <summary>
+/// Driver for Temco Controls T38i8o6do mixed I/O module.
+/// Provides 8 analog inputs, 8 analog outputs, and 6 digital outputs with comprehensive I/O capabilities.
+/// Implements multiple controller interfaces for creating various port types.
+/// </summary>
 public partial class T38i8o6do
     : T3xxx,
     IDigitalOutputController,
@@ -11,20 +16,42 @@ public partial class T38i8o6do
     IVoltageInputController,
     IVoltageOutputController
 {
+    /// <summary>
+    /// Gets the pin definitions for this T38i8o6do module, providing access to all input and output pins.
+    /// </summary>
+    /// <value>The PinDefinitions instance containing all available pins for this module.</value>
     public PinDefinitions Pins { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the T38i8o6do class using Modbus RTU communication.
+    /// </summary>
+    /// <param name="modbusRtuClient">The Modbus RTU client for serial communication.</param>
+    /// <param name="moduleAddress">The Modbus address of the target T38i8o6do module.</param>
     public T38i8o6do(ModbusRtuClient modbusRtuClient, byte moduleAddress)
         : base(modbusRtuClient, moduleAddress)
     {
         Pins = new PinDefinitions(this);
     }
 
+    /// <summary>
+    /// Initializes a new instance of the T38i8o6do class using Modbus TCP communication.
+    /// The module address defaults to 1 for TCP connections.
+    /// </summary>
+    /// <param name="modbusTcpClient">The Modbus TCP client for Ethernet communication.</param>
     public T38i8o6do(ModbusTcpClient modbusTcpClient)
         : base(modbusTcpClient)
     {
         Pins = new PinDefinitions(this);
     }
 
+    /// <summary>
+    /// Creates a digital output port on the specified pin with configurable initial state.
+    /// Automatically configures the channel for digital output operation in manual mode.
+    /// </summary>
+    /// <param name="pin">The pin to configure as a digital output port.</param>
+    /// <param name="initialState">The initial state to set on the digital output (default: false).</param>
+    /// <param name="initialOutputType">The initial output type configuration (default: PushPull).</param>
+    /// <returns>A new IDigitalOutputPort instance configured for digital output.</returns>
     public IDigitalOutputPort CreateDigitalOutputPort(IPin pin, bool initialState = false, OutputType initialOutputType = OutputType.PushPull)
     {
         var offset = (int)pin.Key;
@@ -37,6 +64,12 @@ public partial class T38i8o6do
             );
     }
 
+    /// <summary>
+    /// Creates a current input port configured for 4-20mA measurement on the specified pin.
+    /// Automatically configures the channel for current input range and sets it to manual mode.
+    /// </summary>
+    /// <param name="pin">The pin to configure as a current input port.</param>
+    /// <returns>A new ICurrentInputPort instance configured for current measurement.</returns>
     public ICurrentInputPort CreateCurrentInputPort(IPin pin)
     {
         var offset = (int)pin.Key;
@@ -53,6 +86,12 @@ public partial class T38i8o6do
             );
     }
 
+    /// <summary>
+    /// Creates a voltage input port configured for 0-10V measurement on the specified pin.
+    /// Automatically configures the channel for voltage input range and appropriate mode settings.
+    /// </summary>
+    /// <param name="pin">The pin to configure as a voltage input port.</param>
+    /// <returns>A new IVoltageInputPort instance configured for voltage measurement.</returns>
     public IVoltageInputPort CreateVoltageInputPort(IPin pin)
     {
         var offset = (int)pin.Key;
@@ -69,6 +108,13 @@ public partial class T38i8o6do
             );
     }
 
+    /// <summary>
+    /// Creates a voltage output port with a specified initial voltage value on the specified pin.
+    /// Automatically configures the channel for voltage output operation in manual mode.
+    /// </summary>
+    /// <param name="pin">The pin to configure as a voltage output port.</param>
+    /// <param name="initialVoltage">The initial voltage value to set on the output.</param>
+    /// <returns>A new IVoltageOutputPort instance configured for voltage output.</returns>
     public IVoltageOutputPort CreateVoltageOutputPort(IPin pin, Voltage initialVoltage)
     {
         var offset = (int)pin.Key;
@@ -81,6 +127,12 @@ public partial class T38i8o6do
             );
     }
 
+    /// <summary>
+    /// Creates a voltage output port with zero initial voltage on the specified pin.
+    /// This is a convenience overload that sets the initial voltage to zero.
+    /// </summary>
+    /// <param name="pin">The pin to configure as a voltage output port.</param>
+    /// <returns>A new IVoltageOutputPort instance configured for voltage output with zero initial voltage.</returns>
     public IVoltageOutputPort CreateVoltageOutputPort(IPin pin)
     {
         return CreateVoltageOutputPort(pin, Voltage.Zero);

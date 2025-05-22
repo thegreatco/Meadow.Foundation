@@ -4,93 +4,33 @@ using System.Threading.Tasks;
 
 namespace Meadow.Foundation.IOExpanders;
 
-public class VoltageInputChannelInfo : IChannelInfo
-{
-    public string Name { get; }
-
-    public VoltageInputChannelInfo(string name)
-    {
-        Name = name;
-    }
-}
-
-public class VoltageOutputChannelInfo : IChannelInfo
-{
-    public string Name { get; }
-    public Voltage MaxVoltage { get; }
-
-    public VoltageOutputChannelInfo(string name, Voltage maxVoltage)
-    {
-        Name = name;
-        MaxVoltage = maxVoltage;
-    }
-}
-
-public class CurrentInputChannelInfo : IChannelInfo
-{
-    public string Name { get; }
-
-    public CurrentInputChannelInfo(string name)
-    {
-        Name = name;
-    }
-}
-
-public interface IVoltageInputController
-{
-    IVoltageInputPort CreateVoltageInputPort(IPin pin);
-}
-
-public interface IVoltageOutputController
-{
-    IVoltageOutputPort CreateVoltageOutputPort(IPin pin);
-    IVoltageOutputPort CreateVoltageOutputPort(IPin pin, Voltage initialVoltage);
-}
-
-public interface ICurrentInputController
-{
-    ICurrentInputPort CreateCurrentInputPort(IPin pin);
-}
-
-public interface ICurrentInputPort
-{
-    IPin Pin { get; }
-    ValueTask<Current> Read();
-}
-
-public interface IVoltageInputPort
-{
-    IPin Pin { get; }
-    ValueTask<Voltage> Read();
-}
-
-public interface IVoltageOutputPort
-{
-    IPin Pin { get; }
-    Task SetOutput(Voltage value);
-}
-
 public abstract partial class T3xxx
 {
-    internal enum AnalogOutputRange
-    {
-        Voltage_0_10 = 1
-    }
-
-    internal enum AnalogInputRange
-    {
-        Voltage_0_5 = 11,
-        Current_4_20 = 13,
-        Voltage_0_10 = 19
-    }
-
+    /// <summary>
+    /// Represents a voltage output port on a Temco Controls T3 module.
+    /// Provides functionality to set voltage output values on analog output channels.
+    /// </summary>
     public class VoltageOutputPort : IVoltageOutputPort
     {
         private readonly T3xxx _module;
         private readonly ushort _outputRegister;
 
+        /// <summary>
+        /// Gets the pin associated with this voltage output port.
+        /// </summary>
+        /// <value>The IPin representing the physical connection for this voltage output.</value>
         public IPin Pin { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the VoltageOutputPort class and configures the output channel.
+        /// Sets the channel to manual mode and configures the voltage range to 0-10V.
+        /// </summary>
+        /// <param name="module">The parent T3xxx module that owns this port.</param>
+        /// <param name="pin">The pin associated with this voltage output port.</param>
+        /// <param name="initialVoltage">The initial voltage value to set on the output.</param>
+        /// <param name="autoManualRegister">The register address for setting manual/auto mode.</param>
+        /// <param name="rangeRegister">The register address for configuring the output range.</param>
+        /// <param name="outputRegister">The register address for setting the output value.</param>
         public VoltageOutputPort(
             T3xxx module,
             IPin pin,
@@ -111,6 +51,12 @@ public abstract partial class T3xxx
             SetOutput(initialVoltage);
         }
 
+        /// <summary>
+        /// Asynchronously sets the output voltage value for this port.
+        /// The voltage value is converted to millivolts before writing to the register.
+        /// </summary>
+        /// <param name="value">The voltage value to output on this port.</param>
+        /// <returns>A Task representing the asynchronous set operation.</returns>
         public Task SetOutput(Voltage value)
         {
             return _module.WriteHoldingRegister(_outputRegister, (ushort)value.Millivolts);

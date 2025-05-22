@@ -861,8 +861,5 @@ public partial class T322ai
         /// MODBUS_CAL_SIGN11
         /// </summary>
         CalSign11 = 324,
-
-        /// <summary>
-        /// MODBUS
     }
 }
