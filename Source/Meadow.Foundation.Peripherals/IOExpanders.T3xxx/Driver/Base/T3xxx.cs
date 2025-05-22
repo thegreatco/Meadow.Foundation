@@ -1,6 +1,5 @@
 ﻿using Meadow.Hardware;
 using Meadow.Modbus;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Meadow.Foundation.IOExpanders;
@@ -78,8 +77,6 @@ public abstract partial class T3xxx
     /// <returns>A task representing the asynchronous write operation.</returns>
     internal async Task WriteHoldingRegister(ushort register, ushort value)
     {
-        Debug.WriteLine($"write {register} = {value}");
-
         await ModbusClient.WriteHoldingRegister(this.ModbusAddress, register, value);
     }
 
