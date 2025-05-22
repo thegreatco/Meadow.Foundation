@@ -2,7 +2,7 @@
 using Meadow.Modbus;
 using Meadow.Units;
 
-namespace Meadow.Foundation;
+namespace Meadow.Foundation.IOExpanders;
 
 public partial class T38i8o6do
     : T3xxx,
@@ -14,7 +14,7 @@ public partial class T38i8o6do
     public PinDefinitions Pins { get; }
 
     public T38i8o6do(ModbusRtuClient modbusRtuClient, byte moduleAddress)
-    : base(modbusRtuClient, moduleAddress)
+        : base(modbusRtuClient, moduleAddress)
     {
         Pins = new PinDefinitions(this);
     }
@@ -41,9 +41,13 @@ public partial class T38i8o6do
     {
         var offset = (int)pin.Key;
 
+        // 13 == 4-20 input
+        WriteHoldingRegister((ushort)T38i806doRegisters.AiRange0, (ushort)AnalogInputRange.Current_4_20).Wait();
+
+        // mode must be set to 1 (manual)
+        WriteHoldingRegister((ushort)(T38i806doRegisters.AiDiAi0 + offset), 1).Wait();
+
         return new T3xxx.CurrentInputPort(this, pin,
-            (ushort)(T38i806doRegisters.AiDiAi0 + offset),
-            (ushort)(T38i806doRegisters.AiRange0 + offset),
             // each input is 2 registers, the data for current is in the low
             (ushort)(T38i806doRegisters.AiChannel0 + (offset * 2 + 1))
             );
@@ -53,9 +57,13 @@ public partial class T38i8o6do
     {
         var offset = (int)pin.Key;
 
+        // 19 == 0-10V input, 11 == 0-5V
+        // not sure the utility of 0-5, since 0-10 will also do 0-5...
+        WriteHoldingRegister((ushort)(T38i806doRegisters.AiRange0 + offset), (ushort)AnalogInputRange.Voltage_0_10).Wait();
+        // mode must be set to 1 (manual) in the T38o.  No idea why.
+        WriteHoldingRegister((ushort)(T38i806doRegisters.AiDiAi0 + offset), 0).Wait();
+
         return new T3xxx.VoltageInputPort(this, pin,
-            (ushort)(T38i806doRegisters.AiDiAi0 + offset),
-            (ushort)(T38i806doRegisters.AiRange0 + offset),
             // each input is 2 registers, the data for voltage is in the low
             (ushort)(T38i806doRegisters.AiChannel0 + (offset * 2 + 1))
             );
@@ -71,5 +79,10 @@ public partial class T38i8o6do
             (ushort)(T38i806doRegisters.OutputRange6 + offset),
             (ushort)(T38i806doRegisters.AoChannel0 + offset)
             );
+    }
+
+    public IVoltageOutputPort CreateVoltageOutputPort(IPin pin)
+    {
+        return CreateVoltageOutputPort(pin, Voltage.Zero);
     }
 }

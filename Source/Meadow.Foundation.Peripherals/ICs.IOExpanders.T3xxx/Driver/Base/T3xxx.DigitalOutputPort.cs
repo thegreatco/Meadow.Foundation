@@ -1,7 +1,7 @@
 ﻿using Meadow.Hardware;
 using System.Linq;
 
-namespace Meadow.Foundation;
+namespace Meadow.Foundation.IOExpanders;
 
 public abstract partial class T3xxx
 {

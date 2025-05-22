@@ -1,4 +1,4 @@
-﻿namespace Meadow.Foundation;
+﻿namespace Meadow.Foundation.IOExpanders;
 
 public partial class T322ai
 {

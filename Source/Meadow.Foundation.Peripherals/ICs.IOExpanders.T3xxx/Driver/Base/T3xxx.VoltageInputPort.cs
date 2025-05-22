@@ -2,40 +2,32 @@
 using Meadow.Units;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation;
+namespace Meadow.Foundation.IOExpanders;
 
 public abstract partial class T3xxx
 {
-    public class CurrentInputPort : ICurrentInputPort
+    public class VoltageInputPort : IVoltageInputPort
     {
         private readonly T3xxx _module;
         private readonly ushort _valueRegister;
 
         public IPin Pin { get; }
 
-        internal CurrentInputPort(
+        internal VoltageInputPort(
             T3xxx module,
             IPin pin,
-            ushort autoManualRegister,
-            ushort rangeRegister,
             ushort valueRegister)
         {
             _module = module;
             Pin = pin;
             _valueRegister = valueRegister;
-
-            // 13 == 4-20 input
-            _module.WriteHoldingRegister(rangeRegister, (ushort)AnalogInputRange.Current_4_20).Wait();
-
-            // mode must be set to 1 (manual)
-            _module.WriteHoldingRegister(autoManualRegister, 1).Wait();
         }
 
-        public async ValueTask<Current> Read()
+        public async ValueTask<Voltage> Read()
         {
             var register = await _module.ReadHoldingRegister(_valueRegister);
 
-            return new Current(register / 100d);
+            return new Voltage(register / 100d);
         }
     }
 }

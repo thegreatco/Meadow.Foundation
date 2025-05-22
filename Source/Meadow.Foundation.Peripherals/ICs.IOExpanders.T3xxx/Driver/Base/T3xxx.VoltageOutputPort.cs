@@ -2,7 +2,7 @@
 using Meadow.Units;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation;
+namespace Meadow.Foundation.IOExpanders;
 
 public class VoltageInputChannelInfo : IChannelInfo
 {
@@ -43,11 +43,7 @@ public interface IVoltageInputController
 
 public interface IVoltageOutputController
 {
-    IVoltageOutputPort CreateVoltageOutputPort(IPin pin)
-    {
-        return CreateVoltageOutputPort(pin, Voltage.Zero);
-    }
-
+    IVoltageOutputPort CreateVoltageOutputPort(IPin pin);
     IVoltageOutputPort CreateVoltageOutputPort(IPin pin, Voltage initialVoltage);
 }
 

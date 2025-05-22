@@ -1,7 +1,7 @@
 ﻿using Meadow.Hardware;
 using System.Collections.Generic;
 
-namespace Meadow.Foundation;
+namespace Meadow.Foundation.IOExpanders;
 
 public class T3xxxPin : IPin
 {

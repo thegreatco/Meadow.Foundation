@@ -3,7 +3,7 @@ using Meadow.Modbus;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation;
+namespace Meadow.Foundation.IOExpanders;
 
 public abstract partial class T3xxx
     : IPinController
