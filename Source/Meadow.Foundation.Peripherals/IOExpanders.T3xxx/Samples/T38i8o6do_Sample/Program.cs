@@ -1,4 +1,4 @@
-﻿using Meadow.Foundation;
+﻿using Meadow.Foundation.IOExpanders;
 using Meadow.Modbus;
 using Meadow.Units;
 using System.Diagnostics;

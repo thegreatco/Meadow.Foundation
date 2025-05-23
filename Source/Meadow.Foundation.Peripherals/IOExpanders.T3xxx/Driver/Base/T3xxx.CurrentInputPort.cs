@@ -46,7 +46,7 @@ public abstract partial class T3xxx
         {
             var register = await _module.ReadHoldingRegister(_valueRegister);
 
-            return new Current(register / 100d);
+            return new Current(register / 100d, Current.UnitType.Milliamps);
         }
     }
 }

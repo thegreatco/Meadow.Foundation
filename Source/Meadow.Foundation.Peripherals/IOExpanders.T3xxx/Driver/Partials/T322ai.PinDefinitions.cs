@@ -17,6 +17,7 @@ public partial class T322ai
         /// <param name="module">The T322ai module instance that owns these pin definitions.</param>
         internal PinDefinitions(T322ai module)
         {
+            Controller = module;
         }
 
         /// <summary>
