@@ -137,6 +137,8 @@ public class V10x : ModbusPolledDevice
 
     private object ConvertRegisterToRawValue(ushort[] registers)
     {
+        Resolver.Log.Warn($"converting {registers[0]}");
+
         // value is one register in 1/100 of a unit
         return registers[0] / 100d;
     }
