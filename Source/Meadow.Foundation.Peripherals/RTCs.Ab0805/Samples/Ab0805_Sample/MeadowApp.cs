@@ -4,7 +4,7 @@ using Meadow.Foundation.RTCs;
 using System;
 using System.Threading.Tasks;
 
-namespace RTCs.Ab0805_Sample
+namespace Ab0805_Sample
 {
     public class MeadowApp : App<F7FeatherV2>
     {
@@ -35,14 +35,14 @@ namespace RTCs.Ab0805_Sample
             }
 
             dateTime = rtc.GetTime();
-            Resolver.Log.Info($" RTC current time is: {dateTime.ToString("MM/dd/yy HH:mm:ss")}");
+            Resolver.Log.Info($" RTC current time is: {dateTime:MM/dd/yy HH:mm:ss}");
 
             dateTime = new DateTime(2030, 2, 15);
-            Resolver.Log.Info($" Setting RTC to : {dateTime.ToString("MM/dd/yy HH:mm:ss")}");
+            Resolver.Log.Info($" Setting RTC to : {dateTime:MM/dd/yy HH:mm:ss}");
             rtc.SetTime(dateTime);
 
             dateTime = rtc.GetTime();
-            Resolver.Log.Info($" RTC current time is: {dateTime.ToString("MM/dd/yy HH:mm:ss")}");
+            Resolver.Log.Info($" RTC current time is: {dateTime:MM/dd/yy HH:mm:ss}");
         }
 
         //<!=SNOP=>
