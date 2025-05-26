@@ -10,8 +10,7 @@ namespace Meadow.Foundation.IOExpanders;
 /// </summary>
 public partial class T322ai
     : T3xxx,
-    ICurrentInputController,
-    IVoltageInputController
+    IT322ai
 {
     /// <summary>
     /// Gets the pin definitions for this T322ai module, providing access to all 22 analog input pins.
