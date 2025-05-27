@@ -39,8 +39,6 @@ public class Label : ClickableControl
     public Label(int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label))
         : this(0, 0, width, height)
     {
-        ScaleFactor = scaleFactor;
-        Text = text;
     }
 
     /// <summary>
