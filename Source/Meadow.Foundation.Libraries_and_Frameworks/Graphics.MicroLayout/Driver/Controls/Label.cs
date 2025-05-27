@@ -37,7 +37,7 @@ public class Label : ClickableControl
     /// <param name="scaleFactor">The scale factor used for drawing text</param>
     /// <param name="text">The initial Text for the control</param>
     public Label(int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label))
-        : this(0, 0, width, height)
+        : this(0, 0, width, height, scaleFactor, text)
     {
     }
 
