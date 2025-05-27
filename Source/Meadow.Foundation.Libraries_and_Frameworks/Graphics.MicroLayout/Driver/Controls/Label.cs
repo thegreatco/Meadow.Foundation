@@ -56,6 +56,7 @@ public class Label : ClickableControl
         : base(left, top, width, height)
     {
         ScaleFactor = scaleFactor;
+        Text = text;
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ public class Label : ClickableControl
     /// <summary>
     /// Gets or sets the background color of the label display control.
     /// </summary>
-    public Color BackColor
+    public Color BackgroundColor
     {
         get => _backColor ?? _theme?.BackgroundColor ?? DefaultBackColor;
         set => SetInvalidatingProperty(ref _backColor, value);
@@ -136,9 +137,9 @@ public class Label : ClickableControl
     /// <param name="graphics">The <see cref="MicroGraphics"/> surface to draw the label display control on.</param>
     protected override void OnDraw(MicroGraphics graphics)
     {
-        if (BackColor != Color.Transparent)
+        if (BackgroundColor != Color.Transparent)
         {
-            graphics.DrawRectangle(Left + (Parent?.Left ?? 0), Top + (Parent?.Top ?? 0), Width, Height, BackColor, true);
+            graphics.DrawRectangle(Left + (Parent?.Left ?? 0), Top + (Parent?.Top ?? 0), Width, Height, BackgroundColor, true);
         }
 
         int x, y;
