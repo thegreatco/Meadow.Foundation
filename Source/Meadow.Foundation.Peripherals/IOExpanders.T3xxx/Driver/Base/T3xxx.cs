@@ -10,7 +10,7 @@ namespace Meadow.Foundation.IOExpanders;
 /// Implements IPinController to manage module pins and I/O operations.
 /// </summary>
 public abstract partial class T3xxx
-    : IPinController
+    : IT3Module, IPinController
 {
     private T3ModuleModel? _model = null;
     private int? _serialNumber = null;
