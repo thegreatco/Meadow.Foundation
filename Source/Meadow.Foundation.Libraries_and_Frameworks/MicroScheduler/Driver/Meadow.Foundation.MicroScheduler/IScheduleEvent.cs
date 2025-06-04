@@ -12,7 +12,12 @@ public interface IScheduleEvent
 
     /// <summary>
     /// Gets or sets a value indicating whether this event is disabled.
-    /// When disabled, the event will not trigger or affect circuit states.
+    /// When disabled, the event will not trigger.
     /// </summary>
     bool IsDisabled { get; set; }
+
+    /// <summary>
+    /// Gets or sets data that is passed along with this event from the defined schedule
+    /// </summary>
+    string? Data { get; set; }
 }

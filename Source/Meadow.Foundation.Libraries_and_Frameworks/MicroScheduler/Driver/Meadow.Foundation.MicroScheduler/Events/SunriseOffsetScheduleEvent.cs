@@ -5,22 +5,12 @@ namespace Meadow.Foundation.Scheduling;
 /// <summary>
 /// Represents a schedule event that triggers at a specific time offset from sunrise.
 /// </summary>
-public class SunriseOffsetScheduleEvent : IScheduleEvent
+public class SunriseOffsetScheduleEvent : ScheduleEventBase
 {
     /// <summary>
     /// Gets the type of this schedule event.
     /// </summary>
-    public ScheduleEventType EventType => ScheduleEventType.SunriseOffset;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether this event is disabled.
-    /// </summary>
-    public bool IsDisabled { get; set; }
-
-    /// <summary>
-    /// Gets the desired state that should be set when this event triggers.
-    /// </summary>
-    public bool DesiredState { get; }
+    public override ScheduleEventType EventType => ScheduleEventType.SunriseOffset;
 
     /// <summary>
     /// Gets the time offset from sunrise when this event should trigger.
@@ -38,12 +28,12 @@ public class SunriseOffsetScheduleEvent : IScheduleEvent
     /// Initializes a new instance of the <see cref="SunriseOffsetScheduleEvent"/> class.
     /// </summary>
     /// <param name="offset">The time offset from sunrise when this event should trigger.</param>
-    /// <param name="desiredState">The desired state that should be set when this event triggers.</param>
+    /// <param name="data">Data to be passed when this event triggers.</param>
     /// <param name="daysOfWeek">The days of the week when this event should be active. If null, the event is active every day.</param>
-    public SunriseOffsetScheduleEvent(TimeSpan offset, bool desiredState, DayOfWeek[]? daysOfWeek = null)
+    public SunriseOffsetScheduleEvent(TimeSpan offset, string? data = null, DayOfWeek[]? daysOfWeek = null)
     {
         Offset = offset;
-        DesiredState = desiredState;
+        Data = data;
         DaysOfWeek = daysOfWeek;
     }
 }

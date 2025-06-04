@@ -15,7 +15,7 @@ public static class ScheduleSerializer
     /// </summary>
     /// <param name="masterSchedule">The master schedule to serialize.</param>
     /// <returns>A JSON string representation of the master schedule.</returns>
-    public static string SerializeMasterSchedule(MasterSchedule masterSchedule)
+    public static string SerializeMasterSchedule(ScheduleCollection masterSchedule)
     {
         var serializable = new SerializableMasterSchedule
         {
@@ -31,14 +31,18 @@ public static class ScheduleSerializer
     /// <param name="json">The JSON string to deserialize.</param>
     /// <returns>A master schedule object.</returns>
     /// <exception cref="ArgumentException">Thrown when the JSON contains invalid event types or data.</exception>
-    public static MasterSchedule DeserializeMasterSchedule(string json)
+    public static ScheduleCollection DeserializeMasterSchedule(string json)
     {
         var serializable = MicroJson.Deserialize<SerializableMasterSchedule>(json);
 
-        return new MasterSchedule
+        if (serializable?.schedules == null)
         {
-            Schedules = serializable.schedules?.Select(ConvertFromSerializable).ToArray()
-        };
+            throw new ArgumentException("JSON contains no schedule information");
+        }
+
+        return new ScheduleCollection(
+            serializable.schedules.Select(ConvertFromSerializable)
+            );
     }
 
     /// <summary>
@@ -50,8 +54,8 @@ public static class ScheduleSerializer
     {
         return new SerializableSchedule
         {
-            circuitName = schedule.CircuitName,
-            events = schedule.Events?.Select(ConvertEventToSerializable).ToArray()
+            circuitName = schedule.Name,
+            events = schedule.Events.Select(ConvertEventToSerializable).ToArray()
         };
     }
 
@@ -64,7 +68,7 @@ public static class ScheduleSerializer
     {
         return new Schedule
         {
-            CircuitName = serializable.circuitName,
+            Name = serializable.circuitName,
             Events = serializable.events?.Select(ConvertEventFromSerializable).ToList() ?? new List<IScheduleEvent>()
         };
     }
@@ -86,24 +90,24 @@ public static class ScheduleSerializer
         switch (scheduleEvent)
         {
             case DailyScheduleEvent daily:
-                result.desiredState = daily.DesiredState;
+                result.data = daily.Data;
                 result.eventTime = daily.EventTime.ToString("yyyy-MM-ddTHH:mm:ss");
                 break;
 
             case WeekdayScheduleEvent weekday:
-                result.desiredState = weekday.DesiredState;
+                result.data = weekday.Data;
                 result.eventTime = weekday.EventTime.ToString("yyyy-MM-ddTHH:mm:ss");
                 result.daysOfWeek = weekday.DaysOfWeek?.Select(d => d.ToString()).ToArray();
                 break;
 
             case SunriseOffsetScheduleEvent sunrise:
-                result.desiredState = sunrise.DesiredState;
+                result.data = sunrise.Data;
                 result.offset = FormatTimeSpanOffset(sunrise.Offset);
                 result.daysOfWeek = sunrise.DaysOfWeek?.Select(d => d.ToString()).ToArray();
                 break;
 
             case SunsetOffsetScheduleEvent sunset:
-                result.desiredState = sunset.DesiredState;
+                result.data = sunset.Data;
                 result.offset = FormatTimeSpanOffset(sunset.Offset);
                 result.daysOfWeek = sunset.DaysOfWeek?.Select(d => d.ToString()).ToArray();
                 break;
@@ -132,21 +136,21 @@ public static class ScheduleSerializer
         {
             ScheduleEventType.Daily => new DailyScheduleEvent(
                 DateTime.Parse(serializable.eventTime),
-                serializable.desiredState ?? false),
+                serializable.data),
 
             ScheduleEventType.Weekday => new WeekdayScheduleEvent(
                 DateTime.Parse(serializable.eventTime),
-                serializable.desiredState ?? false,
+                serializable.data,
                 ParseDaysOfWeek(serializable.daysOfWeek)),
 
             ScheduleEventType.SunriseOffset => new SunriseOffsetScheduleEvent(
                 ParseTimeSpanOffset(serializable.offset),
-                serializable.desiredState ?? false,
+                serializable.data,
                 ParseDaysOfWeek(serializable.daysOfWeek)),
 
             ScheduleEventType.SunsetOffset => new SunsetOffsetScheduleEvent(
                 ParseTimeSpanOffset(serializable.offset),
-                serializable.desiredState ?? false,
+                serializable.data,
                 ParseDaysOfWeek(serializable.daysOfWeek)),
 
             _ => throw new ArgumentException($"Unsupported event type: {eventType}")
@@ -256,9 +260,9 @@ internal class SerializableScheduleEvent
     public bool isDisabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the desired state for the event.
+    /// Gets or sets the data for the event.
     /// </summary>
-    public bool? desiredState { get; set; }
+    public string? data { get; set; }
 
     /// <summary>
     /// Gets or sets the event time for Daily and Weekday events.

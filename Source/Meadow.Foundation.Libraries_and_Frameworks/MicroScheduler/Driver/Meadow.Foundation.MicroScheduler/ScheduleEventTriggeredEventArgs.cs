@@ -18,9 +18,9 @@ public class ScheduleEventTriggeredEventArgs : EventArgs
     public IScheduleEvent ScheduleEvent { get; }
 
     /// <summary>
-    /// Gets the new state that the circuit was set to.
+    /// Gets the data for this event
     /// </summary>
-    public bool NewState { get; }
+    public string? Data { get; }
 
     /// <summary>
     /// Gets the date and time when the event was triggered.
@@ -33,12 +33,12 @@ public class ScheduleEventTriggeredEventArgs : EventArgs
     /// <param name="circuitName">The name of the circuit that was affected.</param>
     /// <param name="scheduleEvent">The schedule event that was triggered.</param>
     /// <param name="newState">The new state that the circuit was set to.</param>
-    /// <param name="triggeredAt">The date and time when the event was triggered.</param>
-    public ScheduleEventTriggeredEventArgs(string circuitName, IScheduleEvent scheduleEvent, bool newState, DateTimeOffset triggeredAt)
+    /// <param name="data">Data associated with this event.</param>
+    public ScheduleEventTriggeredEventArgs(string circuitName, IScheduleEvent scheduleEvent, string? data, DateTimeOffset triggeredAt)
     {
         CircuitName = circuitName;
         ScheduleEvent = scheduleEvent;
-        NewState = newState;
+        Data = data;
         TriggeredAt = triggeredAt;
     }
 }

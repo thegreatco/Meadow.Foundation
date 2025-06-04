@@ -1,4 +1,4 @@
-namespace Meadow.Foundation.Scheduling.Unit.Tests;
+namespace Meadow.Foundation.Scheduling.Tests;
 
 public class SystemTimeProviderTests : IDisposable
 {

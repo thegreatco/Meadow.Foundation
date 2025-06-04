@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Driver\Meadow.Foundation.Scheduling\Meadow.Foundation.Scheduling.csproj" />
+    <ProjectReference Include="..\..\Driver\Meadow.Foundation.MicroScheduler\Meadow.Foundation.MicroScheduler.csproj" />
   </ItemGroup>
 
   <ItemGroup>

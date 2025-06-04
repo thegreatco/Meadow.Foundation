@@ -12,12 +12,12 @@ public class Schedule
     /// <summary>
     /// Gets or sets the name of the circuit this schedule controls.
     /// </summary>
-    public string CircuitName { get; set; }
+    public string Name { get; set; } = "Schedule";
 
     /// <summary>
     /// Gets or sets the list of schedule events for this circuit.
     /// </summary>
-    public List<IScheduleEvent> Events { get; set; }
+    public List<IScheduleEvent> Events { get; set; } = new();
 
     /// <summary>
     /// Gets a value indicating whether this schedule contains any sunrise or sunset offset events.

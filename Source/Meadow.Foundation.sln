@@ -1739,6 +1739,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T38i8o6do_Sample", "Meadow.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "T322ai_Sample", "Meadow.Foundation.Peripherals\IOExpanders.T3xxx\Samples\T322ai_Sample\T322ai_Sample.csproj", "{7B2A13F7-189C-E3B4-1B4A-3785FFA099AA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicroScheduler", "MicroScheduler", "{04FC3661-330B-7308-B9F4-52B092F13016}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Foundation.MicroScheduler", "Meadow.Foundation.Libraries_and_Frameworks\MicroScheduler\Driver\Meadow.Foundation.MicroScheduler\Meadow.Foundation.MicroScheduler.csproj", "{05A53DF7-4B16-92CA-E0E4-C590134E368D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{4A6ADE0D-21F0-96A3-C8DF-CF391F4ABC90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Foundation.MicroScheduler.Unit.Tests", "Meadow.Foundation.Libraries_and_Frameworks\MicroScheduler\Tests\Meadow.Foundation.MicroScheduler.Unit.Tests\Meadow.Foundation.MicroScheduler.Unit.Tests.csproj", "{15F1875E-7B38-C554-70A7-5DB937FE8E3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -4191,6 +4199,14 @@ Global
 		{7B2A13F7-189C-E3B4-1B4A-3785FFA099AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7B2A13F7-189C-E3B4-1B4A-3785FFA099AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7B2A13F7-189C-E3B4-1B4A-3785FFA099AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -5058,6 +5074,10 @@ Global
 		{EA4238DB-6EBF-8B43-10FE-2477D959B49C} = {B375B79F-8C7E-4157-8C8A-78CEF5785BBC}
 		{8ACBFEA1-FBA6-31AF-BEDF-7DF7ED1AD4F5} = {B9821B3E-FF60-4627-8203-73E41AF2B55E}
 		{7B2A13F7-189C-E3B4-1B4A-3785FFA099AA} = {B9821B3E-FF60-4627-8203-73E41AF2B55E}
+		{04FC3661-330B-7308-B9F4-52B092F13016} = {E0384B86-37FC-403C-B1F7-AA5D1B869EB1}
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D} = {04FC3661-330B-7308-B9F4-52B092F13016}
+		{4A6ADE0D-21F0-96A3-C8DF-CF391F4ABC90} = {04FC3661-330B-7308-B9F4-52B092F13016}
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F} = {04FC3661-330B-7308-B9F4-52B092F13016}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF7CA16F-8C38-4546-87A2-5DAAF58A1520}
