@@ -14,7 +14,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection();
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -29,7 +29,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -51,7 +51,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -77,7 +77,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -105,7 +105,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -132,7 +132,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -158,7 +158,7 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
 
         // Assert
         Assert.NotNull(json);
@@ -176,7 +176,7 @@ public class ScheduleSerializerTests
         var json = "{\"schedules\":[]}";
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -206,7 +206,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -247,7 +247,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -287,7 +287,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -325,7 +325,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -361,7 +361,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -397,8 +397,8 @@ public class ScheduleSerializerTests
         originalSchedules.Schedules.Add(schedule2);
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(originalSchedules);
-        var deserializedSchedules = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var json = ScheduleSerializer.SerializeScheduleCollection(originalSchedules);
+        var deserializedSchedules = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.Equal(originalSchedules.Schedules.Count, deserializedSchedules.Schedules.Count);
@@ -441,8 +441,8 @@ public class ScheduleSerializerTests
         originalSchedule.Schedules.Add(schedule);
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(originalSchedule);
-        var deserializedSchedule = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var json = ScheduleSerializer.SerializeScheduleCollection(originalSchedule);
+        var deserializedSchedule = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         var event1 = deserializedSchedule.Schedules.First().Events.First();
@@ -457,14 +457,14 @@ public class ScheduleSerializerTests
     public void DeserializeMasterSchedule_WithNullJson_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(null));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(null));
     }
 
     [Fact]
     public void DeserializeMasterSchedule_WithEmptyJson_ThrowsArgumentException()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(""));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(""));
     }
 
     [Fact]
@@ -474,7 +474,7 @@ public class ScheduleSerializerTests
         var invalidJson = "{ invalid json }";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(invalidJson));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(invalidJson));
     }
 
     [Fact]
@@ -484,7 +484,7 @@ public class ScheduleSerializerTests
         var json = "{ \"notSchedules\": [] }";
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(json));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(json));
     }
 
     [Fact]
@@ -509,7 +509,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(json));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(json));
     }
 
     [Fact]
@@ -535,7 +535,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act & Assert
-        Assert.Throws<FormatException>(() => ScheduleSerializer.DeserializeMasterSchedule(json));
+        Assert.Throws<FormatException>(() => ScheduleSerializer.DeserializeScheduleCollection(json));
     }
 
     [Fact]
@@ -561,7 +561,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(json));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(json));
     }
 
     [Fact]
@@ -588,7 +588,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeMasterSchedule(json));
+        Assert.Throws<ArgumentException>(() => ScheduleSerializer.DeserializeScheduleCollection(json));
     }
 
     #endregion
@@ -605,8 +605,8 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
-        var deserialized = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
+        var deserialized = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         var deserializedEvent = Assert.IsType<SunriseOffsetScheduleEvent>(deserialized.Schedules.First().Events.First());
@@ -626,8 +626,8 @@ public class ScheduleSerializerTests
         var masterSchedule = new ScheduleCollection(new[] { schedule1, schedule2 });
 
         // Act
-        var json = ScheduleSerializer.SerializeMasterSchedule(masterSchedule);
-        var deserialized = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var json = ScheduleSerializer.SerializeScheduleCollection(masterSchedule);
+        var deserialized = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.Equal(2, deserialized.Schedules.Count);
@@ -657,7 +657,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(result.Schedules.First().Events.First());
@@ -688,7 +688,7 @@ public class ScheduleSerializerTests
         """;
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(result.Schedules.First().Events.First());
@@ -709,7 +709,7 @@ public class ScheduleSerializerTests
         var json = File.ReadAllText(filePath);
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
         Assert.NotNull(result);
@@ -814,9 +814,9 @@ public class ScheduleSerializerTests
         var originalJson = File.ReadAllText(filePath);
 
         // Act - Deserialize then re-serialize
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(originalJson);
-        var newJson = ScheduleSerializer.SerializeMasterSchedule(scheduleCollection);
-        var roundTripCollection = ScheduleSerializer.DeserializeMasterSchedule(newJson);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(originalJson);
+        var newJson = ScheduleSerializer.SerializeScheduleCollection(scheduleCollection);
+        var roundTripCollection = ScheduleSerializer.DeserializeScheduleCollection(newJson);
 
         // Assert - Verify the data is identical after round trip
         Assert.Equal(scheduleCollection.Schedules.Count, roundTripCollection.Schedules.Count);
@@ -884,7 +884,7 @@ public class ScheduleSerializerTests
         var json = File.ReadAllText(filePath);
 
         // Act
-        var result = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert - Test the computed properties
         var lightSchedule = result.Schedules.First(s => s.Name == "light");

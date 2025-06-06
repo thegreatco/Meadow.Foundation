@@ -2,6 +2,7 @@
 using Meadow.Foundation.Serialization;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -16,6 +17,13 @@ public class ScheduleCollection : IEnumerable<Schedule>
     /// Gets or sets the array of schedules managed by this master schedule.
     /// </summary>
     public List<Schedule> Schedules { get; set; } = new();
+
+    public static ScheduleCollection LoadFrom(FileInfo scheduleFile)
+    {
+        if (!scheduleFile.Exists) throw new FileNotFoundException();
+        var json = File.ReadAllText(scheduleFile.FullName);
+        return ScheduleSerializer.DeserializeScheduleCollection(json);
+    }
 
     public ScheduleCollection()
     {
