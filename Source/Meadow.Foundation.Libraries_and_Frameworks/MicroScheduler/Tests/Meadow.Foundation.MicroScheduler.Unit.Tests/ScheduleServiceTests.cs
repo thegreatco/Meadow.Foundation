@@ -630,7 +630,7 @@ public class ScheduleServiceTests : IDisposable
         Assert.True(File.Exists(filePath), $"Test file not found: {filePath}");
 
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case 1: Saturday 18:00 - Should trigger light events
@@ -655,7 +655,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: Saturday 6:45 - Should trigger fountain sunrise offset
@@ -680,7 +680,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: Monday 17:30 - Should trigger light weekday event
@@ -710,7 +710,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: Wednesday 6:30 - Should trigger fountain weekday event (Mon/Wed/Fri)
@@ -739,7 +739,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: Saturday 7:30 - Should trigger disabled light sunrise offset event time
@@ -760,7 +760,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: 8:00 AM - Should trigger fountain daily event
@@ -784,7 +784,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: Tuesday 20:30 - Should trigger fountain sunset offset (all days)
@@ -813,7 +813,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Test Case: Saturday 12:00 noon - No events should trigger at this time
@@ -833,7 +833,7 @@ public class ScheduleServiceTests : IDisposable
         // Arrange
         var filePath = Path.Combine("inputs", "test_schedule_1.json");
         var json = File.ReadAllText(filePath);
-        var scheduleCollection = ScheduleSerializer.DeserializeMasterSchedule(json);
+        var scheduleCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
         await _scheduleService.SetSchedules(scheduleCollection);
 
         // Act & Assert - Verify the schedule collection properties

@@ -13,13 +13,13 @@ public static class ScheduleSerializer
     /// <summary>
     /// Serializes a master schedule to a JSON string.
     /// </summary>
-    /// <param name="masterSchedule">The master schedule to serialize.</param>
+    /// <param name="collection">The master schedule to serialize.</param>
     /// <returns>A JSON string representation of the master schedule.</returns>
-    public static string SerializeMasterSchedule(ScheduleCollection masterSchedule)
+    public static string? SerializeScheduleCollection(ScheduleCollection collection)
     {
         var serializable = new SerializableMasterSchedule
         {
-            schedules = masterSchedule.Schedules?.Select(ConvertToSerializable).ToArray()
+            schedules = collection.Schedules?.Select(ConvertToSerializable).ToArray()
         };
 
         return MicroJson.Serialize(serializable);
@@ -31,7 +31,7 @@ public static class ScheduleSerializer
     /// <param name="json">The JSON string to deserialize.</param>
     /// <returns>A master schedule object.</returns>
     /// <exception cref="ArgumentException">Thrown when the JSON contains invalid event types or data.</exception>
-    public static ScheduleCollection DeserializeMasterSchedule(string json)
+    public static ScheduleCollection DeserializeScheduleCollection(string json)
     {
         var serializable = MicroJson.Deserialize<SerializableMasterSchedule>(json);
 
