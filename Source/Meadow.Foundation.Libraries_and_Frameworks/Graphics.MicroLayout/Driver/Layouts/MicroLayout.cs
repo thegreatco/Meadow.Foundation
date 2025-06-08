@@ -43,6 +43,11 @@ public abstract class MicroLayout : ThemedControl, IControlContainer
             {
                 control.ApplyTheme(theme);
             }
+
+            if (theme.BackgroundColor != null)
+            {
+                this.BackgroundColor = theme.BackgroundColor;
+            }
         }
     }
 
