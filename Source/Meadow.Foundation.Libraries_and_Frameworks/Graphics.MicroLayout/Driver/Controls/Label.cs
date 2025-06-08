@@ -64,6 +64,7 @@ public class Label : ClickableControl
     public override void ApplyTheme(DisplayTheme theme)
     {
         _theme = theme;
+        this.Invalidate();
     }
 
     /// <summary>
