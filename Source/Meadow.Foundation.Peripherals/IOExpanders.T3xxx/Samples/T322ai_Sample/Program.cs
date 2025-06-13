@@ -17,7 +17,7 @@ internal class Program
         Console.WriteLine($"Serial: {sn}");
 
         //var vi = t3.CreateVoltageInputPort(t3.Pins.AI22);
-        var ci = t3.CreateCurrentInputPort(t3.Pins.AI11);
+        var ci = await t3.CreateCurrentInputPort(t3.Pins.AI11);
 
         while (true)
         {

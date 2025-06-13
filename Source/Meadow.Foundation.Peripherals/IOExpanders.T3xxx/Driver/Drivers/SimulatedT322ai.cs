@@ -21,15 +21,15 @@ public class SimulatedT322ai
     }
 
     /// <inheritdoc/>
-    public ICurrentInputPort CreateCurrentInputPort(IPin pin)
+    public Task<ICurrentInputPort> CreateCurrentInputPort(IPin pin)
     {
-        return new SimulatedCurrentInputPort(this, pin);
+        return Task.FromResult<ICurrentInputPort>(new SimulatedCurrentInputPort(this, pin));
     }
 
     /// <inheritdoc/>
-    public IVoltageInputPort CreateVoltageInputPort(IPin pin)
+    public Task<IVoltageInputPort> CreateVoltageInputPort(IPin pin)
     {
-        return new SimulatedVoltageInputPort(this, pin);
+        return Task.FromResult<IVoltageInputPort>(new SimulatedVoltageInputPort(this, pin));
     }
 
     /// <inheritdoc/>
