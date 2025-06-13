@@ -19,6 +19,18 @@ public class Button : ClickableControl
     /// <summary>
     /// Initializes a new instance of the <see cref="Button"/> class with the specified dimensions.
     /// </summary>
+    /// <param name="width">The width of the button.</param>
+    /// <param name="height">The height of the button.</param>
+    /// <param name="text">The initial Text for the control</param>
+    public Button(int width, int height, string text = nameof(Button))
+        : base(0, 0, width, height)
+    {
+        Text = text;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Button"/> class with the specified dimensions.
+    /// </summary>
     /// <param name="left">The left coordinate of the button.</param>
     /// <param name="top">The top coordinate of the button.</param>
     /// <param name="width">The width of the button.</param>
