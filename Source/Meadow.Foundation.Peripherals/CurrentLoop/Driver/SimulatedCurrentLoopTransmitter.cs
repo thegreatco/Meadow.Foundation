@@ -1,7 +1,7 @@
 ﻿using Meadow.Units;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation.Sensors.CurrentLoop;
+namespace Meadow.Foundation.CurrentLoop;
 
 /// <summary>
 /// Implementation of a simulated current loop generator

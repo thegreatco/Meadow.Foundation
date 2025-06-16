@@ -1,8 +1,9 @@
-﻿using Meadow.Units;
+﻿using Meadow.Hardware;
+using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation.Sensors.CurrentLoop;
+namespace Meadow.Foundation.CurrentLoop;
 
 /// <summary>
 /// Abstract base class for current loop sensors that provides common functionality
@@ -15,10 +16,17 @@ public abstract class CurrentLoopSensor
     /// Initializes a new instance of the CurrentLoopSensor class
     /// </summary>
     /// <param name="transmitter">The current loop transmitter to use for output</param>
-    protected CurrentLoopSensor(ICurrentLoopGenerator transmitter)
+    /// <param name="range">The current loop range (0-20mA or 4-20mA)</param>
+    protected CurrentLoopSensor(ICurrentLoopGenerator transmitter, CurrentLoopRange range)
     {
         _transmitter = transmitter;
+        Range = range;
     }
+
+    /// <summary>
+    /// Gets the current loop range (0-20mA or 4-20mA) for this sensor
+    /// </summary>
+    public CurrentLoopRange Range { get; }
 
     /// <summary>
     /// Sets the output current, ensuring it's within valid range

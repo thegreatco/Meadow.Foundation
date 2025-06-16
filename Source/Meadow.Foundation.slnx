@@ -165,6 +165,11 @@
       <Deploy />
     </Project>
   </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/CurrentLoop/">
+    <Project Path="Meadow.Foundation.Peripherals/CurrentLoop/Driver/CurrentLoop.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/Displays/" />
   <Folder Name="/Meadow.Foundation.Peripherals/Displays/AsciiConsole/">
     <Project Path="Meadow.Foundation.Peripherals/Displays.AsciiConsole/Driver/Displays.AsciiConsole.csproj">

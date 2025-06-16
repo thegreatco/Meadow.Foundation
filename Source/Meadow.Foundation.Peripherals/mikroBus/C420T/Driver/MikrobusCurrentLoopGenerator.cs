@@ -2,7 +2,7 @@
 using Meadow.Units;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation.Sensors.CurrentLoop;
+namespace Meadow.Foundation.mikroBUS.Sensors;
 
 /// <summary>
 /// Implementation of current loop generator using the Mikrobus C420T module

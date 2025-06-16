@@ -1,8 +1,9 @@
-﻿using Meadow.Units;
+﻿using Meadow.Hardware;
+using Meadow.Units;
 using System;
 using System.Threading.Tasks;
 
-namespace Meadow.Foundation.Sensors.CurrentLoop;
+namespace Meadow.Foundation.CurrentLoop;
 
 /// <summary>
 /// Emulates a pressure sensor that outputs a 4-20mA or 0-20mA current loop signal
@@ -21,11 +22,6 @@ public class PressureTransmitter : CurrentLoopSensor
     public Pressure MaximumSensePressure { get; }
 
     /// <summary>
-    /// Gets the current loop range (0-20mA or 4-20mA) for this sensor
-    /// </summary>
-    public CurrentLoopRange Range { get; }
-
-    /// <summary>
     /// Initializes a new instance of the PressureTransmitter class
     /// </summary>
     /// <param name="generator">The current loop generator to use for output</param>
@@ -38,7 +34,7 @@ public class PressureTransmitter : CurrentLoopSensor
         CurrentLoopRange range,
         Pressure minimumSensePressure,
         Pressure maximumSensePressure)
-        : base(generator)
+        : base(generator, range)
     {
         if (minimumSensePressure >= maximumSensePressure)
         {
@@ -48,7 +44,6 @@ public class PressureTransmitter : CurrentLoopSensor
 
         MinimumSensePressure = minimumSensePressure;
         MaximumSensePressure = maximumSensePressure;
-        Range = range;
     }
 
     /// <summary>

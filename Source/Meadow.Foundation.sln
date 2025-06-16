@@ -1755,6 +1755,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CurrentLoop", "CurrentLoop"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sensors.CurrentLoop", "Meadow.Foundation.Peripherals\Sensors.CurrentLoop\Driver\Sensors.CurrentLoop.csproj", "{50693E36-6D2D-9F6A-17F7-AE9412481DDF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{33912EBA-F4D3-40A3-D3C5-DC5A2693A323}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -5108,6 +5110,7 @@ Global
 		{C4633E33-C29C-FBC7-7A61-DE45966E8337} = {65C50059-6C22-43E9-88DE-AD73F7F108C8}
 		{594A5199-B1F7-DD2F-F554-93772B1E3F08} = {9F4EEBFB-F2B6-4B28-ABAD-D219F4AB15F3}
 		{50693E36-6D2D-9F6A-17F7-AE9412481DDF} = {594A5199-B1F7-DD2F-F554-93772B1E3F08}
+		{33912EBA-F4D3-40A3-D3C5-DC5A2693A323} = {64623FCA-6086-4F0A-A59D-2BF372EA38AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF7CA16F-8C38-4546-87A2-5DAAF58A1520}
