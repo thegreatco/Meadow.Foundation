@@ -1,5 +1,6 @@
 ﻿using Meadow.Hardware;
 using Meadow.Modbus;
+using System.Threading.Tasks;
 
 namespace Meadow.Foundation.IOExpanders;
 
@@ -10,8 +11,7 @@ namespace Meadow.Foundation.IOExpanders;
 /// </summary>
 public partial class T322ai
     : T3xxx,
-    ICurrentInputController,
-    IVoltageInputController
+    IT322ai
 {
     /// <summary>
     /// Gets the pin definitions for this T322ai module, providing access to all 22 analog input pins.
@@ -47,15 +47,15 @@ public partial class T322ai
     /// </summary>
     /// <param name="pin">The pin to configure as a current input port.</param>
     /// <returns>A new ICurrentInputPort instance configured for current measurement.</returns>
-    public ICurrentInputPort CreateCurrentInputPort(IPin pin)
+    public async Task<ICurrentInputPort> CreateCurrentInputPort(IPin pin)
     {
         var offset = (int)pin.Key;
 
-        WriteHoldingRegister((ushort)(T322aiRegisters.AiRange0 + offset), (ushort)AnalogInputRange.Current_4_20).Wait();
+        await WriteHoldingRegister((ushort)(T322aiRegisters.AiRange0 + offset), (ushort)AnalogInputRange.Current_4_20);
         // mode must be set to 0 (auto) in the T322i.  No idea why.
-        WriteHoldingRegister((ushort)(T322aiRegisters.AutoManual0 + offset), 0).Wait();
+        await WriteHoldingRegister((ushort)(T322aiRegisters.AutoManual0 + offset), 0);
         // set it as an analog input 
-        WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 1).Wait();
+        await WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 1);
 
         return new T3xxx.CurrentInputPort(this, pin,
             // each input is 2 registers, the data for voltage is in the low
@@ -69,15 +69,15 @@ public partial class T322ai
     /// </summary>
     /// <param name="pin">The pin to configure as a voltage input port.</param>
     /// <returns>A new IVoltageInputPort instance configured for voltage measurement.</returns>
-    public IVoltageInputPort CreateVoltageInputPort(IPin pin)
+    public async Task<IVoltageInputPort> CreateVoltageInputPort(IPin pin)
     {
         var offset = (int)pin.Key;
 
-        WriteHoldingRegister((ushort)(T322aiRegisters.AiRange0 + offset), (ushort)AnalogInputRange.Voltage_0_10).Wait();
+        await WriteHoldingRegister((ushort)(T322aiRegisters.AiRange0 + offset), (ushort)AnalogInputRange.Voltage_0_10);
         // mode must be set to 0 (auto) in the T322i.  No idea why.
-        WriteHoldingRegister((ushort)(T322aiRegisters.AutoManual0 + offset), 0).Wait();
+        await WriteHoldingRegister((ushort)(T322aiRegisters.AutoManual0 + offset), 0);
         // set it as an analog input 
-        WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 1).Wait();
+        await WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 1);
 
         return new T3xxx.VoltageInputPort(this, pin,
             // each input is 2 registers, the data for voltage is in the low

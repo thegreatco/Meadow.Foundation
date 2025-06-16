@@ -43,18 +43,42 @@ public class ScrollingTextArea : MicroLayout
         CreateRowLabels(RowCount);
     }
 
+    /// <inheritdoc/>
+    public override IControl? Parent
+    {
+        get => base.Parent;
+        set
+        {
+            base.Parent = value;
+
+            var x = value?.Left ?? 0;
+            var y = value?.Top ?? 0;
+
+            for (var i = 0; i < _labels.Length; i++)
+            {
+                _labels[i].Left = x;
+                _labels[i].Top = y;
+
+                y += _rowHeight;
+            }
+        }
+    }
+
     private void CreateRowLabels(int rowCount)
     {
-        var y = 0;
+        var x = Parent?.Left ?? 0;
+        var y = Parent?.Top ?? 0;
+
         for (var i = 0; i < rowCount; i++)
         {
             _labels[i] =
-                new Label(Left, Top + y, this.Width, _rowHeight)
+                new Label(x, Top + y, this.Width, _rowHeight)
                 {
                     Font = _font,
                     TextColor = DefaultRowColor,
-                    BackColor = this.BackgroundColor ?? Color.Transparent,
+                    BackgroundColor = this.BackgroundColor ?? Color.Transparent,
                     VerticalAlignment = VerticalAlignment.Center,
+                    Text = string.Empty
                 };
 
             Controls.Add(_labels[i]);

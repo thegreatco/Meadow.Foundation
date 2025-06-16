@@ -1746,6 +1746,13 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTCs.Ab0805", "Meadow.Foundation.Peripherals\RTCs.Ab0805\Driver\RTCs.Ab0805.csproj", "{B608AF2E-311A-9893-207B-715F4B42445A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab0805_Sample", "Meadow.Foundation.Peripherals\RTCs.Ab0805\Samples\Ab0805_Sample\Ab0805_Sample.csproj", "{6BCBF7C3-E8D6-C674-BF83-82ABE9CA3B0C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicroScheduler", "MicroScheduler", "{04FC3661-330B-7308-B9F4-52B092F13016}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Foundation.MicroScheduler", "Meadow.Foundation.Libraries_and_Frameworks\MicroScheduler\Driver\Meadow.Foundation.MicroScheduler\Meadow.Foundation.MicroScheduler.csproj", "{05A53DF7-4B16-92CA-E0E4-C590134E368D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{4A6ADE0D-21F0-96A3-C8DF-CF391F4ABC90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Foundation.MicroScheduler.Unit.Tests", "Meadow.Foundation.Libraries_and_Frameworks\MicroScheduler\Tests\Meadow.Foundation.MicroScheduler.Unit.Tests\Meadow.Foundation.MicroScheduler.Unit.Tests.csproj", "{15F1875E-7B38-C554-70A7-5DB937FE8E3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -4211,6 +4218,14 @@ Global
 		{6BCBF7C3-E8D6-C674-BF83-82ABE9CA3B0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BCBF7C3-E8D6-C674-BF83-82ABE9CA3B0C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6BCBF7C3-E8D6-C674-BF83-82ABE9CA3B0C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -5082,6 +5097,10 @@ Global
 		{C2640DFE-0FE4-48FA-BE46-CF7E0169957D} = {FCB6A31B-3246-466C-981A-95D3CA3F74C9}
 		{B608AF2E-311A-9893-207B-715F4B42445A} = {FCB6A31B-3246-466C-981A-95D3CA3F74C9}
 		{6BCBF7C3-E8D6-C674-BF83-82ABE9CA3B0C} = {C2640DFE-0FE4-48FA-BE46-CF7E0169957D}
+		{04FC3661-330B-7308-B9F4-52B092F13016} = {E0384B86-37FC-403C-B1F7-AA5D1B869EB1}
+		{05A53DF7-4B16-92CA-E0E4-C590134E368D} = {04FC3661-330B-7308-B9F4-52B092F13016}
+		{4A6ADE0D-21F0-96A3-C8DF-CF391F4ABC90} = {04FC3661-330B-7308-B9F4-52B092F13016}
+		{15F1875E-7B38-C554-70A7-5DB937FE8E3F} = {04FC3661-330B-7308-B9F4-52B092F13016}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF7CA16F-8C38-4546-87A2-5DAAF58A1520}

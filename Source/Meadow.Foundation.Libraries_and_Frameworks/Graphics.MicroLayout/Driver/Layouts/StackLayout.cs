@@ -90,12 +90,12 @@ public class StackLayout : MicroLayout
                 if (StackOrientation == Orientation.Vertical)
                 {
                     control.Left = Width / 2 - control.Width / 2;
-                    control.Top = Top + offset;
+                    control.Top = offset;
                     offset += control.Height + Spacing;
                 }
                 else
                 {
-                    control.Left = Left + offset;
+                    control.Left = offset;
                     control.Top = Height / 2 - control.Height / 2;
                     offset += control.Width + Spacing;
                 }
@@ -112,6 +112,20 @@ public class StackLayout : MicroLayout
         lock (Controls.SyncRoot)
         {
             Controls.Add(control);
+        }
+        LayoutControls();
+        Invalidate();
+    }
+
+    /// <summary>
+    /// Adds controls to the layout and updates positions.
+    /// </summary>
+    /// <param name="controls">The controls to add.</param>
+    public void Add(params IControl[] controls)
+    {
+        lock (Controls.SyncRoot)
+        {
+            Controls.Add(controls);
         }
         LayoutControls();
         Invalidate();
