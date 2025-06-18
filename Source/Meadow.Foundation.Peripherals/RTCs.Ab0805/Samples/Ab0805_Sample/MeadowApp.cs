@@ -64,10 +64,9 @@ namespace Ab0805_Sample
         {
             Resolver.Log.Info("\n=== Testing Countdown Timer Functionality ===");
 
-            // Test 1: Basic 5-second timer
             await TestBasicTimer();
-
             await Task.Delay(1000);
+            await TestAlarm();
         }
 
         private async Task TestBasicTimer()
@@ -76,108 +75,49 @@ namespace Ab0805_Sample
 
             rtc.ResetTimer();
 
-            // Start a 5-second timer
             Resolver.Log.Info("Starting 5-second countdown timer...");
             rtc.StartTimer(5, Ab0805.DelayTimeUnit.Seconds);
 
             var startTime = DateTime.Now;
+            TimeSpan elapsed;
 
-            // Monitor the timer
             while (rtc.HasTimerEnded == false)
             {
-                var timerValue = 0; // rtc.GetCountdownTimerValue();
-                var elapsed = DateTime.Now - startTime;
-                Resolver.Log.Info($"Timer value: {timerValue}, Elapsed: {elapsed.TotalSeconds:F1}s");
+                elapsed = DateTime.Now - startTime;
+                Resolver.Log.Info($"Elapsed: {elapsed.TotalSeconds:F1}s");
 
-                await Task.Delay(1000); // Check every second
+                await Task.Delay(1000);
             }
 
-            // Check if interrupt fired
-            if (rtc.HasTimerEnded)
-            {
-                var elapsed = DateTime.Now - startTime;
-                Resolver.Log.Info($"✓ Timer completed! Interrupt fired after {elapsed.TotalSeconds:F1}s");
-                rtc.ResetTimer();
-            }
-            else
-            {
-                Resolver.Log.Info("Timer completed but no interrupt detected");
-            }
+            elapsed = DateTime.Now - startTime;
+            Resolver.Log.Info($"✓ Timer completed! Interrupt fired after {elapsed.TotalSeconds:F1}s");
+            rtc.ResetTimer();
         }
 
-        /*
-        private async Task TestRepeatingTimer()
+        private async Task TestAlarm()
         {
-            Resolver.Log.Info("\n--- Test 2: Repeating 3-second timer (will run 3 cycles) ---");
+            Resolver.Log.Info("\n--- Test 2: Alarm 6 seconds in the future ---");
 
-            rtc.ClearCountdownTimerInterrupt();
+            DateTimeOffset alarmTime = rtc.GetTime().AddSeconds(6);
 
-            // Start a repeating 3-second timer
-            Resolver.Log.Info("Starting repeating 3-second timer...");
-            rtc.StartCountdownTimer(3, CountdownFrequency.OneHz, repeatMode: true, enableInterrupt: true);
-
-            int cycleCount = 0;
-            var startTime = DateTime.Now;
-
-            // Run for 3 cycles (about 9 seconds)
-            while (cycleCount < 3)
-            {
-                if (rtc.CountdownTimerInterruptFired)
-                {
-                    cycleCount++;
-                    var elapsed = DateTime.Now - startTime;
-                    Resolver.Log.Info($"✓ Timer cycle {cycleCount} completed at {elapsed.TotalSeconds:F1}s");
-                    rtc.ClearCountdownTimerInterrupt();
-                }
-
-                var timerValue = rtc.GetCountdownTimerValue();
-                Resolver.Log.Info($"Timer value: {timerValue}, Cycle: {cycleCount}/3");
-
-                await Task.Delay(500); // Check every half second
-            }
-
-            // Stop the repeating timer
-            rtc.StopCountdownTimer();
-            Resolver.Log.Info("Stopped repeating timer");
-        }
-
-        private async Task TestHighFrequencyTimer()
-        {
-            Resolver.Log.Info("\n--- Test 3: High frequency timer (64Hz for 2 seconds) ---");
-
-            rtc.ClearCountdownTimerInterrupt();
-
-            // Start a high-frequency timer - 128 ticks at 64Hz = 2 seconds
-            Resolver.Log.Info("Starting 128-tick timer at 64Hz (should take ~2 seconds)...");
-            rtc.StartCountdownTimer(128, CountdownFrequency.Hz64, repeatMode: false, enableInterrupt: true);
+            Resolver.Log.Info("Monitoring alarm...");
+            rtc.SetAlarm(alarmTime);
 
             var startTime = DateTime.Now;
-            var lastValue = 128;
+            TimeSpan elapsed;
 
-            while (rtc.IsCountdownTimerRunning)
+            while (rtc.HasAlarmTriggered == false)
             {
-                var timerValue = rtc.GetCountdownTimerValue();
-                var elapsed = DateTime.Now - startTime;
+                elapsed = DateTime.Now - startTime;
+                Resolver.Log.Info($"Elapsed: {elapsed.TotalSeconds:F1}s");
 
-                // Only log when value changes significantly to avoid spam
-                if (lastValue - timerValue >= 10 || timerValue == 0)
-                {
-                    Resolver.Log.Info($"Timer value: {timerValue}, Elapsed: {elapsed.TotalSeconds:F2}s");
-                    lastValue = timerValue;
-                }
-
-                await Task.Delay(100); // Check every 100ms
+                await Task.Delay(1000);
             }
 
-            if (rtc.CountdownTimerInterruptFired)
-            {
-                var elapsed = DateTime.Now - startTime;
-                Resolver.Log.Info($"✓ High-frequency timer completed in {elapsed.TotalSeconds:F2}s");
-                rtc.ClearCountdownTimerInterrupt();
-            }
+            elapsed = DateTime.Now - startTime;
+            Resolver.Log.Info($"✓ Alarm triggered! Interrupt fired after {elapsed.TotalSeconds:F1}s");
+            rtc.ResetAlarm();
         }
-
-        */
 
         //<!=SNOP=>
     }

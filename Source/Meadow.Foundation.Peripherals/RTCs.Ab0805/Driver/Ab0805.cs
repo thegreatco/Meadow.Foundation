@@ -52,6 +52,18 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         }
     }
 
+    /// <summary>
+    /// Has the alarm triggered
+    /// </summary>
+    public bool HasAlarmTriggered
+    {
+        get
+        {
+            byte status = i2CCommunications.ReadRegister((byte)Registers.STATUS);
+            return (status & (1 << StatusBits.ALM)) != 0;
+        }
+    }
+
     private I2cCommunications i2CCommunications;
 
     /// <summary>
@@ -66,7 +78,7 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
 
     private void Initialize()
     {
-        i2CCommunications.WriteRegister((byte)Registers.CONTROL1, 0x91);
+        i2CCommunications.WriteRegister((byte)Registers.CONTROL1, 0x1B);
         i2CCommunications.WriteRegister((byte)Registers.CONFIG_KEY, 0xA1);
         i2CCommunications.WriteRegister((byte)Registers.OSC_CONTROL, 0x08);
     }
@@ -107,13 +119,11 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
     {
         byte control1 = i2CCommunications.ReadRegister((byte)Registers.CONTROL1);
 
-        // Ensure 24-hour mode (Bit 6 = 0)
         if ((control1 & (1 << Control1Bits.HourFormat_12_24)) != 0) // If in 12hr mode
         {
             control1 = (byte)(control1 & ~(1 << Control1Bits.HourFormat_12_24)); // Set to 24hr mode
         }
 
-        // Ensure WRTC is enabled (Bit 0 = 1)
         control1 |= (1 << Control1Bits.WRTC);
         i2CCommunications.WriteRegister((byte)Registers.CONTROL1, control1);
 
@@ -123,7 +133,7 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
             // Stop the clock before setting time by modifying bit in current interrupts value
             byte stopCommand = (byte)(control1 | (1 << Control1Bits.STOP));
             i2CCommunications.WriteRegister((byte)Registers.CONTROL1, stopCommand);
-            Thread.Sleep(10); // Give it a moment to stop if needed
+            Thread.Sleep(10);
         }
 
         if (time.Year < 2000 || time.Year > 2099)
@@ -134,7 +144,7 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         i2CCommunications.WriteRegister((byte)Registers.MONTH, DecimalToBcd(time.Month));
         i2CCommunications.WriteRegister((byte)Registers.DATE, DecimalToBcd(time.Day));
 
-        int rtcDow = (time.DayOfWeek == DayOfWeek.Sunday) ? 7 : (int)time.DayOfWeek;
+        int rtcDow = (int)time.DayOfWeek;
         byte currentDowReg = i2CCommunications.ReadRegister((byte)Registers.DAY_OF_WEEK);
         byte newDowReg = (byte)((currentDowReg & ~DayOfWeekBits.Mask) | (rtcDow & DayOfWeekBits.Mask));
         i2CCommunications.WriteRegister((byte)Registers.DAY_OF_WEEK, newDowReg);
@@ -152,7 +162,47 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         }
     }
 
+    /// <summary>
+    /// Sets the alarm time
+    /// </summary>
+    /// <param name="alarmTime">The DateTimeOffset to trigger the alarm</param>
+    public void SetAlarm(DateTimeOffset alarmTime)
+    {
+        var localTime = alarmTime.DateTime;
 
+        // Extract time components
+        int hundredths = localTime.Millisecond / 10;
+        int seconds = localTime.Second;
+        int minutes = localTime.Minute;
+        int hours = localTime.Hour;
+        int date = localTime.Day;
+        int month = localTime.Month;
+        int dayOfWeek = (int)localTime.DayOfWeek;
+
+        // Convert to BCD format and write to alarm registers
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_HUNDREDTHS, DecimalToBcd(hundredths));
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_SECONDS, DecimalToBcd(seconds));
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_MINUTES, DecimalToBcd(minutes));
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_HOURS, DecimalToBcd(hours));
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_DATE, DecimalToBcd(date));
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_MONTH, DecimalToBcd(month));
+        i2CCommunications.WriteRegister((byte)Registers.ALARM_DAY_OF_WEEK, (byte)dayOfWeek);
+
+        SetAlarmInterrupt(true);
+
+        byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
+        byte value = TimerBits.RPT;
+        timerControl |= 1 << TimerBits.RPT;
+        timerControl &= (byte)~(1 << value + 1);
+        timerControl &= (byte)~(1 << value + 2);
+        i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
+    }
+
+    /// <summary>
+    /// Start the timer on the RTC
+    /// </summary>
+    /// <param name="value">Count down timer value as an integer</param>
+    /// <param name="unit">Count down seconds or minutes</param>
     public void StartTimer(byte value, DelayTimeUnit unit = DelayTimeUnit.Seconds)
     {
         if (value < 1 || value > 255)
@@ -196,6 +246,18 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         EnableTimer(false);
     }
 
+    /// <summary>
+    /// Reset the alarm on the RTC.
+    /// </summary>
+    public void ResetAlarm()
+    {
+        byte status = i2CCommunications.ReadRegister((byte)Registers.STATUS);
+        byte value = StatusBits.ALM;
+        status &= (byte)~(1 << value);
+        i2CCommunications.WriteRegister((byte)Registers.STATUS, status);
+        SetAlarmInterrupt(false);
+    }
+
     void EnableTimer(bool enable)
     {
         byte value;
@@ -221,11 +283,11 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
 
         if (enable)
         {
-            interrupts |= (1 << InterruptMaskBits.TIE);
+            interrupts |= 1 << InterruptMaskBits.TIE;
         }
         else
         {
-            var value = (byte)InterruptMaskBits.TIE;
+            var value = InterruptMaskBits.TIE;
             interrupts &= (byte)~(1 << value);
         }
         i2CCommunications.WriteRegister((byte)Registers.INT_MASK, interrupts);
@@ -234,16 +296,20 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
     void SetAlarmInterrupt(bool enable)
     {
         byte interrupts = i2CCommunications.ReadRegister((byte)Registers.INT_MASK);
+        byte value;
 
         if (enable)
         {
-            interrupts |= (1 << InterruptMaskBits.AIE);
+            interrupts |= 1 << InterruptMaskBits.AIE;
         }
         else
         {
-            var value = (byte)InterruptMaskBits.AIE;
+            value = InterruptMaskBits.AIE;
             interrupts &= (byte)~(1 << value);
         }
+        value = InterruptMaskBits.IM;
+        interrupts &= (byte)~(1 << value);
+        interrupts &= (byte)~(1 << value + 1);
         i2CCommunications.WriteRegister((byte)Registers.INT_MASK, interrupts);
     }
 
