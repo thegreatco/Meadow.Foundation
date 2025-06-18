@@ -1,4 +1,4 @@
-﻿using Meadow.Foundation.ICs.IOExpanders;
+﻿using Meadow.Foundation.ICs.ADC;
 using Meadow.Foundation.Sensors.Power;
 using Meadow.Hardware;
 using Meadow.Units;
@@ -16,7 +16,7 @@ namespace Meadow.Foundation.mikroBUS.Sensors
         /// </summary>
         public Voltage ReferenceVoltage { get; protected set; } = new Voltage(2.048, Voltage.UnitType.Volts);
 
-        readonly Mcp3201 mcp3201 = default!;
+        private readonly Mcp3201 mcp3201 = default!;
 
         /// <summary>
         /// Creates a new CLEM object
@@ -54,7 +54,7 @@ namespace Meadow.Foundation.mikroBUS.Sensors
         /// Creates a new CLEM object using an analog input for readings
         /// </summary>
         /// <param name="analogInput">The analog input connected to the Click's AN port</param>
-        public CLEM(IAnalogInputPort analogInput)
+        public CLEM(IObservableAnalogInputPort analogInput)
         {
             base.Initialize(analogInput, new Voltage(1.8, Voltage.UnitType.Volts), new Current(30, Units.Current.UnitType.Amps));
         }
