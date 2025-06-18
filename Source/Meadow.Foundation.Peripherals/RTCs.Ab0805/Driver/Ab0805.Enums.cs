@@ -50,6 +50,21 @@ internal enum Registers : byte
 }
 
 /// <summary>
+/// Status register bit positions
+/// </summary>
+internal static class StatusBits
+{
+    public const byte CB = 7;
+    public const byte BAT = 6;
+    public const byte WDT = 5;
+    public const byte BL = 4;
+    public const byte TIM = 3; //timer
+    public const int ALM = 2; //alarm          
+    public const byte EX2 = 1;
+    public const byte EX1 = 0;
+}
+
+/// <summary>
 /// Control1 register bit positions
 /// </summary>
 internal static class Control1Bits
@@ -65,15 +80,15 @@ internal static class Control1Bits
 /// <summary>
 /// Control2 register bit positions
 /// </summary>
-public static class Control2Bits
+internal static class Control2Bits
 {
     public const int OUTPP = 7;          // Output Pin Polarity
 }
 
 /// <summary>
-/// Timer Control register bit positions
+/// Interrupt Mask register bit positions
 /// </summary>
-public static class TimerControlBits
+internal static class InterruptMaskBits
 {
     public const int CEB = 7;
     public const int IM = 5; //5 & 6

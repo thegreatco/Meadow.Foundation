@@ -33,15 +33,24 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
             }
             else
             {
-                control1 |= (byte)(1 << Control1Bits.STOP); 
+                control1 |= (byte)(1 << Control1Bits.STOP);
             }
             control1 |= (1 << Control1Bits.WRTC);
             i2CCommunications.WriteRegister((byte)Registers.CONTROL1, control1);
         }
     }
 
-    private byte[] txBuffer = new byte[16];
-    private byte[] rxBuffer = new byte[16];
+    /// <summary>
+    /// Has the timer ended
+    /// </summary>
+    public bool HasTimerEnded
+    {
+        get
+        {
+            byte status = i2CCommunications.ReadRegister((byte)Registers.STATUS);
+            return (status & (1 << StatusBits.TIM)) != 0;
+        }
+    }
 
     private I2cCommunications i2CCommunications;
 
@@ -111,7 +120,7 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         bool wasRunning = (control1 & (1 << Control1Bits.STOP)) == 0;
         if (wasRunning)
         {
-            // Stop the clock before setting time by modifying bit in current control1 value
+            // Stop the clock before setting time by modifying bit in current interrupts value
             byte stopCommand = (byte)(control1 | (1 << Control1Bits.STOP));
             i2CCommunications.WriteRegister((byte)Registers.CONTROL1, stopCommand);
             Thread.Sleep(10); // Give it a moment to stop if needed
@@ -143,6 +152,43 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         }
     }
 
+    public void StartTimer()
+    {
+
+    }
+
+    void SetTimerInterrupt(bool enable)
+    {
+        byte interrupts = i2CCommunications.ReadRegister((byte)Registers.INT_MASK);
+
+        if (enable)
+        {
+            interrupts |= (1 << InterruptMaskBits.TIE);
+        }
+        else
+        {
+            var value = (byte)InterruptMaskBits.TIE;
+            interrupts &= (byte)~(1 << value);
+        }
+        i2CCommunications.WriteRegister((byte)Registers.INT_MASK, interrupts);
+    }
+
+    void SetAlarmInterrupt(bool enable)
+    {
+        byte interrupts = i2CCommunications.ReadRegister((byte)Registers.INT_MASK);
+
+        if (enable)
+        {
+            interrupts |= (1 << InterruptMaskBits.AIE);
+        }
+        else
+        {
+            var value = (byte)InterruptMaskBits.AIE;
+            interrupts &= (byte)~(1 << value);
+        }
+        i2CCommunications.WriteRegister((byte)Registers.INT_MASK, interrupts);
+    }
+
     /// <summary>
     /// Reads the hundredths of a second from the RTC.
     /// Note: This is only valid if using an XT oscillator.
@@ -151,7 +197,7 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
     int GetHundredths()
     {
         byte bcdHundredths = i2CCommunications.ReadRegister((byte)Registers.HUNDREDTHS);
-        return BcdToDecimal(bcdHundredths); 
+        return BcdToDecimal(bcdHundredths);
     }
 
     /// <summary>
