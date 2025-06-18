@@ -1,8 +1,8 @@
-# Meadow.Foundation.RTCs.Pcf8523
+# Meadow.Foundation.RTCs.Ab0805
 
 **Ab0805 I2C real time clock**
 
-The **Ab0805** library is included in the **Meadow.Foundation.RTCs.Pcf8523** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **Ab0805** library is included in the **Meadow.Foundation.RTCs.Ab0805** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -14,7 +14,7 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.Foundation.RTCs.Pcf8523`
+`dotnet add package Meadow.Foundation.RTCs.Ab0805`
 ## Usage
 
 ```csharp
