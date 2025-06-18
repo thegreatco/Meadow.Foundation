@@ -152,9 +152,67 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         }
     }
 
-    public void StartTimer()
-    {
 
+    public void StartTimer(byte value, DelayTimeUnit unit = DelayTimeUnit.Seconds)
+    {
+        if (value < 1 || value > 255)
+        {
+            throw new ArgumentOutOfRangeException(nameof(value), "Timer value must be between 1 and 255.");
+        }
+
+        byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
+
+        if (unit == DelayTimeUnit.Seconds)
+        {
+            timerControl |= 1 << TimerBits.TFS;
+            value = TimerBits.TFS + 1;
+            timerControl &= (byte)~(1 << value);
+        }
+        else if (unit == DelayTimeUnit.Minutes)
+        {
+            timerControl |= 1 << TimerBits.TFS;
+            timerControl |= 1 << TimerBits.TFS + 1;
+        }
+        else
+        {
+            throw new ArgumentException("Invalid time unit specified.", nameof(unit));
+        }
+
+        i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
+        SetTimerInterrupt(true);
+        EnableTimer(true);
+    }
+
+    /// <summary>
+    /// Reset the timer on the RTC.
+    /// </summary>
+    public void ResetTimer()
+    {
+        byte status = i2CCommunications.ReadRegister((byte)Registers.STATUS);
+        byte value = StatusBits.TIM;
+        status &= (byte)~(1 << value);
+        i2CCommunications.WriteRegister((byte)Registers.STATUS, status);
+        SetTimerInterrupt(false);
+        EnableTimer(false);
+    }
+
+    void EnableTimer(bool enable)
+    {
+        byte value;
+        byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
+        if (enable)
+        {
+            timerControl |= 1 << TimerBits.TE;
+        }
+        else
+        {
+            value = TimerBits.TE;
+            timerControl &= (byte)~(1 << value);
+        }
+        timerControl |= 1 << TimerBits.TM; //level triggered
+        value = TimerBits.TRPT; //don't repeat
+        timerControl &= (byte)~(1 << value);
+        i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
     }
 
     void SetTimerInterrupt(bool enable)
