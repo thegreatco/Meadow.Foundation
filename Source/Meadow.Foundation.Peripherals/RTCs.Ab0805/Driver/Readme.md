@@ -1,8 +1,8 @@
 # Meadow.Foundation.RTCs.Pcf8523
 
-**Pcf8523 I2C real time clock**
+**Ab0805 I2C real time clock**
 
-The **Pcf8523** library is included in the **Meadow.Foundation.RTCs.Pcf8523** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **Ab0805** library is included in the **Meadow.Foundation.RTCs.Pcf8523** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -18,41 +18,113 @@ You can install the library from within Visual studio using the the NuGet Packag
 ## Usage
 
 ```csharp
-private Pcf8523 rtc;
+private Ab0805 rtc;
 
 public override Task Initialize()
 {
     Resolver.Log.Info("Initializing...");
 
-    rtc = new Pcf8523(Device.CreateI2cBus());
+    rtc = new Ab0805(Device.CreateI2cBus());
 
     return base.Initialize();
 }
 
-public override Task Run()
+public override async Task Run()
 {
-    var dateTime = new DateTimeOffset();
-    var running = rtc.IsRunning;
+    // Test basic RTC functionality
+    await TestBasicRTC();
 
-    Resolver.Log.Info($"{(running ? "is running" : "is not running")}");
+    // Test countdown timers
+    await TestCountdownTimers();
+}
+
+private async Task TestBasicRTC()
+{
+    Resolver.Log.Info("=== Testing Basic RTC Functionality ===");
+
+    var running = rtc.IsRunning;
+    Resolver.Log.Info($"RTC {(running ? "is running" : "is not running")}");
 
     if (!running)
     {
-        Resolver.Log.Info(" Starting RTC...");
+        Resolver.Log.Info("Starting RTC...");
         rtc.IsRunning = true;
     }
 
-    dateTime = rtc.GetTime();
-    Resolver.Log.Info($" RTC current time is: {dateTime.ToString("MM/dd/yy HH:mm:ss")}");
+    var currentTime = rtc.GetTime();
+    Resolver.Log.Info($"RTC current time: {currentTime:MM/dd/yy HH:mm:ss}");
 
-    Resolver.Log.Info($" Setting RTC to : {dateTime.ToString("MM/dd/yy HH:mm:ss")}");
-    dateTime = new DateTime(2030, 2, 15);
-    rtc.SetTime(dateTime);
+    // Set RTC to a known time for testing
+    var testTime = new DateTime(2025, 6, 15, 14, 30, 0);
+    Resolver.Log.Info($"Setting RTC to: {testTime:MM/dd/yy HH:mm:ss}");
+    rtc.SetTime(testTime);
 
-    dateTime = rtc.GetTime();
-    Resolver.Log.Info($" RTC current time is: {dateTime.ToString("MM/dd/yy HH:mm:ss")}");
+    currentTime = rtc.GetTime();
+    Resolver.Log.Info($"RTC time after setting: {currentTime:MM/dd/yy HH:mm:ss}");
 
-    return base.Run();
+    await Task.Delay(2000);
+
+    currentTime = rtc.GetTime();
+    Resolver.Log.Info($"RTC time after 2 second delay: {currentTime:MM/dd/yy HH:mm:ss}");
+}
+
+private async Task TestCountdownTimers()
+{
+    Resolver.Log.Info("\n=== Testing Countdown Timer Functionality ===");
+
+    await TestBasicTimer();
+    await Task.Delay(1000);
+    await TestAlarm();
+}
+
+private async Task TestBasicTimer()
+{
+    Resolver.Log.Info("\n--- Test 1: Basic 5-second countdown timer ---");
+
+    rtc.ResetTimer();
+
+    Resolver.Log.Info("Starting 5-second countdown timer...");
+    rtc.StartTimer(5, Ab0805.DelayTimeUnit.Seconds);
+
+    var startTime = DateTime.Now;
+    TimeSpan elapsed;
+
+    while (rtc.HasTimerEnded == false)
+    {
+        elapsed = DateTime.Now - startTime;
+        Resolver.Log.Info($"Elapsed: {elapsed.TotalSeconds:F1}s");
+
+        await Task.Delay(1000);
+    }
+
+    elapsed = DateTime.Now - startTime;
+    Resolver.Log.Info($"✓ Timer completed! Interrupt fired after {elapsed.TotalSeconds:F1}s");
+    rtc.ResetTimer();
+}
+
+private async Task TestAlarm()
+{
+    Resolver.Log.Info("\n--- Test 2: Alarm 6 seconds in the future ---");
+
+    DateTimeOffset alarmTime = rtc.GetTime().AddSeconds(6);
+
+    Resolver.Log.Info("Monitoring alarm...");
+    rtc.SetAlarm(alarmTime);
+
+    var startTime = DateTime.Now;
+    TimeSpan elapsed;
+
+    while (rtc.HasAlarmTriggered == false)
+    {
+        elapsed = DateTime.Now - startTime;
+        Resolver.Log.Info($"Elapsed: {elapsed.TotalSeconds:F1}s");
+
+        await Task.Delay(1000);
+    }
+
+    elapsed = DateTime.Now - startTime;
+    Resolver.Log.Info($"✓ Alarm triggered! Interrupt fired after {elapsed.TotalSeconds:F1}s");
+    rtc.ResetAlarm();
 }
 
 ```
