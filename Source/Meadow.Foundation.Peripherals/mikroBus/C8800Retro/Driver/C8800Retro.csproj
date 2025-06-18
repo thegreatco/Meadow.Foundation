@@ -21,9 +21,9 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include=".\Readme.md" Pack="true" PackagePath="" />
-    <None Include="..\..\icon.png" Pack="true" PackagePath="" />
+    <None Include="..\..\..\..\icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\ICs.IOExpanders.As1115\Driver\ICs.IOExpanders.As1115.csproj" />
+    <ProjectReference Include="..\..\..\ICs.IOExpanders.As1115\Driver\ICs.IOExpanders.As1115.csproj" />
   </ItemGroup>
 </Project>

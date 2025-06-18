@@ -21,9 +21,9 @@
   </PropertyGroup>
   <ItemGroup>
 	<None Include=".\Readme.md" Pack="true" PackagePath="" />
-    <None Include="..\..\icon.png" Pack="true" PackagePath="" />
+    <None Include="..\..\..\..\icon.png" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Meadow.Foundation\Source\Meadow.Foundation.Peripherals\Sensors.Atmospheric.Bh1900Nux\Driver\Sensors.Atmospheric.Bh1900Nux.csproj" />
+    <ProjectReference Include="..\..\..\Sensors.Atmospheric.Bh1900Nux\Driver\Sensors.Atmospheric.Bh1900Nux.csproj" />
   </ItemGroup>
 </Project>

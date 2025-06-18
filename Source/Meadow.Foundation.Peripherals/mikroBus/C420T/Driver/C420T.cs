@@ -29,6 +29,15 @@ public class C420T : IDisposable
     /// <summary>
     /// Creates a new C420T object using the SPI bus for output
     /// </summary>
+    /// <param name="connector">The Mikrobus connector for the device</param>
+    public C420T(MikroBusConnector connector)
+        : this(connector.SpiBus, connector.Pins.CS)
+    {
+    }
+
+    /// <summary>
+    /// Creates a new C420T object using the SPI bus for output
+    /// </summary>
     /// <param name="spiBus">The SPI bus</param>
     /// <param name="chipSelectPin">Chip select pin</param>
     public C420T(ISpiBus spiBus,

@@ -765,13 +765,134 @@
       <Deploy />
     </Project>
   </Folder>
-  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/">
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/" />
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C16x9/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C16x9/Driver/C16x9.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C16x9/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C16x9/Sample/C16x9_Sample/C16x9_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C420R/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C420R/Driver/C420R.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C420R/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C420R/Sample/C420R_Sample/C420R_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C420T/">
     <Project Path="Meadow.Foundation.Peripherals/mikroBus/C420T/Driver/C420T.csproj">
       <Deploy />
     </Project>
   </Folder>
-  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/Samples/">
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C420T/Samples/">
     <Project Path="Meadow.Foundation.Peripherals/mikroBus/C420T/Sample/C420T_Sample/C420T_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C8800Retro/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C8800Retro/Driver/C8800Retro.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C8800Retro/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C8800Retro/Sample/C8800Retro_Sample/C8800Retro_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C8x8/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C8x8/Driver/C8x8.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/C8x8/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/C8x8/Sample/C8x8_Sample/C8x8_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CACCurrent/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CACCurrent/Driver/CACCurrent.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CACCurrent/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CACCurrent/Sample/CACCurrent_Sample/CACCurrent_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CButton/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CButton/Driver/CButton.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CButton/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CButton/Sample/CButton_Sample/CButton_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CGNSS10/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CGNSS10/Driver/CGNSS10.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CGNSS10/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CGNSS10/Sample/CGNSS10_Sample/CGNSS10_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CGNSS5/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CGNSS5/Driver/CGNSS5.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CGNSS5/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CGNSS5/Sample/CGNSS5_Sample/CGNSS5_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CJoystick/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CJoystick/Driver/CJoystick.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CJoystick/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CJoystick/Sample/CJoystick_Sample/CJoystick_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CLEM/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CLEM/Driver/CLEM.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CLEM/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CLEM/Sample/CLEM_Sample/CLEM_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CTempHum15/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CTempHum15/Driver/CTempHum15.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CTempHum15/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CTempHum15/Sample/CTempHum15_Sample/CTempHum15_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CThermo13/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CThermo13/Driver/CThermo13.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/mikroBus/CThermo13/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/mikroBus/CThermo13/Sample/CThermo13_Sample/Thermo13_Sample.csproj">
       <Deploy />
     </Project>
   </Folder>
