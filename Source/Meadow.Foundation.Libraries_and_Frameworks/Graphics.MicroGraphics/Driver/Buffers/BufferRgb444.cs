@@ -141,12 +141,12 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// Fill buffer with a color
         /// </summary>
         /// <param name="color">The fill color</param>
-        public override void Fill(Color color)
+        public unsafe override void Fill(Color color)
         {
-            // could do a minor optimization by caching the ushort 444 value 
-            Buffer[0] = (byte)(color.Color12bppRgb444 >> 4);
-            Buffer[1] = (byte)((color.Color12bppRgb444 << 4) | (color.Color12bppRgb444 >> 8));
-            Buffer[2] = (byte)color.Color12bppRgb444;
+            var color12bpp = color.Color12bppRgb444;
+            Buffer[0] = (byte)(color12bpp >> 4);
+            Buffer[1] = (byte)((color12bpp << 4) | (color12bpp >> 8));
+            Buffer[2] = (byte)color12bpp;
 
             int arrayMidPoint = Buffer.Length / 2;
             int copyLength;

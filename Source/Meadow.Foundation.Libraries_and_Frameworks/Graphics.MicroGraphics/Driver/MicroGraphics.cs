@@ -1976,7 +1976,7 @@ namespace Meadow.Foundation.Graphics
         /// <param name="color">Color to set display</param>
         public virtual void Clear(Color color, bool updateDisplay = false)
         {
-            DrawRectangle(0, 0, Width, Height, color, true);
+            PixelBuffer.Fill(color);
 
             if (updateDisplay) { Show(); }
         }
