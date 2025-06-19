@@ -1,5 +1,6 @@
 ﻿using Meadow.Peripherals.Displays;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Meadow.Foundation.Graphics.Buffers
 {
@@ -112,6 +113,7 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// <param name="x">X pixel position</param>
         /// <param name="y">Y pixel position</param>
         /// <param name="color">The pixel color packed as a 12 bpp ushort</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetPixel(int x, int y, ushort color)
         {
             int index;
