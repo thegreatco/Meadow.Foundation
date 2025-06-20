@@ -1721,6 +1721,14 @@
       <Deploy />
     </Project>
   </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Power/Spm1x/">
+    <Project Path="Meadow.Foundation.Peripherals/Sensors.Power.Spm1x/Driver/Sensors.Power.Spm1x.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Power/Spm1x/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/Sensors.Power.Spm1x/Samples/Spm1x_DesktopSample/Spm1x_DesktopSample.csproj" />
+  </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Radio/" />
   <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Radio/Rfid.IDxxLA/">
     <Project Path="Meadow.Foundation.Peripherals/Sensors.Radio.Rfid.IDxxLA/Driver/Sensors.Radio.Rfid.IDxxLA.csproj">
