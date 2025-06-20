@@ -190,6 +190,25 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
 
         SetAlarmInterrupt(true);
 
+        DisableAlarmRepeat();
+
+        SetAlarmInterruptToControlFOUT();
+    }
+
+    void SetAlarmInterruptToControlFOUT()
+    {
+        byte control2 = i2CCommunications.ReadRegister((byte)Registers.CONTROL2);
+        byte value = Control2Bits.OUT1S;
+        control2 |= 1 << Control2Bits.OUT1S;
+        control2 |= 1 << (Control2Bits.OUT1S + 1);
+        control2 |= 1 << Control2Bits.OUTPP;
+        //control2 &= (byte)~(1 << value);
+        //control2 &= (byte)~(1 << value + 1);
+        i2CCommunications.WriteRegister((byte)Registers.CONTROL2, control2);
+    }
+
+    void DisableAlarmRepeat()
+    {
         byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
         byte value = TimerBits.RPT;
         timerControl |= 1 << TimerBits.RPT;
@@ -229,6 +248,16 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         }
 
         i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
+
+        byte control2 = i2CCommunications.ReadRegister((byte)Registers.CONTROL2);
+        value = Control2Bits.OUT2S;
+        control2 |= 1 << Control2Bits.OUT2S;
+        control2 &= (byte)~(1 << value + 1);
+        control2 |= 1 << (Control2Bits.OUT2S + 2);
+        control2 |= 1 << Control2Bits.OUTPP;
+        //control2 &= (byte)~(1 << value + 2);
+        i2CCommunications.WriteRegister((byte)Registers.CONTROL2, control2);
+
         SetTimerInterrupt(true);
         EnableTimer(true);
     }
