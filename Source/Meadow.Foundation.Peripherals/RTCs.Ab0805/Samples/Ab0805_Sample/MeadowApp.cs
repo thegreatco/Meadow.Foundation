@@ -67,8 +67,6 @@ namespace Ab0805_Sample
             await TestAlarm();
             await Task.Delay(1000);
             await TestBasicTimer();
-
-
         }
 
         private async Task TestBasicTimer()
