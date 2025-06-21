@@ -1,1 +1,1 @@
-# Meadow.Foundation.Sensors.Power.CsSmAc
+# Meadow.Foundation.Sensors.Power.Spm1x

@@ -25,7 +25,7 @@ public partial class Spm1x : ISpm1x
     /// Gets the Modbus address of the sensor device
     /// </summary>
     /// <value>The Modbus slave address used to communicate with this specific sensor instance</value>
-    public byte ModbusAddress { get; }
+    public byte ModbusAddress { get; private set; }
 
     /// <summary>
     /// Cached sensor information to avoid repeated Modbus calls
@@ -155,6 +155,11 @@ public partial class Spm1x : ISpm1x
     /// </remarks>
     public async ValueTask<Current> ReadCurrent()
     {
+        if (!_modbusClient.IsConnected)
+        {
+            await _modbusClient.Connect();
+        }
+
         var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.Current, 1);
         return new Current(registers[0] / 100d, Units.Current.UnitType.Amps);
     }
@@ -184,6 +189,11 @@ public partial class Spm1x : ISpm1x
     /// </remarks>
     public async ValueTask<Voltage> ReadVoltage()
     {
+        if (!_modbusClient.IsConnected)
+        {
+            await _modbusClient.Connect();
+        }
+
         var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.Current, 1);
         return new Voltage(registers[0] / 10d, Units.Voltage.UnitType.Volts);
     }
@@ -197,5 +207,67 @@ public partial class Spm1x : ISpm1x
     async Task<Voltage> ISensor<Voltage>.Read()
     {
         return await ReadVoltage();
+    }
+
+    /// <summary>
+    /// Gets the Modbus communication bitrate the sensor is configured to use
+    /// </summary>
+    /// <returns>A task containing the bitrate in bits per second</returns>
+    public async Task<int> GetBaudRate()
+    {
+        if (!_modbusClient.IsConnected)
+        {
+            await _modbusClient.Connect();
+        }
+
+        var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.BaudRate, 1);
+        return (SensorBaudRate)registers[0] switch
+        {
+            SensorBaudRate.BitRate_19200 => 19200,
+            SensorBaudRate.Bitrate_9600 => 9600,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Sets the Modbus communication bitrate the sensor is configured to use
+    /// </summary>
+    /// <remarks>
+    /// Supports only 9600 or 19200
+    /// </remarks>
+    public async Task SetBaudRate(int bitrate)
+    {
+        var rate = bitrate switch
+        {
+            19200 => SensorBaudRate.BitRate_19200,
+            9600 => SensorBaudRate.Bitrate_9600,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        if (!_modbusClient.IsConnected)
+        {
+            await _modbusClient.Connect();
+        }
+
+        await _modbusClient.WriteHoldingRegister(ModbusAddress, (ushort)Registers.BaudRate, (ushort)rate);
+    }
+
+    /// <summary>
+    /// Sets the Modbus node address of the sensor
+    /// </summary>
+    /// <remarks>
+    /// Supports only 9600 or 19200
+    /// </remarks>
+    public async Task SetModbusAddress(byte newAddress)
+    {
+        if (!_modbusClient.IsConnected)
+        {
+            await _modbusClient.Connect();
+        }
+
+        await _modbusClient.WriteHoldingRegister(ModbusAddress, (ushort)Registers.ModbusAddress, newAddress);
+
+        var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.ModbusAddress, 1);
+        ModbusAddress = (byte)registers[0];
     }
 }
