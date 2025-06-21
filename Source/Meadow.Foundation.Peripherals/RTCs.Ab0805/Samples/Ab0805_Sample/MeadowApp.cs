@@ -64,18 +64,20 @@ namespace Ab0805_Sample
         {
             Resolver.Log.Info("\n=== Testing Countdown Timer Functionality ===");
 
-            await TestBasicTimer();
-            await Task.Delay(1000);
             await TestAlarm();
+            await Task.Delay(1000);
+            await TestBasicTimer();
+
+
         }
 
         private async Task TestBasicTimer()
         {
-            Resolver.Log.Info("\n--- Test 1: Basic 5-second countdown timer ---");
+            Resolver.Log.Info("\n--- Test 1: Basic 2-second countdown timer ---");
 
             rtc.ResetTimer();
 
-            Resolver.Log.Info("Starting 5-second countdown timer...");
+            Resolver.Log.Info("Starting 2-second countdown timer...");
             rtc.StartTimer(5, Ab0805.DelayTimeUnit.Seconds);
 
             var startTime = DateTime.Now;
@@ -96,9 +98,9 @@ namespace Ab0805_Sample
 
         private async Task TestAlarm()
         {
-            Resolver.Log.Info("\n--- Test 2: Alarm 6 seconds in the future ---");
+            Resolver.Log.Info("\n--- Test 2: Alarm 5 seconds in the future ---");
 
-            DateTimeOffset alarmTime = rtc.GetTime().AddSeconds(6);
+            DateTimeOffset alarmTime = rtc.GetTime().AddSeconds(5);
 
             Resolver.Log.Info("Monitoring alarm...");
             rtc.SetAlarm(alarmTime);
@@ -116,6 +118,8 @@ namespace Ab0805_Sample
 
             elapsed = DateTime.Now - startTime;
             Resolver.Log.Info($"✓ Alarm triggered! Interrupt fired after {elapsed.TotalSeconds:F1}s");
+
+            await Task.Delay(5000);
             rtc.ResetAlarm();
         }
 

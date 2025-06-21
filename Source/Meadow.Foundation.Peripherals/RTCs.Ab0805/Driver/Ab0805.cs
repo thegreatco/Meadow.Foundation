@@ -168,8 +168,17 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
     /// <param name="alarmTime">The DateTimeOffset to trigger the alarm</param>
     public void SetAlarm(DateTimeOffset alarmTime)
     {
-        var localTime = alarmTime.DateTime;
+        SetAlarmTime(alarmTime.DateTime);
 
+        SetAlarmInterrupt(true);
+
+        DisableAlarmRepeat();
+
+        SetAlarmInterruptToControlFOUT();
+    }
+
+    void SetAlarmTime(DateTime localTime)
+    {
         // Extract time components
         int hundredths = localTime.Millisecond / 10;
         int seconds = localTime.Second;
@@ -187,23 +196,14 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         i2CCommunications.WriteRegister((byte)Registers.ALARM_DATE, DecimalToBcd(date));
         i2CCommunications.WriteRegister((byte)Registers.ALARM_MONTH, DecimalToBcd(month));
         i2CCommunications.WriteRegister((byte)Registers.ALARM_DAY_OF_WEEK, (byte)dayOfWeek);
-
-        SetAlarmInterrupt(true);
-
-        DisableAlarmRepeat();
-
-        SetAlarmInterruptToControlFOUT();
     }
 
     void SetAlarmInterruptToControlFOUT()
     {
         byte control2 = i2CCommunications.ReadRegister((byte)Registers.CONTROL2);
-        byte value = Control2Bits.OUT1S;
         control2 |= 1 << Control2Bits.OUT1S;
         control2 |= 1 << (Control2Bits.OUT1S + 1);
         control2 |= 1 << Control2Bits.OUTPP;
-        //control2 &= (byte)~(1 << value);
-        //control2 &= (byte)~(1 << value + 1);
         i2CCommunications.WriteRegister((byte)Registers.CONTROL2, control2);
     }
 
@@ -336,6 +336,8 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
             value = InterruptMaskBits.AIE;
             interrupts &= (byte)~(1 << value);
         }
+
+        //set interrupts to level (not pulse) 
         value = InterruptMaskBits.IM;
         interrupts &= (byte)~(1 << value);
         interrupts &= (byte)~(1 << value + 1);
@@ -380,5 +382,23 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
     private int BcdToDecimalWithMask(byte bcdValue, byte tensMask)
     {
         return (bcdValue & 0x0F) + (((bcdValue & tensMask) >> 4) * 10);
+    }
+
+    private void RegistersToString()
+    {
+        Console.WriteLine("Registers:");
+        RegisterToString((byte)Registers.STATUS, "Status");
+        RegisterToString((byte)Registers.CONTROL1, "Control1");
+        RegisterToString((byte)Registers.CONTROL2, "Control2");
+        RegisterToString((byte)Registers.INT_MASK, "Interrupt Mask");
+        RegisterToString((byte)Registers.TIMER_CONTROL, "Timer Control");
+        RegisterToString((byte)Registers.TIMER, "Timer");
+        Console.WriteLine();
+    }
+
+    private void RegisterToString(byte reg, string name)
+    {
+        byte value = i2CCommunications.ReadRegister(reg);
+        Console.WriteLine($"0x{reg:X2} - {Convert.ToString(value, 2).PadLeft(8, '0')} : {name}");
     }
 }
