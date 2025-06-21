@@ -141,7 +141,7 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// Fill buffer with a color
         /// </summary>
         /// <param name="color">The fill color</param>
-        public unsafe override void Fill(Color color)
+        public override void Fill(Color color)
         {
             var color12bpp = color.Color12bppRgb444;
             Buffer[0] = (byte)(color12bpp >> 4);
