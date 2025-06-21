@@ -82,7 +82,9 @@ internal static class Control1Bits
 /// </summary>
 internal static class Control2Bits
 {
-    public const int OUTPP = 7;          // Output Pin Polarity
+    public const int OUTPP = 7; // Output Pin Polarity
+    public const int OUT2S = 2; // 2:4 timer         
+    public const int OUT1S = 0; // 0:1 alarm
 }
 
 /// <summary>
