@@ -1746,6 +1746,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RTCs.Ab0805", "Meadow.Foundation.Peripherals\RTCs.Ab0805\Driver\RTCs.Ab0805.csproj", "{B608AF2E-311A-9893-207B-715F4B42445A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ab0805_Sample", "Meadow.Foundation.Peripherals\RTCs.Ab0805\Samples\Ab0805_Sample\Ab0805_Sample.csproj", "{6BCBF7C3-E8D6-C674-BF83-82ABE9CA3B0C}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MicroScheduler", "MicroScheduler", "{04FC3661-330B-7308-B9F4-52B092F13016}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Foundation.MicroScheduler", "Meadow.Foundation.Libraries_and_Frameworks\MicroScheduler\Driver\Meadow.Foundation.MicroScheduler\Meadow.Foundation.MicroScheduler.csproj", "{05A53DF7-4B16-92CA-E0E4-C590134E368D}"
