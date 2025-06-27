@@ -3,7 +3,7 @@
 /// <summary>
 /// A layout that arranges child elements in a horizontal or vertical stack.
 /// </summary>
-public class StackLayout : MicroLayout
+public class StackLayout : LayoutBase
 {
     /// <summary>
     /// Defines the stacking orientation (Vertical or Horizontal).
@@ -60,6 +60,14 @@ public class StackLayout : MicroLayout
     /// <summary>
     /// Creates a new StackLayout.
     /// </summary>
+    public StackLayout()
+        : this(0, 0, 0, 0)
+    {
+    }
+
+    /// <summary>
+    /// Creates a new StackLayout.
+    /// </summary>
     /// <param name="left">The left position of the layout.</param>
     /// <param name="top">The top position of the layout.</param>
     /// <param name="width">The width of the layout.</param>
@@ -68,7 +76,16 @@ public class StackLayout : MicroLayout
     public StackLayout(int left, int top, int width, int height, Orientation orientation = Orientation.Vertical)
         : base(left, top, width, height)
     {
-        StackOrientation = orientation;
+        _stackOrientation = orientation;
+
+        Controls.ControlAdded += OnControlsChanged;
+        Controls.ControlRemoved += OnControlsChanged;
+    }
+
+    private void OnControlsChanged(object sender, IControl e)
+    {
+        LayoutControls();
+        Invalidate();
     }
 
     /// <summary>
@@ -103,46 +120,9 @@ public class StackLayout : MicroLayout
         }
     }
 
-    /// <summary>
-    /// Adds a control to the layout and updates positions.
-    /// </summary>
-    /// <param name="control">The control to add.</param>
-    public void Add(IControl control)
-    {
-        lock (Controls.SyncRoot)
-        {
-            Controls.Add(control);
-        }
-        LayoutControls();
-        Invalidate();
-    }
-
-    /// <summary>
-    /// Adds controls to the layout and updates positions.
-    /// </summary>
-    /// <param name="controls">The controls to add.</param>
-    public void Add(params IControl[] controls)
-    {
-        lock (Controls.SyncRoot)
-        {
-            Controls.Add(controls);
-        }
-        LayoutControls();
-        Invalidate();
-    }
-
     /// <inheritdoc/>
-    protected override void OnDraw(MicroGraphics graphics)
+    internal override void PerformLayout()
     {
-        if (!IsVisible || !BackgroundColor.HasValue)
-            return;
-
-        graphics.DrawRectangle(
-            Left + (Parent?.Left ?? 0),
-            Top + (Parent?.Top ?? 0),
-            Width,
-            Height,
-            BackgroundColor.Value,
-            true);
+        LayoutControls();
     }
 }

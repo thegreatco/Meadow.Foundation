@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents an auto-scrolling text area
 /// </summary>
-public class ScrollingTextArea : MicroLayout
+public class ScrollingTextArea : LayoutBase
 {
     private readonly int _rowHeight;
     private readonly IFont _font;
@@ -136,5 +136,11 @@ public class ScrollingTextArea : MicroLayout
     /// <inheritdoc/>
     protected override void OnDraw(MicroGraphics graphics)
     {
+    }
+
+    /// <inheritdoc/>
+    internal override void PerformLayout()
+    {
+        // No layout needed for this control
     }
 }
