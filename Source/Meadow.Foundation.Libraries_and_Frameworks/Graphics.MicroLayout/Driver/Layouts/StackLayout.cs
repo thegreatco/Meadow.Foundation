@@ -48,6 +48,7 @@ public class StackLayout : LayoutBase
     private Orientation _stackOrientation;
     private CrossAxisAlignment _crossAxisAlignment = CrossAxisAlignment.Center;
     private int _spacing = 2;
+    private int _padding = 2;
 
     /// <summary>
     /// Gets or sets the stack orientation.
@@ -101,12 +102,25 @@ public class StackLayout : LayoutBase
     }
 
     /// <summary>
+    /// Gets or sets the padding (or indentation) of all controls from all 4 edges.
+    /// </summary>
+    public int Padding
+    {
+        get => _padding;
+        set
+        {
+            if (_padding == value) { return; }
+            _padding = value;
+            LayoutControls();
+            Invalidate();
+        }
+    }
+
+    /// <summary>
     /// Creates a new StackLayout.
     /// </summary>
-    public StackLayout()
-        : this(0, 0, 0, 0)
-    {
-    }
+    public StackLayout() : this(0, 0, 0, 0)
+    { }
 
     /// <summary>
     /// Creates a new StackLayout.
@@ -125,7 +139,6 @@ public class StackLayout : LayoutBase
         _stackOrientation = orientation;
         _crossAxisAlignment = crossAxisAlignment;
 
-        // Subscribing to ControlAdded/Removed ensures a re-layout when children change.
         Controls.ControlAdded += OnControlsChanged;
         Controls.ControlRemoved += OnControlsChanged;
     }
@@ -137,88 +150,82 @@ public class StackLayout : LayoutBase
     }
 
     /// <summary>
-    /// Arranges child controls based on the stack orientation and cross-axis alignment.
-    /// </summary>
-    /// <summary>
-    /// Arranges child controls based on the stack orientation and cross-axis alignment.
+    /// Arranges child controls based on the stack orientation and cross-axis alignment,
+    /// respecting the layout's padding and spacing.
     /// </summary>
     public void LayoutControls()
     {
-        int currentMainAxisOffset = 0; // Tracks position along the main stacking axis relative to this StackLayout's (0,0)
+        int currentMainAxisOffset = Padding;
 
-        lock (Controls.SyncRoot) // Ensure thread safety when iterating Controls
+        int paddedWidth = Width - (2 * Padding);
+        int paddedHeight = Height - (2 * Padding);
+
+        if (paddedWidth < 0) paddedWidth = 0;
+        if (paddedHeight < 0) paddedHeight = 0;
+
+        lock (Controls.SyncRoot)
         {
             foreach (var control in Controls)
             {
                 if (!control.IsVisible)
                 {
-                    continue; // Skip invisible controls in layout calculations
+                    continue;
                 }
 
                 int finalControlX;
                 int finalControlY;
-                int finalControlWidth = control.Width;  // Start with control's intrinsic width
-                int finalControlHeight = control.Height; // Start with control's intrinsic height
+                int finalControlWidth = control.Width;
+                int finalControlHeight = control.Height;
 
                 if (StackOrientation == Orientation.Vertical)
                 {
-                    // Vertical stacking: Main axis is Y (Top). Cross axis is X (Left).
-                    // finalControlY is relative to the StackLayout's Top
                     finalControlY = currentMainAxisOffset;
 
-                    // Determine finalControlWidth and finalControlX based on CrossAxisAlignment (horizontal alignment)
-                    // These positions are relative to the StackLayout's own (0,0)
                     switch (AxisAlignment)
                     {
                         case CrossAxisAlignment.Start:
-                            finalControlX = 0; // Align to the left edge of the stack layout's content area
+                            finalControlX = Padding;
                             break;
                         case CrossAxisAlignment.Center:
-                            finalControlX = (Width / 2) - (finalControlWidth / 2); // Center horizontally within the stack layout's content area
+                            finalControlX = Padding + (paddedWidth / 2) - (finalControlWidth / 2);
                             break;
                         case CrossAxisAlignment.End:
-                            finalControlX = Width - finalControlWidth; // Align to the right edge of the stack layout's content area
+                            finalControlX = Padding + paddedWidth - finalControlWidth;
                             break;
                         case CrossAxisAlignment.Stretch:
-                            finalControlX = 0;
-                            finalControlWidth = Width; // Stretch to fill the full width of the stack layout
+                            finalControlX = Padding;
+                            finalControlWidth = paddedWidth;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(CrossAxisAlignment), "Unknown CrossAxisAlignment value.");
                     }
-                    currentMainAxisOffset += finalControlHeight + Spacing; // Advance offset by current control's (potentially stretched) height
+                    currentMainAxisOffset += finalControlHeight + Spacing;
                 }
                 else // Orientation.Horizontal
                 {
-                    // Horizontal stacking: Main axis is X (Left). Cross axis is Y (Top).
-                    // finalControlX is relative to the StackLayout's Left
                     finalControlX = currentMainAxisOffset;
 
-                    // Determine finalControlHeight and finalControlY based on CrossAxisAlignment (vertical alignment)
-                    // These positions are relative to the StackLayout's own (0,0)
                     switch (AxisAlignment)
                     {
                         case CrossAxisAlignment.Start:
-                            finalControlY = 0; // Align to the top edge of the stack layout's content area
+                            finalControlY = Padding;
                             break;
                         case CrossAxisAlignment.Center:
-                            finalControlY = (Height / 2) - (finalControlHeight / 2); // Center vertically within the stack layout's content area
+                            finalControlY = Padding + (paddedHeight / 2) - (finalControlHeight / 2);
                             break;
                         case CrossAxisAlignment.End:
-                            finalControlY = Height - finalControlHeight; // Align to the bottom edge of the stack layout's content area
+                            finalControlY = Padding + paddedHeight - finalControlHeight;
                             break;
                         case CrossAxisAlignment.Stretch:
-                            finalControlY = 0;
-                            finalControlHeight = Height; // Stretch to fill the full height of the stack layout
+                            finalControlY = Padding;
+                            finalControlHeight = paddedHeight;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(CrossAxisAlignment), "Unknown CrossAxisAlignment value.");
                     }
-                    currentMainAxisOffset += finalControlWidth + Spacing; // Advance offset by current control's (potentially stretched) width
+                    currentMainAxisOffset += finalControlWidth + Spacing;
                 }
 
-                // Apply the calculated dimensions and positions to the control
-                // These are correctly relative to the StackLayout's (0,0)
                 control.Left = finalControlX;
                 control.Top = finalControlY;
                 control.Width = finalControlWidth;
