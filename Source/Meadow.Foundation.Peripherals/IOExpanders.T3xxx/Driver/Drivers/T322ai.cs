@@ -87,6 +87,37 @@ public partial class T322ai
     }
 
     /// <inheritdoc/>
+    public IDigitalInputPort CreateDigitalInputPort(IPin pin, ResistorMode resistorMode = ResistorMode.Disabled)
+    {
+        switch (resistorMode)
+        {
+            case ResistorMode.Disabled:
+                // only valid option (really it's always internal pull-up?)
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(resistorMode), "Resistors are not supported");
+        }
+        var offset = (int)pin.Key;
+
+        WriteHoldingRegister((ushort)(T322aiRegisters.AiRange0 + offset), (ushort)AnalogInputRange.Disabled)
+            .GetAwaiter().GetResult();
+
+        // mode must be set to 0 (auto)
+        WriteHoldingRegister((ushort)(T322aiRegisters.AutoManual0 + offset), 0)
+            .GetAwaiter().GetResult();
+
+        // make it digital
+        WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 0)
+            .GetAwaiter().GetResult();
+
+        return new T3xxx.DigitalInputPort(this, pin,
+            // each input is 2 registers, the data for state is in the low
+            (ushort)(T322aiRegisters.AiChannel0Hi + (offset * 2 + 1))
+            );
+
+    }
+
+    /// <inheritdoc/>
     public override async Task<int> ReadBaudRate()
     {
         var register = await ReadHoldingRegister((ushort)T322aiRegisters.BaudRate);

@@ -1,4 +1,5 @@
-﻿using Meadow.Hardware;
+﻿using Meadow.Foundation.Sensors;
+using Meadow.Hardware;
 using System.Threading.Tasks;
 
 namespace Meadow.Foundation.IOExpanders;
@@ -72,5 +73,11 @@ public class SimulatedT322ai
     public Task WriteModbusAddress(byte newAddress)
     {
         throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public IDigitalInputPort CreateDigitalInputPort(IPin pin, ResistorMode resistorMode)
+    {
+        return new SimulatedDigitalInputPort();
     }
 }

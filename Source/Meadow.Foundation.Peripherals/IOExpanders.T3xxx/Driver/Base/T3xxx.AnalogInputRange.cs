@@ -7,6 +7,8 @@ public abstract partial class T3xxx
     /// </summary>
     internal enum AnalogInputRange
     {
+        Disabled = 0,
+
         /// <summary>
         /// 0-5 volt input range.
         /// </summary>
