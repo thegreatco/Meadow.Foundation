@@ -1,5 +1,6 @@
 ﻿using Meadow.Hardware;
 using Meadow.Modbus;
+using System;
 using System.Threading.Tasks;
 
 namespace Meadow.Foundation.IOExpanders;
@@ -83,5 +84,45 @@ public partial class T322ai
             // each input is 2 registers, the data for voltage is in the low
             (ushort)(T322aiRegisters.AiChannel0Hi + (offset * 2 + 1))
             );
+    }
+
+    /// <inheritdoc/>
+    public override async Task<int> ReadBaudRate()
+    {
+        var register = await ReadHoldingRegister((ushort)T322aiRegisters.BaudRate);
+        return (ModuleBaudRate)register switch
+        {
+            ModuleBaudRate.BitRate_115200 => 115200,
+            ModuleBaudRate.BitRate_57600 => 57600,
+            ModuleBaudRate.BitRate_38400 => 38400,
+            ModuleBaudRate.BitRate_19200 => 19200,
+            ModuleBaudRate.Bitrate_9600 => 9600,
+            _ => 0
+        };
+    }
+
+    /// <inheritdoc/>
+    public override async Task WriteBaudRate(int bitrate)
+    {
+        var rate = bitrate switch
+        {
+            115200 => ModuleBaudRate.BitRate_115200,
+            57600 => ModuleBaudRate.BitRate_57600,
+            38400 => ModuleBaudRate.BitRate_38400,
+            19200 => ModuleBaudRate.BitRate_19200,
+            9600 => ModuleBaudRate.Bitrate_9600,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        await WriteHoldingRegister((ushort)T322aiRegisters.BaudRate, (ushort)rate);
+    }
+
+    /// <inheritdoc/>
+    public override async Task WriteModbusAddress(byte newAddress)
+    {
+        await WriteHoldingRegister((ushort)T322aiRegisters.Address, newAddress);
+
+        var register = await ReadHoldingRegister((ushort)T322aiRegisters.Address);
+        ModbusAddress = (byte)register;
     }
 }

@@ -55,4 +55,22 @@ public class SimulatedT322ai
     {
         return Task.FromResult((byte)1);
     }
+
+    /// <inheritdoc/>
+    public Task<int> ReadBaudRate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public Task WriteBaudRate(int bitrate)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public Task WriteModbusAddress(byte newAddress)
+    {
+        throw new System.NotImplementedException();
+    }
 }
