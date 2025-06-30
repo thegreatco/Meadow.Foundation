@@ -138,4 +138,22 @@ public partial class T38i8o6do
     {
         return CreateVoltageOutputPort(pin, Voltage.Zero);
     }
+
+    /// <inheritdoc/>
+    public override Task<int> ReadBaudRate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public override Task WriteBaudRate(int bitrate)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public override Task WriteModbusAddress(byte newAddress)
+    {
+        throw new System.NotImplementedException();
+    }
 }
