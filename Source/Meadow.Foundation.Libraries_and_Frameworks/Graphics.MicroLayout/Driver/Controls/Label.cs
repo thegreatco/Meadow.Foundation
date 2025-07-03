@@ -139,33 +139,18 @@ public class Label : ClickableControl, IControl
             graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, BackgroundColor, true);
         }
 
-        int x, y;
-
-        switch (HorizontalAlignment)
+        var x = HorizontalAlignment switch
         {
-            case HorizontalAlignment.Center:
-                x = Width / 2;
-                break;
-            case HorizontalAlignment.Right:
-                x = Width;
-                break;
-            default:
-                x = 0;
-                break;
-        }
-        switch (VerticalAlignment)
+            HorizontalAlignment.Center => Width / 2,
+            HorizontalAlignment.Right => Width,
+            _ => 0,
+        };
+        var y = VerticalAlignment switch
         {
-            case VerticalAlignment.Center:
-                y = Height / 2;
-                break;
-            case VerticalAlignment.Bottom:
-                y = Height;
-                break;
-            default:
-                y = 0;
-                break;
-        }
-
+            VerticalAlignment.Center => Height / 2,
+            VerticalAlignment.Bottom => Height,
+            _ => 0,
+        };
         x += Parent?.Left ?? 0;
         y += Parent?.Top ?? 0;
 

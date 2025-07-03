@@ -155,6 +155,11 @@ public class StackLayout : LayoutBase
     /// </summary>
     public void LayoutControls()
     {
+        if (Width <= 0 || Height <= 0)
+        {
+            return;
+        }
+
         int currentMainAxisOffset = Padding;
 
         int paddedWidth = Width - (2 * Padding);
@@ -172,64 +177,64 @@ public class StackLayout : LayoutBase
                     continue;
                 }
 
-                int finalControlX;
-                int finalControlY;
-                int finalControlWidth = control.Width;
-                int finalControlHeight = control.Height;
+                int controlX;
+                int controlY;
+                int controlWidth = control.Width;
+                int controlHeight = control.Height;
 
                 if (StackOrientation == Orientation.Vertical)
                 {
-                    finalControlY = currentMainAxisOffset;
+                    controlY = currentMainAxisOffset;
 
                     switch (AxisAlignment)
                     {
                         case CrossAxisAlignment.Start:
-                            finalControlX = Padding;
+                            controlX = Padding;
                             break;
                         case CrossAxisAlignment.Center:
-                            finalControlX = Padding + (paddedWidth / 2) - (finalControlWidth / 2);
+                            controlX = Padding + (paddedWidth / 2) - (controlWidth / 2);
                             break;
                         case CrossAxisAlignment.End:
-                            finalControlX = Padding + paddedWidth - finalControlWidth;
+                            controlX = Padding + paddedWidth - controlWidth;
                             break;
                         case CrossAxisAlignment.Stretch:
-                            finalControlX = Padding;
-                            finalControlWidth = paddedWidth;
+                            controlX = Padding;
+                            controlWidth = paddedWidth;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(CrossAxisAlignment), "Unknown CrossAxisAlignment value.");
                     }
-                    currentMainAxisOffset += finalControlHeight + Spacing;
+                    currentMainAxisOffset += controlHeight + Spacing;
                 }
                 else // Orientation.Horizontal
                 {
-                    finalControlX = currentMainAxisOffset;
+                    controlX = currentMainAxisOffset;
 
                     switch (AxisAlignment)
                     {
                         case CrossAxisAlignment.Start:
-                            finalControlY = Padding;
+                            controlY = Padding;
                             break;
                         case CrossAxisAlignment.Center:
-                            finalControlY = Padding + (paddedHeight / 2) - (finalControlHeight / 2);
+                            controlY = Padding - (controlHeight / 2) + (paddedHeight / 2);
                             break;
                         case CrossAxisAlignment.End:
-                            finalControlY = Padding + paddedHeight - finalControlHeight;
+                            controlY = Padding + paddedHeight - controlHeight;
                             break;
                         case CrossAxisAlignment.Stretch:
-                            finalControlY = Padding;
-                            finalControlHeight = paddedHeight;
+                            controlY = Padding;
+                            controlHeight = paddedHeight;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(CrossAxisAlignment), "Unknown CrossAxisAlignment value.");
                     }
-                    currentMainAxisOffset += finalControlWidth + Spacing;
+                    currentMainAxisOffset += controlWidth + Spacing;
                 }
 
-                control.Left = finalControlX;
-                control.Top = finalControlY;
-                control.Width = finalControlWidth;
-                control.Height = finalControlHeight;
+                control.Left = controlX;
+                control.Top = controlY;
+                control.Width = controlWidth;
+                control.Height = controlHeight;
             }
         }
     }
