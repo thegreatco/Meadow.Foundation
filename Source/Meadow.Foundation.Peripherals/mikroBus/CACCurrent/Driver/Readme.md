@@ -62,7 +62,7 @@ private void OnCurrentUpdated(object sender, IChangeResult<Meadow.Units.Current>
 
 - **Found a bug?** [Report an issue](https://github.com/WildernessLabs/Meadow_Issues/issues)
 - Have a **feature idea or driver request?** [Open a new feature request](https://github.com/WildernessLabs/Meadow_Issues/issues)
-- Want to **contribute code?** Fork the [Meadow.Foundation.mikroBus](https://github.com/WildernessLabs/Meadow.Foundation.mikroBus) repository and submit a pull request against the `develop` branch
+- Want to **contribute code?** Fork the [Meadow.Foundation](https://github.com/WildernessLabs/Meadow.Foundation) repository and submit a pull request against the `develop` branch
 
 
 ## Need Help?
