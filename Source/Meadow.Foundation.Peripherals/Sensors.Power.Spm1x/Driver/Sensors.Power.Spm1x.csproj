@@ -8,9 +8,9 @@
     <AssemblyName>Spm1x</AssemblyName>
     <Company>Wilderness Labs, Inc</Company>
     <PackageProjectUrl>http://developer.wildernesslabs.co/Meadow/Meadow.Foundation/</PackageProjectUrl>
-    <PackageId>Meadow.Foundation.Sensors.Power.CurrentTransducer</PackageId>
+    <PackageId>Meadow.Foundation.Sensors.Power.Spm1x</PackageId>
     <RepositoryUrl>https://github.com/WildernessLabs/Meadow.Foundation</RepositoryUrl>
-    <PackageTags>Meadow.Foundation,Sensor,Power,current,transducer</PackageTags>
+    <PackageTags>Meadow.Foundation,Sensor,Power,current,Spm1x</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Description>Temco Controls' SPM1-X Modbus Single-Phase Power Meter library</Description>
   </PropertyGroup>
