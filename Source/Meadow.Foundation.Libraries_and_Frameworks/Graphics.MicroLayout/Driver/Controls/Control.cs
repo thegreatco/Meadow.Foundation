@@ -211,8 +211,6 @@ public abstract class Control : IControl
     protected virtual void OnParentBoundsChanged(object? sender, EventArgs e)
     {
         // This is where you'd trigger a re-layout of the child
-        // For example, if the child's position is relative to the parent's
-        // Or if the child's size is a percentage of the parent's
-        Invalidate(); // Or trigger a specific layout recalculation for this control
+        Invalidate();
     }
 }

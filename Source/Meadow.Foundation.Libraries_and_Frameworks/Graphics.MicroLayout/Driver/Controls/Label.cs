@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a label display control in the user interface.
 /// </summary>
-public class Label : ClickableControl, IControl
+public class Label : ClickableControl
 {
     /// <summary>
     /// Gets or sets the vertical alignment of the label text within the label display control.
