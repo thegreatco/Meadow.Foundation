@@ -195,15 +195,15 @@ public class Button : ClickableControl
             if (Image != null) // image always wins over text
             {
                 graphics.DrawImage(
-                    Left + ((this.Width - Image.Width) / 2) + parentOffsetX,
-                    Top + ((this.Height - Image.Height) / 2) + parentOffsetY,
+                    Left + ((Width - Image.Width) / 2) + parentOffsetX,
+                    Top + ((Height - Image.Height) / 2) + parentOffsetY,
                     Image);
             }
             else if (!string.IsNullOrEmpty(Text))
             {
                 graphics.DrawText(
-                    Left + (this.Width / 2) + parentOffsetX,
-                    Top + (this.Height / 2) + parentOffsetY,
+                    Left + (Width / 2) + parentOffsetX,
+                    Top + (Height / 2) + parentOffsetY,
                     Text,
                     TextColor,
                     scaleFactor: ScaleFactor,
