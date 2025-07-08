@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 namespace Meadow.Foundation.Graphics.MicroLayout;
 
-internal interface IControlContainer : IControl
-{
-    ControlsCollection Controls { get; }
-}
-
 /// <summary>
 /// Represents a collection of display controls on a <see cref="DisplayScreen"/>.
 /// </summary>

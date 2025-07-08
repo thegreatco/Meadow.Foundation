@@ -6,7 +6,7 @@ namespace Meadow.Foundation.Graphics.MicroLayout;
 /// <summary>
 /// A base class for display layouts
 /// </summary>
-public abstract class LayoutBase : ThemedControl, IControlContainer
+public abstract class LayoutBase : ThemedControl, ILayout
 {
     /// <summary>
     /// Gets the collection of controls on the display screen.
