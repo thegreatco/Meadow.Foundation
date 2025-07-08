@@ -1755,6 +1755,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{4A6A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Meadow.Foundation.MicroScheduler.Unit.Tests", "Meadow.Foundation.Libraries_and_Frameworks\MicroScheduler\Tests\Meadow.Foundation.MicroScheduler.Unit.Tests\Meadow.Foundation.MicroScheduler.Unit.Tests.csproj", "{15F1875E-7B38-C554-70A7-5DB937FE8E3F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spm1x", "Spm1x", "{CF9DA3ED-501D-4726-9C3C-E0FB0560AA2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sensors.Power.Spm1x", "Meadow.Foundation.Peripherals\Sensors.Power.Spm1x\Driver\Sensors.Power.Spm1x.csproj", "{7AC28282-7DF5-61C0-7554-772EE25F5D51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{73CDDACB-2226-4CBA-9348-13E57D113834}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spm1x_DesktopSample", "Meadow.Foundation.Peripherals\Sensors.Power.Spm1x\Samples\Spm1x_DesktopSample\Spm1x_DesktopSample.csproj", "{A19B77D9-29E3-8AFE-29DD-68DAB03D1B4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -4227,6 +4235,16 @@ Global
 		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15F1875E-7B38-C554-70A7-5DB937FE8E3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A19B77D9-29E3-8AFE-29DD-68DAB03D1B4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A19B77D9-29E3-8AFE-29DD-68DAB03D1B4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A19B77D9-29E3-8AFE-29DD-68DAB03D1B4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A19B77D9-29E3-8AFE-29DD-68DAB03D1B4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -5102,6 +5120,10 @@ Global
 		{05A53DF7-4B16-92CA-E0E4-C590134E368D} = {04FC3661-330B-7308-B9F4-52B092F13016}
 		{4A6ADE0D-21F0-96A3-C8DF-CF391F4ABC90} = {04FC3661-330B-7308-B9F4-52B092F13016}
 		{15F1875E-7B38-C554-70A7-5DB937FE8E3F} = {04FC3661-330B-7308-B9F4-52B092F13016}
+		{CF9DA3ED-501D-4726-9C3C-E0FB0560AA2D} = {C95CDA6C-3968-467E-80ED-5A963BE96215}
+		{7AC28282-7DF5-61C0-7554-772EE25F5D51} = {CF9DA3ED-501D-4726-9C3C-E0FB0560AA2D}
+		{73CDDACB-2226-4CBA-9348-13E57D113834} = {CF9DA3ED-501D-4726-9C3C-E0FB0560AA2D}
+		{A19B77D9-29E3-8AFE-29DD-68DAB03D1B4C} = {73CDDACB-2226-4CBA-9348-13E57D113834}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AF7CA16F-8C38-4546-87A2-5DAAF58A1520}

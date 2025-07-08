@@ -15,49 +15,11 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
 `dotnet add package Meadow.Foundation.mikroBUS.Sensors.MBus.CMBusMaster`
-## Usage
-
-```csharp
-private CMBusMaster master;
-private IProjectLabHardware projectLab;
-private PadPulsM2 pulseCounter;
-
-public override Task Initialize()
-{
-    Resolver.Log.Info("Initializing ...");
-
-    projectLab = ProjectLab.Create();
-
-    master = new CMBusMaster(
-        projectLab.MikroBus1.CreateSerialPort(
-            baudRate: 9600,
-            parity: Meadow.Hardware.Parity.Even)
-        );
-
-    pulseCounter = new PadPulsM2(master);
-
-    return Task.CompletedTask;
-}
-
-public override async Task Run()
-{
-    pulseCounter.StartMonitoring();
-
-    Resolver.Log.Info($"Ports: {pulseCounter.Ports[0].ID:X8} {pulseCounter.Ports[1].ID:X8}");
-
-    while (true)
-    {
-        Resolver.Log.Info($"Counts: {pulseCounter.Ports[0].CurrentCount:X8} {pulseCounter.Ports[1].CurrentCount:X8}");
-        await Task.Delay(TimeSpan.FromSeconds(5));
-    }
-}
-
-```
 ## How to Contribute
 
 - **Found a bug?** [Report an issue](https://github.com/WildernessLabs/Meadow_Issues/issues)
 - Have a **feature idea or driver request?** [Open a new feature request](https://github.com/WildernessLabs/Meadow_Issues/issues)
-- Want to **contribute code?** Fork the [Meadow.Foundation.mikroBus](https://github.com/WildernessLabs/Meadow.Foundation.mikroBus) repository and submit a pull request against the `develop` branch
+- Want to **contribute code?** Fork the [Meadow.Foundation](https://github.com/WildernessLabs/Meadow.Foundation) repository and submit a pull request against the `develop` branch
 
 
 ## Need Help?

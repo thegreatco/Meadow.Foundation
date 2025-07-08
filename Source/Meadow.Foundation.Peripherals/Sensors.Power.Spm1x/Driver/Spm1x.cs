@@ -41,6 +41,11 @@ public partial class Spm1x : ISpm1x
     /// <exception cref="ArgumentOutOfRangeException">Thrown when modbusAddress is outside valid range (1-247)</exception>
     public Spm1x(ModbusRtuClient modbusClient, byte modbusAddress)
     {
+        if (modbusAddress < 1 || modbusAddress > 254)
+        {
+            throw new ArgumentOutOfRangeException(nameof(modbusAddress));
+        }
+
         _modbusClient = modbusClient;
         ModbusAddress = modbusAddress;
     }

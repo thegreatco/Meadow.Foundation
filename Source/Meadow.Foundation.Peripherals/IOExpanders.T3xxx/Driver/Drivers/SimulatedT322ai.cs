@@ -1,4 +1,5 @@
-﻿using Meadow.Hardware;
+﻿using Meadow.Foundation.Sensors;
+using Meadow.Hardware;
 using System.Threading.Tasks;
 
 namespace Meadow.Foundation.IOExpanders;
@@ -54,5 +55,29 @@ public class SimulatedT322ai
     public Task<byte> ReadHardwareRevision()
     {
         return Task.FromResult((byte)1);
+    }
+
+    /// <inheritdoc/>
+    public Task<int> ReadBaudRate()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public Task WriteBaudRate(int bitrate)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public Task WriteModbusAddress(byte newAddress)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public IDigitalInputPort CreateDigitalInputPort(IPin pin, ResistorMode resistorMode)
+    {
+        return new SimulatedDigitalInputPort();
     }
 }
