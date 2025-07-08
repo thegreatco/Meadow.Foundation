@@ -151,6 +151,7 @@ public class Label : ClickableControl
             VerticalAlignment.Bottom => Height,
             _ => 0,
         };
+
         x += Parent?.Left ?? 0;
         y += Parent?.Top ?? 0;
 

@@ -252,6 +252,5 @@ public class ListBox : LayoutBase
     internal override void PerformLayout()
     {
         // No layout needed for ListBox, items are managed by the Items collection
-        // and the labels are already created in the constructor.
     }
 }

@@ -36,7 +36,7 @@ public class AbsoluteLayout : LayoutBase
     /// <inheritdoc/>
     internal override void PerformLayout()
     {
-        //no op
+        //nop
     }
 
     /// <summary>
