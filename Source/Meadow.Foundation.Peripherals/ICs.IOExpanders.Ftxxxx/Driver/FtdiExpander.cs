@@ -15,6 +15,7 @@ public abstract partial class FtdiExpander :
     ISpiController,
     II2cController
 {
+
     internal byte GpioDirectionLow { get; set; }
     internal byte GpioStateLow { get; set; }
     internal byte GpioDirectionHigh { get; set; }
@@ -24,8 +25,8 @@ public abstract partial class FtdiExpander :
     internal uint Flags { get; private set; }
     internal uint ID { get; private set; }
     internal uint LocID { get; private set; }
-    internal string? SerialNumber { get; private set; }
-    internal string? Description { get; private set; }
+    public string? SerialNumber { get; private set; }
+    public string? Description { get; private set; }
     internal IntPtr Handle { get; private set; }
 
     /// <inheritdoc/>
