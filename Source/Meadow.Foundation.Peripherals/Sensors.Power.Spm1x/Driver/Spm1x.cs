@@ -2,6 +2,7 @@
 using Meadow.Peripherals.Sensors;
 using Meadow.Units;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Meadow.Foundation.Sensors.Power;
@@ -41,6 +42,7 @@ public partial class Spm1x : ISpm1x
     /// <exception cref="ArgumentOutOfRangeException">Thrown when modbusAddress is outside valid range (1-247)</exception>
     public Spm1x(ModbusRtuClient modbusClient, byte modbusAddress)
     {
+
         if (modbusAddress < 1 || modbusAddress > 254)
         {
             throw new ArgumentOutOfRangeException(nameof(modbusAddress));
@@ -115,6 +117,11 @@ public partial class Spm1x : ISpm1x
 
             var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, 0, 10);
 
+            if (registers.Length == 0)
+            {
+                throw new IOException("Failed to read sensor info. No registers returned.");
+            }
+
             _sensorInfo = new SensorInfo
             {
                 SerialNumber = registers[3] << 24 | registers[2] << 16 | registers[1] << 8 | registers[0],
@@ -166,6 +173,10 @@ public partial class Spm1x : ISpm1x
         }
 
         var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.Current, 1);
+        if (registers.Length == 0)
+        {
+            throw new IOException("Failed to read current from sensor. No registers returned.");
+        }
         return new Current(registers[0] / 100d, Units.Current.UnitType.Amps);
     }
 
@@ -200,6 +211,12 @@ public partial class Spm1x : ISpm1x
         }
 
         var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.Current, 1);
+
+        if (registers.Length == 0)
+        {
+            throw new IOException("Failed to read voltage from sensor. No registers returned.");
+        }
+
         return new Voltage(registers[0] / 10d, Units.Voltage.UnitType.Volts);
     }
 
@@ -226,6 +243,12 @@ public partial class Spm1x : ISpm1x
         }
 
         var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.BaudRate, 1);
+
+        if (registers.Length == 0)
+        {
+            throw new IOException("Failed to read baud rate from sensor. No registers returned.");
+        }
+
         return (SensorBaudRate)registers[0] switch
         {
             SensorBaudRate.BitRate_19200 => 19200,
@@ -273,6 +296,11 @@ public partial class Spm1x : ISpm1x
         await _modbusClient.WriteHoldingRegister(ModbusAddress, (ushort)Registers.ModbusAddress, newAddress);
 
         var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.ModbusAddress, 1);
+        if (registers.Length == 0)
+        {
+            throw new IOException("Failed to read address from sensor. No registers returned.");
+        }
+
         ModbusAddress = (byte)registers[0];
     }
 }
