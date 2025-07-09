@@ -210,7 +210,7 @@ public partial class Spm1x : ISpm1x
             await _modbusClient.Connect();
         }
 
-        var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.Current, 1);
+        var registers = await _modbusClient.ReadHoldingRegisters(ModbusAddress, (ushort)Registers.Voltage, 1);
 
         if (registers.Length == 0)
         {
