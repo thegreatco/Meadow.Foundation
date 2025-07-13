@@ -19,7 +19,8 @@ public static class ScheduleSerializer
     {
         var serializable = new SerializableMasterSchedule
         {
-            schedules = collection.Schedules?.Select(ConvertToSerializable).ToArray()
+            schedules = collection.Schedules?.Select(ConvertToSerializable).ToArray(),
+            timezone = ConvertTimezoneToSerializable(collection.Timezone)
         };
 
         return MicroJson.Serialize(serializable);
@@ -40,9 +41,16 @@ public static class ScheduleSerializer
             throw new ArgumentException("JSON contains no schedule information");
         }
 
-        return new ScheduleCollection(
+        var collection = new ScheduleCollection(
             serializable.schedules.Select(ConvertFromSerializable)
             );
+        
+        if (serializable.timezone != null)
+        {
+            collection.Timezone = ConvertTimezoneFromSerializable(serializable.timezone);
+        }
+
+        return collection;
     }
 
     /// <summary>
@@ -215,6 +223,66 @@ public static class ScheduleSerializer
 
         throw new ArgumentException($"Invalid offset format: {offsetString}");
     }
+
+    /// <summary>
+    /// Converts a TimezoneInfo object to its serializable representation.
+    /// </summary>
+    /// <param name="timezone">The timezone info to convert.</param>
+    /// <returns>A serializable timezone object.</returns>
+    private static SerializableTimezone? ConvertTimezoneToSerializable(TimezoneInfo? timezone)
+    {
+        if (timezone == null) return null;
+
+        return new SerializableTimezone
+        {
+            timezoneName = timezone.TimezoneName,
+            utcOffsetHours = timezone.UtcOffsetHours,
+            daylightSavingTime = timezone.DaylightSavingTime != null ? new SerializableDaylightSavingTime
+            {
+                startMonth = timezone.DaylightSavingTime.StartMonth,
+                startDay = timezone.DaylightSavingTime.StartDay,
+                startDayOfWeek = timezone.DaylightSavingTime.StartDayOfWeek.ToString(),
+                startHour = timezone.DaylightSavingTime.StartHour,
+                endMonth = timezone.DaylightSavingTime.EndMonth,
+                endDay = timezone.DaylightSavingTime.EndDay,
+                endDayOfWeek = timezone.DaylightSavingTime.EndDayOfWeek.ToString(),
+                endHour = timezone.DaylightSavingTime.EndHour,
+                offsetHours = timezone.DaylightSavingTime.OffsetHours
+            } : null
+        };
+    }
+
+    /// <summary>
+    /// Converts a serializable timezone object back to a TimezoneInfo object.
+    /// </summary>
+    /// <param name="serializable">The serializable timezone to convert.</param>
+    /// <returns>A TimezoneInfo object.</returns>
+    private static TimezoneInfo ConvertTimezoneFromSerializable(SerializableTimezone serializable)
+    {
+        var timezone = new TimezoneInfo
+        {
+            TimezoneName = serializable.timezoneName ?? "UTC",
+            UtcOffsetHours = serializable.utcOffsetHours
+        };
+
+        if (serializable.daylightSavingTime != null)
+        {
+            timezone.DaylightSavingTime = new DaylightSavingTimeInfo
+            {
+                StartMonth = serializable.daylightSavingTime.startMonth,
+                StartDay = serializable.daylightSavingTime.startDay,
+                StartDayOfWeek = Enum.Parse<DayOfWeek>(serializable.daylightSavingTime.startDayOfWeek),
+                StartHour = serializable.daylightSavingTime.startHour,
+                EndMonth = serializable.daylightSavingTime.endMonth,
+                EndDay = serializable.daylightSavingTime.endDay,
+                EndDayOfWeek = Enum.Parse<DayOfWeek>(serializable.daylightSavingTime.endDayOfWeek),
+                EndHour = serializable.daylightSavingTime.endHour,
+                OffsetHours = serializable.daylightSavingTime.offsetHours
+            };
+        }
+
+        return timezone;
+    }
 }
 
 /// <summary>
@@ -226,6 +294,11 @@ internal class SerializableMasterSchedule
     /// Gets or sets the array of serializable schedules.
     /// </summary>
     public SerializableSchedule[] schedules { get; set; }
+
+    /// <summary>
+    /// Gets or sets the timezone information.
+    /// </summary>
+    public SerializableTimezone? timezone { get; set; }
 }
 
 /// <summary>
@@ -278,4 +351,76 @@ internal class SerializableScheduleEvent
     /// Gets or sets the days of week for Weekday and offset events.
     /// </summary>
     public string[] daysOfWeek { get; set; }
+}
+
+/// <summary>
+/// Internal serializable representation of timezone information for JSON conversion.
+/// </summary>
+internal class SerializableTimezone
+{
+    /// <summary>
+    /// Gets or sets the timezone name.
+    /// </summary>
+    public string timezoneName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the UTC offset in hours.
+    /// </summary>
+    public double utcOffsetHours { get; set; }
+
+    /// <summary>
+    /// Gets or sets the daylight saving time information.
+    /// </summary>
+    public SerializableDaylightSavingTime? daylightSavingTime { get; set; }
+}
+
+/// <summary>
+/// Internal serializable representation of daylight saving time information for JSON conversion.
+/// </summary>
+internal class SerializableDaylightSavingTime
+{
+    /// <summary>
+    /// Gets or sets the start month.
+    /// </summary>
+    public int startMonth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the start day.
+    /// </summary>
+    public int startDay { get; set; }
+
+    /// <summary>
+    /// Gets or sets the start day of week.
+    /// </summary>
+    public string startDayOfWeek { get; set; }
+
+    /// <summary>
+    /// Gets or sets the start hour.
+    /// </summary>
+    public int startHour { get; set; }
+
+    /// <summary>
+    /// Gets or sets the end month.
+    /// </summary>
+    public int endMonth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the end day.
+    /// </summary>
+    public int endDay { get; set; }
+
+    /// <summary>
+    /// Gets or sets the end day of week.
+    /// </summary>
+    public string endDayOfWeek { get; set; }
+
+    /// <summary>
+    /// Gets or sets the end hour.
+    /// </summary>
+    public int endHour { get; set; }
+
+    /// <summary>
+    /// Gets or sets the DST offset in hours.
+    /// </summary>
+    public double offsetHours { get; set; }
 }

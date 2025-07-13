@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
+namespace Meadow.Foundation.Scheduling;
+
 /// <summary>
 /// Represents a collection of schedules that can be managed as a single unit.
 /// </summary>
@@ -17,6 +19,11 @@ public class ScheduleCollection : IEnumerable<Schedule>
     /// Gets or sets the array of schedules managed by this master schedule.
     /// </summary>
     public List<Schedule> Schedules { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the timezone information for this schedule collection.
+    /// </summary>
+    public TimezoneInfo Timezone { get; set; } = new();
 
     public static ScheduleCollection LoadFrom(FileInfo scheduleFile)
     {

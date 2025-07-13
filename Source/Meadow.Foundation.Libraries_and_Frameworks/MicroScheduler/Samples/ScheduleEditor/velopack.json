@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "title": "Schedule Editor",
+  "icon": "Assets/icon.png",
+  "owners": [ "Wilderness Labs" ],
+  "authors": [ "Wilderness Labs" ],
+  "description": "A desktop app for configuring a Meadow schedule"
+}
