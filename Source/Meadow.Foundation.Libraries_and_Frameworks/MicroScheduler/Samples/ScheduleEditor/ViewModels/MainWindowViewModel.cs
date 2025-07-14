@@ -174,11 +174,15 @@ public class MainWindowViewModel : ViewModelBase
 
         try
         {
+            // Apply any pending changes before saving
+            ApplyAllPendingChanges();
+            
             var json = ScheduleSerializer.SerializeScheduleCollection(ScheduleCollection.ScheduleCollection);
             if (json != null)
             {
                 await File.WriteAllTextAsync(ScheduleCollection.FileName, json);
                 IsFileModified = false;
+                HasUnsavedChanges = false;
                 this.RaisePropertyChanged(nameof(WindowTitle));
             }
         }
@@ -211,12 +215,17 @@ public class MainWindowViewModel : ViewModelBase
             try
             {
                 var filePath = file.Path.LocalPath;
+                
+                // Apply any pending changes before saving
+                ApplyAllPendingChanges();
+                
                 var json = ScheduleSerializer.SerializeScheduleCollection(ScheduleCollection.ScheduleCollection);
                 if (json != null)
                 {
                     await File.WriteAllTextAsync(filePath, json);
                     ScheduleCollection.FileName = filePath;
                     IsFileModified = false;
+                    HasUnsavedChanges = false;
                     this.RaisePropertyChanged(nameof(WindowTitle));
                 }
             }
@@ -285,18 +294,21 @@ public class MainWindowViewModel : ViewModelBase
 
     private async Task SaveChanges()
     {
-        // Mark all events as clean
-        if (SelectedSchedule != null)
-        {
-            foreach (var eventModel in SelectedSchedule.Events)
-            {
-                eventModel.MarkClean();
-            }
-        }
+        // Apply all pending changes to the underlying schedule objects
+        ApplyAllPendingChanges();
         
         HasUnsavedChanges = false;
         IsFileModified = true;
         this.RaisePropertyChanged(nameof(WindowTitle));
+    }
+
+    private void ApplyAllPendingChanges()
+    {
+        // Apply changes to all schedules, not just the selected one
+        foreach (var schedule in ScheduleCollection.Schedules)
+        {
+            schedule.ApplyChanges();
+        }
     }
 
     private void OnScheduleCollectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

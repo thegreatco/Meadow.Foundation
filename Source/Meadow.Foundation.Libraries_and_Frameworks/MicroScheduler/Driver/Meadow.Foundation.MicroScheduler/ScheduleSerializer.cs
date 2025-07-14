@@ -23,7 +23,13 @@ public static class ScheduleSerializer
             timezone = ConvertTimezoneToSerializable(collection.Timezone)
         };
 
-        return MicroJson.Serialize(serializable);
+        var options = new SerializerOptions
+        {
+            OmitNulls = true,
+            WriteIndented = true
+        };
+        
+        return MicroJson.Serialize(serializable, options);
     }
 
     /// <summary>

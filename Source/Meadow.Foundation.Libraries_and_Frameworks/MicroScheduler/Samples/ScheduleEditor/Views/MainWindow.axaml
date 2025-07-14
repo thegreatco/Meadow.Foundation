@@ -141,7 +141,94 @@
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Time/Offset" Binding="{Binding TimeDisplay}" Width="*" IsReadOnly="True"/>
+                                <DataGridTemplateColumn Header="Time/Offset" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Spacing="5">
+                                                <!-- Time Picker for Daily/Weekday events -->
+                                                <TimePicker SelectedTime="{Binding EventTime, Mode=TwoWay}" 
+                                                            IsVisible="{Binding SupportsTimePicker}"
+                                                            MinuteIncrement="15"
+                                                            ClockIdentifier="24HourClock"/>
+                                                
+                                                <!-- Offset Editor for Sunrise/Sunset events -->
+                                                <StackPanel Orientation="Horizontal" Spacing="3"
+                                                            IsVisible="{Binding SupportsOffsetEditor}">
+                                                    <NumericUpDown Value="{Binding OffsetMinutes, Mode=TwoWay}"
+                                                                   Minimum="0" Maximum="1440" Increment="1"
+                                                                   Width="120" 
+                                                                   MinWidth="120"
+                                                                   ShowButtonSpinner="True"
+                                                                   FormatString="F0"
+                                                                   HorizontalContentAlignment="Left"/>
+                                                    <TextBlock Text="minutes" VerticalAlignment="Center" Margin="3,0"/>
+                                                    <ComboBox ItemsSource="{Binding AvailableOffsetOptions}"
+                                                              SelectedItem="{Binding OffsetBeforeAfterSelection, Mode=TwoWay}"
+                                                              BorderThickness="0"
+                                                              Background="Transparent"
+                                                              Width="100"
+                                                              MinWidth="100"/>
+                                                </StackPanel>
+                                                
+                                                <!-- Fallback text display for other event types -->
+                                                <TextBlock Text="{Binding TimeDisplay}" 
+                                                           VerticalAlignment="Center">
+                                                    <TextBlock.IsVisible>
+                                                        <MultiBinding Converter="{x:Static BoolConverters.And}">
+                                                            <Binding Path="SupportsTimePicker" Converter="{StaticResource InvertBoolConverter}"/>
+                                                            <Binding Path="SupportsOffsetEditor" Converter="{StaticResource InvertBoolConverter}"/>
+                                                        </MultiBinding>
+                                                    </TextBlock.IsVisible>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn Header="Days" Width="Auto">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" 
+                                                        IsVisible="{Binding IsWeekdayEvent}"
+                                                        Spacing="3">
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="M" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding MondaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="T" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding TuesdaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="W" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding WednesdaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="T" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding ThursdaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="F" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding FridaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="S" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding SaturdaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                                <StackPanel HorizontalAlignment="Center" Width="20">
+                                                    <TextBlock Text="S" FontSize="8" HorizontalAlignment="Center" Margin="0,0,0,2"/>
+                                                    <CheckBox IsChecked="{Binding SundaySelected, Mode=TwoWay}" 
+                                                              HorizontalAlignment="Center" Width="14" Height="14"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                                 <DataGridTemplateColumn Header="Action" Width="100">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>

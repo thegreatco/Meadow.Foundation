@@ -1,6 +1,8 @@
 using Avalonia.Data.Converters;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace ScheduleEditor.Converters;
 
@@ -13,6 +15,20 @@ public static class ObjectConverters
 public static class BoolConverters
 {
     public static readonly IValueConverter Not = new FuncValueConverter<bool, bool>(x => !x);
+    public static readonly IMultiValueConverter And = new BooleanAndConverter();
+}
+
+public class BooleanAndConverter : IMultiValueConverter
+{
+    public object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
+    {
+        return values?.All(v => v is bool b && b) == true;
+    }
+
+    public object[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class InvertBoolConverter : IValueConverter
