@@ -182,6 +182,14 @@ namespace Meadow.Foundation.Graphics.Buffers
         }
 
         /// <summary>
+        ///  fast and no checks
+        /// </summary>
+        public void WriteBufferRaw(BufferRgb565 bufferToDraw)
+        {
+            Array.Copy(bufferToDraw.Buffer, Buffer, bufferToDraw.Buffer.Length);
+        }
+
+        /// <summary>
         /// Write a buffer to specific location to the current buffer
         /// </summary>
         /// <param name="x">x origin</param>
