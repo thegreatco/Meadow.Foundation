@@ -80,4 +80,10 @@ public class SimulatedT322ai
     {
         return new SimulatedDigitalInputPort();
     }
+
+    /// <inheritdoc/>
+    public ICounter CreateCounter(IPin pin, InterruptMode edge)
+    {
+        throw new System.NotImplementedException();
+    }
 }

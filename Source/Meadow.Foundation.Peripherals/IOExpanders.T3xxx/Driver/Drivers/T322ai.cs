@@ -110,11 +110,43 @@ public partial class T322ai
         WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 0)
             .GetAwaiter().GetResult();
 
+        // turn the filter down (factory is 5)
+        WriteHoldingRegister((ushort)(T322aiRegisters.AiFilter0 + offset), 0)
+            .GetAwaiter().GetResult();
+
         return new T3xxx.DigitalInputPort(this, pin,
             // each input is 2 registers, the data for state is in the low
             (ushort)(T322aiRegisters.AiChannel0Hi + (offset * 2 + 1))
             );
 
+    }
+
+    /// <inheritdoc/>
+    public ICounter CreateCounter(IPin pin, InterruptMode edge = InterruptMode.EdgeRising)
+    {
+        if (edge != InterruptMode.EdgeRising)
+        {
+            throw new ArgumentOutOfRangeException(nameof(edge), "Only EdgeRising is supported for counters");
+        }
+
+        var offset = (int)pin.Key;
+
+        WriteHoldingRegister((ushort)(T322aiRegisters.AiRange0 + offset),
+            (ushort)(offset > 11 ? AnalogInputRange.pulseCountSlow : AnalogInputRange.PulseCountFast))
+            .GetAwaiter().GetResult();
+
+        // mode must be set to 0
+        WriteHoldingRegister((ushort)(T322aiRegisters.AutoManual0 + offset), 0)
+            .GetAwaiter().GetResult();
+
+        // counters are considered analogs
+        WriteHoldingRegister((ushort)(T322aiRegisters.AiDiAi0 + offset), 1)
+            .GetAwaiter().GetResult();
+
+        return new T3xxx.Counter(this, pin,
+            // each input is 2 registers, the data for state is in the low
+            (ushort)(T322aiRegisters.AiChannel0Hi + (offset * 2 + 1))
+            );
     }
 
     /// <inheritdoc/>

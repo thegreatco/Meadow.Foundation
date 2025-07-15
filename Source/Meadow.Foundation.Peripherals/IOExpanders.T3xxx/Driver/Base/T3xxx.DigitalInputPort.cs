@@ -4,6 +4,10 @@ namespace Meadow.Foundation.IOExpanders;
 
 public abstract partial class T3xxx
 {
+}
+
+public abstract partial class T3xxx
+{
     /// <summary>
     /// Represents a digital input port on a Temco Controls T3 module.
     /// </summary>
