@@ -942,6 +942,16 @@
     </Project>
   </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/RTCs/" />
+  <Folder Name="/Meadow.Foundation.Peripherals/RTCs/Ab0805/">
+    <Project Path="Meadow.Foundation.Peripherals/RTCs.Ab0805/Driver/RTCs.Ab0805.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/RTCs/Ab0805/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/RTCs.Ab0805/Samples/Ab0805_Sample/Ab0805_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/RTCs/Ds1307/">
     <Project Path="Meadow.Foundation.Peripherals/RTCs.Ds1307/Driver/RTCs.Ds1307.csproj" />
   </Folder>
