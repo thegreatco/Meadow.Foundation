@@ -311,10 +311,7 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
 
     void EnableTimer(bool enable)
     {
-        var control1 = i2CCommunications.ReadRegister((byte)Registers.CONTROL1);
-        byte stop = Control1Bits.STOP;
-        control1 &= (byte)~(1 << stop);
-        i2CCommunications.WriteRegister((byte)Registers.CONTROL1, control1);
+        EnableOscillator(false);
 
         byte value;
         byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
