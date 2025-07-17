@@ -122,5 +122,47 @@ namespace Ab0805_Sample
         }
 
         //<!=SNOP=>
+
+        private async Task TestCombined()
+        {
+            Resolver.Log.Info("\n--- Test 3: Alarm 25 seconds in the future with 10 second timer ---");
+
+            rtc.ResetTimer();
+            rtc.ResetAlarm();
+
+            DateTimeOffset alarmTime = rtc.GetTime().AddSeconds(25);
+
+            Resolver.Log.Info("Start timer...");
+            rtc.StartTimer(10, Ab0805.DelayTimeUnit.Seconds);
+            Resolver.Log.Info("Set alarm...");
+            rtc.SetAlarm(alarmTime);
+
+            var startTime = DateTime.Now;
+            TimeSpan elapsed;
+
+            Resolver.Log.Info("Monitoring...");
+
+            bool hasShownTimerMessage = false;
+
+            while (rtc.HasAlarmTriggered == false)
+            {
+                elapsed = DateTime.Now - startTime;
+                Resolver.Log.Info($"Elapsed: {elapsed.TotalSeconds:F1}s");
+
+                if (rtc.HasTimerEnded && hasShownTimerMessage == false)
+                {
+                    Resolver.Log.Info("Timer has ended!");
+                    hasShownTimerMessage = true;
+                }
+
+                await Task.Delay(1000);
+            }
+
+            elapsed = DateTime.Now - startTime;
+            Resolver.Log.Info($"✓ Alarm triggered! Interrupt fired after {elapsed.TotalSeconds:F1}s");
+
+            await Task.Delay(5000);
+            rtc.ResetAlarm();
+        }
     }
 }

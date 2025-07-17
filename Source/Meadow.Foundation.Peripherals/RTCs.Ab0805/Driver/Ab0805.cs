@@ -169,12 +169,10 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
     public void SetAlarm(DateTimeOffset alarmTime)
     {
         SetAlarmTime(alarmTime.DateTime);
-
         SetAlarmInterrupt(true);
-
         DisableAlarmRepeat();
-
         SetAlarmInterruptToControlFOUT();
+        EnableOscillator(true);
     }
 
     void SetAlarmTime(DateTime localTime)
@@ -217,25 +215,34 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
     }
 
-    /// <summary>
-    /// Start the timer on the RTC
-    /// </summary>
-    /// <param name="value">Count down timer value as an integer</param>
-    /// <param name="unit">Count down seconds or minutes</param>
-    public void StartTimer(byte value, DelayTimeUnit unit = DelayTimeUnit.Seconds)
+    void SetTimerValue(byte value)
     {
         if (value < 1 || value > 255)
         {
             throw new ArgumentOutOfRangeException(nameof(value), "Timer value must be between 1 and 255.");
         }
 
+        EnableOscillator(false);
+
+        i2CCommunications.WriteRegister((byte)Registers.TIMER, value);
+    }
+
+    /// <summary>
+    /// Start the timer on the RTC
+    /// </summary>
+    /// <param name="timerValue">Count down timer value as an integer</param>
+    /// <param name="unit">Count down seconds or minutes</param>
+    public void StartTimer(byte timerValue, DelayTimeUnit unit = DelayTimeUnit.Seconds)
+    {
+        SetTimerValue(timerValue);
+
         byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
 
         if (unit == DelayTimeUnit.Seconds)
         {
-            timerControl |= 1 << TimerBits.TFS;
-            value = TimerBits.TFS + 1;
-            timerControl &= (byte)~(1 << value);
+            timerControl |= 1 << TimerBits.TFS + 1;
+            byte tfs = TimerBits.TFS;
+            timerControl &= (byte)~(1 << tfs);
         }
         else if (unit == DelayTimeUnit.Minutes)
         {
@@ -250,12 +257,11 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
 
         byte control2 = i2CCommunications.ReadRegister((byte)Registers.CONTROL2);
-        value = Control2Bits.OUT2S;
+        byte value = Control2Bits.OUT2S;
         control2 |= 1 << Control2Bits.OUT2S;
         control2 &= (byte)~(1 << value + 1);
         control2 |= 1 << (Control2Bits.OUT2S + 2);
         control2 |= 1 << Control2Bits.OUTPP;
-        //control2 &= (byte)~(1 << value + 2);
         i2CCommunications.WriteRegister((byte)Registers.CONTROL2, control2);
 
         SetTimerInterrupt(true);
@@ -287,8 +293,26 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
         SetAlarmInterrupt(false);
     }
 
+    void EnableOscillator(bool enable)
+    {
+        var control1 = i2CCommunications.ReadRegister((byte)Registers.CONTROL1);
+
+        if (enable)
+        {
+            byte stop = Control1Bits.STOP;
+            control1 &= (byte)~(1 << stop);
+        }
+        else
+        {
+            control1 |= 1 << Control1Bits.STOP;
+        }
+        i2CCommunications.WriteRegister((byte)Registers.CONTROL1, control1);
+    }
+
     void EnableTimer(bool enable)
     {
+        EnableOscillator(false);
+
         byte value;
         byte timerControl = i2CCommunications.ReadRegister((byte)Registers.TIMER_CONTROL);
         if (enable)
@@ -300,10 +324,12 @@ public partial class Ab0805 : II2cPeripheral, IRealTimeClock
             value = TimerBits.TE;
             timerControl &= (byte)~(1 << value);
         }
-        timerControl |= 1 << TimerBits.TM; //level triggered
-        value = TimerBits.TRPT; //don't repeat
+        timerControl |= 1 << TimerBits.TM;
+        value = TimerBits.TRPT;
         timerControl &= (byte)~(1 << value);
         i2CCommunications.WriteRegister((byte)Registers.TIMER_CONTROL, timerControl);
+
+        EnableOscillator(enable);
     }
 
     void SetTimerInterrupt(bool enable)

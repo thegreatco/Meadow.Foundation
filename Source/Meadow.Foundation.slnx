@@ -1879,8 +1879,17 @@
     <Project Path="Meadow.Foundation.Peripherals/VFDs.CerusXDrive/Samples/CerusXDrive_Sample/CerusXDrive_Sample.csproj" />
   </Folder>
   <Folder Name="/Product/" />
-  <Folder Name="/Product/ProgrammableAnalogInputModule/" />
-  <Folder Name="/Product/ProgrammableAnalogInputModule/Driver/">
+  <Folder Name="/Product/DeepSleep/">
+    <Project Path="Product/DeepSleep/Driver/DeepSleep.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Product/DeepSleep/Samples/">
+    <Project Path="Product/DeepSleep/Samples/DeepSleep_Sample/DeepSleep_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Product/ProgrammableAnalogInputModule/">
     <Project Path="Product/ProgrammableAnalogInput/Driver/ProgramableAnalogInput.csproj">
       <Deploy />
     </Project>
