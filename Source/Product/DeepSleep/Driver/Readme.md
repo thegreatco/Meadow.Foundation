@@ -1,8 +1,8 @@
-# Meadow.Foundation.ProgrammableAnalogInput
+# Meadow.Foundation.DeepSleep
 
-**Meadow Programmable Analog Input module**
+**Wilderness Labs I2C timer deep sleep power controller**
 
-The **ProgrammableAnalogInput** library is included in the **Meadow.Foundation.ProgrammableAnalogInput** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **DeepSleep** library is included in the **Meadow.Foundation.DeepSleep** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -14,135 +14,43 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.Foundation.ProgrammableAnalogInput`
+`dotnet add package Meadow.Foundation.DeepSleep`
 ## Usage
 
 ```csharp
-private ProgrammableAnalogInputModule module;
+private DeepSleep deepSleep;
 
-public override async Task Initialize()
+public override Task Initialize()
 {
     Resolver.Log.Info("Initialize...");
 
-    var bus = Device.CreateI2cBus();
+    var i2cBus = Device.CreateI2cBus();
 
-    module = new ProgrammableAnalogInputModule(
-        bus,
-        0x10,
-        0x20,
-        0x21);
+    deepSleep = new DeepSleep(i2cBus);
+
+    return Task.CompletedTask;
 }
 
-public override async Task Run()
+public override Task Run()
 {
     Resolver.Log.Info("Run...");
-}
 
-public async Task Test4_20()
-{
-    for (var i = 0; i < 8; i++)
-    {
-        module.ConfigureChannel(new ChannelConfig
-        {
-            ChannelNumber = i,
-            ChannelType = ConfigurableAnalogInputChannelType.Current_4_20,
-            UnitType = "Temperature",
-            Scale = 3.4725, //0-100F, but scale/offs in C
-            Offset = -31.67
-        });
-    }
+    var currentTime = deepSleep.GetTime();
+    Resolver.Log.Info($"DeepSleep current time: {currentTime:MM/dd/yy HH:mm:ss}");
 
-    while (true)
-    {
-        for (var i = 0; i < module.ChannelCount; i++)
-        {
-            try
-            {
-                var raw = module.Read4_20mA(i);
-                Resolver.Log.Info($"CH{i}: {raw.Milliamps:N1} mA");
-                var t1 = module.ReadChannelAsConfiguredUnit(i);
-                if (t1 is Temperature temp)
-                {
-                    Resolver.Log.Info($"temp{i}: {temp.Fahrenheit:N1}F");
-                }
-            }
-            catch (Exception ex)
-            {
-                Resolver.Log.Error($"ERROR: {ex.Message}");
-            }
-        }
-        Resolver.Log.Info($"---");
-        await Task.Delay(1000);
-    }
-}
+    var testTime = new DateTime(2025, 6, 15, 14, 30, 0);
+    Resolver.Log.Info($"Setting time to: {testTime:MM/dd/yy HH:mm:ss}");
+    deepSleep.SetTime(testTime);
 
-public async Task Test0_10()
-{
-    for (var i = 0; i < 8; i++)
-    {
-        module.ConfigureChannel(new ChannelConfig
-        {
-            ChannelNumber = i,
-            ChannelType = ConfigurableAnalogInputChannelType.Voltage_0_10,
-            UnitType = "Temperature",
-            Scale = 3.4725, //0-100F, but scale/offs in C
-            Offset = -31.67
-        });
+    currentTime = deepSleep.GetTime();
+    Resolver.Log.Info($"RTC time after setting: {currentTime:MM/dd/yy HH:mm:ss}");
 
-        module.ConfigureChannel(new ChannelConfig
-        {
-            ChannelNumber = i,
-            ChannelType = ConfigurableAnalogInputChannelType.ThermistorNtc
-        });
-    }
+    DateTimeOffset wakeTime = deepSleep.GetTime().AddSeconds(30);
 
-    while (true)
-    {
-        for (var i = 0; i < module.ChannelCount; i++)
-        {
-            try
-            {
-                var raw = module.Read0_10V(i);
-                Resolver.Log.Info($"CH{i}: {raw.Volts:N2} V");
-            }
-            catch (Exception ex)
-            {
-                Resolver.Log.Error($"ERROR: {ex.Message}");
-            }
-        }
-        Resolver.Log.Info($"---");
-        await Task.Delay(1000);
-    }
-}
+    Resolver.Log.Info($"Setting DeepSleep to sleep in 10 seconds and wake at: {wakeTime:MM/dd/yy HH:mm:ss}");
+    deepSleep.SetDeepSleep(10, wakeTime);
 
-public async Task TestNtc()
-{
-    for (var i = 0; i < 8; i++)
-    {
-        module.ConfigureChannel(new ChannelConfig
-        {
-            ChannelNumber = i,
-            ChannelType = ConfigurableAnalogInputChannelType.ThermistorNtc
-        });
-    }
-
-    while (true)
-    {
-        for (var i = 0; i < module.ChannelCount; i++)
-        {
-            try
-            {
-                var raw = module.ReadNtc(i);
-                Resolver.Log.Info($"CH{i}: {raw.Fahrenheit:N2} F");
-            }
-            catch (Exception ex)
-            {
-                Resolver.Log.Error($"ERROR: {ex.Message}");
-            }
-        }
-        Resolver.Log.Info($"---");
-        await Task.Delay(1000);
-    }
+    return Task.CompletedTask;
 }
 
 ```
