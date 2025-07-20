@@ -191,7 +191,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Living Room",
+                    "scheduleName": "Living Room",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -231,7 +231,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Bedroom",
+                    "scheduleName": "Bedroom",
                     "events": [
                         {
                             "eventType": "Weekday",
@@ -271,7 +271,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Garden",
+                    "scheduleName": "Garden",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -310,7 +310,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Porch",
+                    "scheduleName": "Porch",
                     "events": [
                         {
                             "eventType": "SunsetOffset",
@@ -346,7 +346,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -495,7 +495,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "InvalidType",
@@ -520,7 +520,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -546,7 +546,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -572,7 +572,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "Weekday",
@@ -642,7 +642,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -672,7 +672,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",

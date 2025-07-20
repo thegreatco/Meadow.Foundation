@@ -28,10 +28,10 @@ public class ScheduleEventTriggeredEventArgs : EventArgs
     public DateTimeOffset TriggeredAt { get; }
 
     /// <summary>
-    /// Gets the name of the circuit that was affected by the schedule event.
+    /// Gets the name of the schedule that was affected by the schedule event.
     /// This is a convenience property that returns Schedule.Name.
     /// </summary>
-    public string CircuitName => Schedule.Name;
+    public string Name => Schedule.Name;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScheduleEventTriggeredEventArgs"/> class.

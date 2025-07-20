@@ -1,7 +1,7 @@
 ﻿{
   "schedules": [
     {
-      "circuitName": "light",
+      "scheduleName": "light",
       "events": [
         {
           "eventType": "Daily",
@@ -39,7 +39,7 @@
       ]
     },
     {
-      "circuitName": "fountain",
+      "scheduleName": "fountain",
       "events": [
         {
           "eventType": "Daily",
