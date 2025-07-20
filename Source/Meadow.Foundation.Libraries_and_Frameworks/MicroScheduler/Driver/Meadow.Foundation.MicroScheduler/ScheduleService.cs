@@ -21,7 +21,7 @@ public class ScheduleService : IDisposable
     /// <summary>
     /// Occurs when a schedule event is triggered and a circuit state is changed.
     /// </summary>
-    public event EventHandler<ScheduleEventTriggeredEventArgs> ScheduleEventTriggered;
+    public event EventHandler<ScheduleEventTriggeredEventArgs>? ScheduleEventTriggered;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ScheduleService"/> class using the system time provider.
@@ -166,8 +166,8 @@ public class ScheduleService : IDisposable
             {
                 foreach (var evt in activeEvents)
                 {
-                    OnScheduleEventTriggered(new ScheduleEventTriggeredEventArgs(
-                        schedule.Name,
+                    RaiseScheduleEvents(new ScheduleEventTriggeredEventArgs(
+                        schedule,
                         evt.Event,
                         evt.Event.Data,
                         currentTime));
@@ -309,9 +309,10 @@ public class ScheduleService : IDisposable
     /// Raises the ScheduleEventTriggered event.
     /// </summary>
     /// <param name="e">The event arguments.</param>
-    protected virtual void OnScheduleEventTriggered(ScheduleEventTriggeredEventArgs e)
+    protected virtual void RaiseScheduleEvents(ScheduleEventTriggeredEventArgs e)
     {
         ScheduleEventTriggered?.Invoke(this, e);
+        e.Schedule.RaiseScheduleEvent(e);
     }
 
     /// <summary>
