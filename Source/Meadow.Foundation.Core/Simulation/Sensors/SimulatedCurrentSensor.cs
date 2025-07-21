@@ -23,7 +23,7 @@ public class SimulatedCurrentSensor : SimulatedSamplingSensorBase<Current>, ISam
     public override Type ValueType => typeof(Current);
 
     /// <summary>
-    /// Creates a SimulatedAccelerometer instance
+    /// Creates a SimulatedCurrentSensor instance
     /// </summary>
     public SimulatedCurrentSensor(Current? maxCurrent = null, Current? minCurrent = null)
     {
