@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
+namespace Meadow.Foundation.Scheduling;
+
 /// <summary>
 /// Represents a collection of schedules that can be managed as a single unit.
 /// </summary>
@@ -15,6 +17,11 @@ public class ScheduleCollection : IEnumerable<Schedule>
     internal SemaphoreSlim SyncRoot { get; } = new SemaphoreSlim(1, 1);
 
     private readonly List<Schedule> _schedules = new();
+
+    /// <summary>
+    /// Gets or sets the timezone information for this schedule collection.
+    /// </summary>
+    public TimezoneInfo Timezone { get; set; } = new();
 
     public static ScheduleCollection LoadFrom(FileInfo scheduleFile)
     {
