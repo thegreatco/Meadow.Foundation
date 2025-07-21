@@ -180,7 +180,7 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Empty(result.Schedules);
+        Assert.Equal(0, result.Count);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Living Room",
+                    "scheduleName": "Living Room",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -210,9 +210,9 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Single(result.Schedules);
+        Assert.Equal(1, result.Count);
 
-        var schedule = result.Schedules.First();
+        var schedule = result[0];
         Assert.Equal("Living Room", schedule.Name);
         Assert.Single(schedule.Events);
 
@@ -231,7 +231,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Bedroom",
+                    "scheduleName": "Bedroom",
                     "events": [
                         {
                             "eventType": "Weekday",
@@ -251,7 +251,7 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        var schedule = result.Schedules.First();
+        var schedule = result[0];
         var weekdayEvent = Assert.IsType<WeekdayScheduleEvent>(schedule.Events.First());
 
         Assert.Equal(ScheduleEventType.Weekday, weekdayEvent.EventType);
@@ -271,7 +271,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Garden",
+                    "scheduleName": "Garden",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -291,7 +291,7 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        var schedule = result.Schedules.First();
+        var schedule = result[0];
         var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(schedule.Events.First());
 
         Assert.Equal(ScheduleEventType.SunriseOffset, sunriseEvent.EventType);
@@ -310,7 +310,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Porch",
+                    "scheduleName": "Porch",
                     "events": [
                         {
                             "eventType": "SunsetOffset",
@@ -329,7 +329,7 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        var schedule = result.Schedules.First();
+        var schedule = result[0];
         var sunsetEvent = Assert.IsType<SunsetOffsetScheduleEvent>(schedule.Events.First());
 
         Assert.Equal(ScheduleEventType.SunsetOffset, sunsetEvent.EventType);
@@ -346,7 +346,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -365,7 +365,7 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        var schedule = result.Schedules.First();
+        var schedule = result[0];
         var dailyEvent = Assert.IsType<DailyScheduleEvent>(schedule.Events.First());
 
         Assert.True(dailyEvent.IsDisabled);
@@ -393,18 +393,18 @@ public class ScheduleSerializerTests
         schedule2.Events.Add(new SunriseOffsetScheduleEvent(TimeSpan.FromMinutes(30), "LIGHT_ON"));
         schedule2.Events.Add(new SunsetOffsetScheduleEvent(TimeSpan.FromMinutes(-15), "LIGHT_OFF", new[] { DayOfWeek.Sunday }));
 
-        originalSchedules.Schedules.Add(schedule1);
-        originalSchedules.Schedules.Add(schedule2);
+        originalSchedules.Add(schedule1);
+        originalSchedules.Add(schedule2);
 
         // Act
         var json = ScheduleSerializer.SerializeScheduleCollection(originalSchedules);
         var deserializedSchedules = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
-        Assert.Equal(originalSchedules.Schedules.Count, deserializedSchedules.Schedules.Count);
+        Assert.Equal(originalSchedules.Count, deserializedSchedules.Count);
 
         // Verify Living Room schedule
-        var livingRoom = deserializedSchedules.Schedules.First(s => s.Name == "Living Room");
+        var livingRoom = deserializedSchedules["Living Room"]!;
         Assert.Equal(2, livingRoom.Events.Count);
 
         var onEvent = Assert.IsType<DailyScheduleEvent>(livingRoom.Events.First(e => e.Data == "ON"));
@@ -414,7 +414,7 @@ public class ScheduleSerializerTests
         Assert.Equal(new DateTime(2024, 1, 1, 23, 0, 0), offEvent.EventTime);
 
         // Verify Garden schedule
-        var garden = deserializedSchedules.Schedules.First(s => s.Name == "Garden");
+        var garden = deserializedSchedules["Garden"]!;
         Assert.Equal(3, garden.Events.Count);
 
         var waterEvent = Assert.IsType<WeekdayScheduleEvent>(garden.Events.First(e => e.Data == "WATER"));
@@ -438,14 +438,14 @@ public class ScheduleSerializerTests
         var originalSchedule = new ScheduleCollection();
         var schedule = new Schedule { Name = "Test" };
         schedule.Events.Add(new DailyScheduleEvent(new DateTime(2024, 1, 1, 12, 0, 0), null));
-        originalSchedule.Schedules.Add(schedule);
+        originalSchedule.Add(schedule);
 
         // Act
         var json = ScheduleSerializer.SerializeScheduleCollection(originalSchedule);
         var deserializedSchedule = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
-        var event1 = deserializedSchedule.Schedules.First().Events.First();
+        var event1 = deserializedSchedule[0].Events.First();
         Assert.Null(event1.Data);
     }
 
@@ -495,7 +495,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "InvalidType",
@@ -520,7 +520,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -546,7 +546,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -572,7 +572,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "Weekday",
@@ -609,7 +609,7 @@ public class ScheduleSerializerTests
         var deserialized = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
-        var deserializedEvent = Assert.IsType<SunriseOffsetScheduleEvent>(deserialized.Schedules.First().Events.First());
+        var deserializedEvent = Assert.IsType<SunriseOffsetScheduleEvent>(deserialized[0].Events.First());
         Assert.Equal(largeOffset, deserializedEvent.Offset);
     }
 
@@ -630,8 +630,8 @@ public class ScheduleSerializerTests
         var deserialized = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
-        Assert.Equal(2, deserialized.Schedules.Count);
-        Assert.All(deserialized.Schedules, s => Assert.Equal("Same Name", s.Name));
+        Assert.Equal(2, deserialized.Count);
+        Assert.All(deserialized, s => Assert.Equal("Same Name", s.Name));
     }
 
     [Fact]
@@ -642,7 +642,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -660,7 +660,7 @@ public class ScheduleSerializerTests
         var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
-        var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(result.Schedules.First().Events.First());
+        var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(result[0].Events.First());
         Assert.Equal(TimeSpan.Zero, sunriseEvent.Offset);
     }
 
@@ -672,7 +672,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "circuitName": "Test",
+                    "scheduleName": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -691,7 +691,7 @@ public class ScheduleSerializerTests
         var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert
-        var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(result.Schedules.First().Events.First());
+        var sunriseEvent = Assert.IsType<SunriseOffsetScheduleEvent>(result[0].Events.First());
         Assert.Null(sunriseEvent.DaysOfWeek);
     }
 
@@ -713,10 +713,10 @@ public class ScheduleSerializerTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(2, result.Schedules.Count);
+        Assert.Equal(2, result.Count);
 
         // Verify Light Schedule
-        var lightSchedule = result.Schedules.First(s => s.Name == "light");
+        var lightSchedule = result["light"]!;
         Assert.Equal("light", lightSchedule.Name);
         Assert.Equal(5, lightSchedule.Events.Count);
 
@@ -761,7 +761,7 @@ public class ScheduleSerializerTests
         Assert.Null(lightSunriseEvent.DaysOfWeek); // Should be null
 
         // Verify Fountain Schedule
-        var fountainSchedule = result.Schedules.First(s => s.Name == "fountain");
+        var fountainSchedule = result["fountain"]!;
         Assert.Equal("fountain", fountainSchedule.Name);
         Assert.Equal(5, fountainSchedule.Events.Count);
 
@@ -819,12 +819,12 @@ public class ScheduleSerializerTests
         var roundTripCollection = ScheduleSerializer.DeserializeScheduleCollection(newJson);
 
         // Assert - Verify the data is identical after round trip
-        Assert.Equal(scheduleCollection.Schedules.Count, roundTripCollection.Schedules.Count);
+        Assert.Equal(scheduleCollection.Count, roundTripCollection.Count);
 
-        for (int i = 0; i < scheduleCollection.Schedules.Count; i++)
+        for (int i = 0; i < scheduleCollection.Count; i++)
         {
-            var originalSchedule = scheduleCollection.Schedules[i];
-            var roundTripSchedule = roundTripCollection.Schedules[i];
+            var originalSchedule = scheduleCollection[i];
+            var roundTripSchedule = roundTripCollection[i];
 
             Assert.Equal(originalSchedule.Name, roundTripSchedule.Name);
             Assert.Equal(originalSchedule.Events.Count, roundTripSchedule.Events.Count);
@@ -887,8 +887,8 @@ public class ScheduleSerializerTests
         var result = ScheduleSerializer.DeserializeScheduleCollection(json);
 
         // Assert - Test the computed properties
-        var lightSchedule = result.Schedules.First(s => s.Name == "light");
-        var fountainSchedule = result.Schedules.First(s => s.Name == "fountain");
+        var lightSchedule = result["light"]!;
+        var fountainSchedule = result["fountain"]!;
 
         // Both schedules should have sunrise/sunset events
         Assert.True(lightSchedule.ContainsSunriseOrSunsetEvents);

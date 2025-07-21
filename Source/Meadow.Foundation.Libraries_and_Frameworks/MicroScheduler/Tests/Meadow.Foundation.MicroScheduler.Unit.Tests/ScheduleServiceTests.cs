@@ -87,7 +87,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("Daily Test", triggeredEvent.CircuitName);
+        Assert.Equal("Daily Test", triggeredEvent.Name);
         Assert.Equal("NOON_EVENT", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.Daily, triggeredEvent.ScheduleEvent.EventType);
     }
@@ -161,7 +161,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("Weekday Test", triggeredEvent.CircuitName);
+        Assert.Equal("Weekday Test", triggeredEvent.Name);
         Assert.Equal("WEEKEND_EVENT", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.Weekday, triggeredEvent.ScheduleEvent.EventType);
     }
@@ -237,7 +237,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("Sunrise Test", triggeredEvent.CircuitName);
+        Assert.Equal("Sunrise Test", triggeredEvent.Name);
         Assert.Equal("SUNRISE_OFFSET_EVENT", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.SunriseOffset, triggeredEvent.ScheduleEvent.EventType);
     }
@@ -336,7 +336,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("Sunset Test", triggeredEvent.CircuitName);
+        Assert.Equal("Sunset Test", triggeredEvent.Name);
         Assert.Equal("SUNSET_OFFSET_EVENT", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.SunsetOffset, triggeredEvent.ScheduleEvent.EventType);
     }
@@ -453,8 +453,8 @@ public class ScheduleServiceTests : IDisposable
 
         // Assert
         Assert.Equal(2, _triggeredEvents.Count);
-        Assert.Contains(_triggeredEvents, e => e.CircuitName == "Schedule 1" && e.Data == "SCHEDULE_1_EVENT");
-        Assert.Contains(_triggeredEvents, e => e.CircuitName == "Schedule 2" && e.Data == "SCHEDULE_2_EVENT");
+        Assert.Contains(_triggeredEvents, e => e.Name == "Schedule 1" && e.Data == "SCHEDULE_1_EVENT");
+        Assert.Contains(_triggeredEvents, e => e.Name == "Schedule 2" && e.Data == "SCHEDULE_2_EVENT");
     }
 
     #endregion
@@ -611,7 +611,7 @@ public class ScheduleServiceTests : IDisposable
         Assert.Single(_triggeredEvents);
         var eventArgs = _triggeredEvents.First();
 
-        Assert.Equal("Event Args Test", eventArgs.CircuitName);
+        Assert.Equal("Event Args Test", eventArgs.Name);
         Assert.Equal("TEST_DATA", eventArgs.Data);
         Assert.Equal(testTime, eventArgs.TriggeredAt);
         Assert.Equal(dailyEvent, eventArgs.ScheduleEvent);
@@ -643,9 +643,9 @@ public class ScheduleServiceTests : IDisposable
 
         // Assert
         Assert.Equal(2, _triggeredEvents.Count);
-        Assert.Contains(_triggeredEvents, e => e.CircuitName == "light" && e.Data == "true" &&
+        Assert.Contains(_triggeredEvents, e => e.Name == "light" && e.Data == "true" &&
             e.ScheduleEvent.EventType == ScheduleEventType.Daily);
-        Assert.Contains(_triggeredEvents, e => e.CircuitName == "light" && e.Data == "true" &&
+        Assert.Contains(_triggeredEvents, e => e.Name == "light" && e.Data == "true" &&
             e.ScheduleEvent.EventType == ScheduleEventType.SunsetOffset);
     }
 
@@ -669,7 +669,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("fountain", triggeredEvent.CircuitName);
+        Assert.Equal("fountain", triggeredEvent.Name);
         Assert.Equal("true", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.SunriseOffset, triggeredEvent.ScheduleEvent.EventType);
     }
@@ -693,7 +693,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("light", triggeredEvent.CircuitName);
+        Assert.Equal("light", triggeredEvent.Name);
         Assert.Equal("true", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.Weekday, triggeredEvent.ScheduleEvent.EventType);
 
@@ -723,7 +723,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("fountain", triggeredEvent.CircuitName);
+        Assert.Equal("fountain", triggeredEvent.Name);
         Assert.Equal("true", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.Weekday, triggeredEvent.ScheduleEvent.EventType);
 
@@ -773,7 +773,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("fountain", triggeredEvent.CircuitName);
+        Assert.Equal("fountain", triggeredEvent.Name);
         Assert.Equal("true", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.Daily, triggeredEvent.ScheduleEvent.EventType);
     }
@@ -798,7 +798,7 @@ public class ScheduleServiceTests : IDisposable
         // Assert
         Assert.Single(_triggeredEvents);
         var triggeredEvent = _triggeredEvents.First();
-        Assert.Equal("fountain", triggeredEvent.CircuitName);
+        Assert.Equal("fountain", triggeredEvent.Name);
         Assert.Equal("false", triggeredEvent.Data);
         Assert.Equal(ScheduleEventType.SunsetOffset, triggeredEvent.ScheduleEvent.EventType);
 
@@ -838,10 +838,10 @@ public class ScheduleServiceTests : IDisposable
 
         // Act & Assert - Verify the schedule collection properties
         Assert.True(scheduleCollection.ContainsSunriseOrSunsetEvents);
-        Assert.Equal(2, scheduleCollection.Schedules.Count);
+        Assert.Equal(2, scheduleCollection.Count);
 
-        var lightSchedule = scheduleCollection.Schedules.First(s => s.Name == "light");
-        var fountainSchedule = scheduleCollection.Schedules.First(s => s.Name == "fountain");
+        var lightSchedule = scheduleCollection["light"]!;
+        var fountainSchedule = scheduleCollection["fountain"]!;
 
         Assert.True(lightSchedule.ContainsSunriseOrSunsetEvents);
         Assert.True(fountainSchedule.ContainsSunriseOrSunsetEvents);
