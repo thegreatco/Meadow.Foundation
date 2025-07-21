@@ -145,7 +145,7 @@ public class ScheduleService : IDisposable
     /// <returns>A task that represents the asynchronous evaluation operation.</returns>
     private async Task EvaluateSchedules()
     {
-        if (_scheduleCollection?.Schedules == null)
+        if (_scheduleCollection?.Count == 0)
         {
             return;
         }
@@ -158,7 +158,7 @@ public class ScheduleService : IDisposable
             sunTimes = await _timeProvider.GetUtcSunriseAndSunset();
         }
 
-        foreach (var schedule in _scheduleCollection.Schedules)
+        foreach (var schedule in _scheduleCollection)
         {
             var activeEvents = EvaluateSchedule(schedule, currentTime, sunTimes);
 

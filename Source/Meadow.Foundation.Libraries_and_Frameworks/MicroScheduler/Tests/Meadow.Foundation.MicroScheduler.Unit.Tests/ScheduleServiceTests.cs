@@ -838,10 +838,10 @@ public class ScheduleServiceTests : IDisposable
 
         // Act & Assert - Verify the schedule collection properties
         Assert.True(scheduleCollection.ContainsSunriseOrSunsetEvents);
-        Assert.Equal(2, scheduleCollection.Schedules.Count);
+        Assert.Equal(2, scheduleCollection.Count);
 
-        var lightSchedule = scheduleCollection.Schedules.First(s => s.Name == "light");
-        var fountainSchedule = scheduleCollection.Schedules.First(s => s.Name == "fountain");
+        var lightSchedule = scheduleCollection["light"]!;
+        var fountainSchedule = scheduleCollection["fountain"]!;
 
         Assert.True(lightSchedule.ContainsSunriseOrSunsetEvents);
         Assert.True(fountainSchedule.ContainsSunriseOrSunsetEvents);
