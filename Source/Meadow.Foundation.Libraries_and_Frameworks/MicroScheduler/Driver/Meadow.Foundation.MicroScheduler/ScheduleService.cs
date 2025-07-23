@@ -32,17 +32,26 @@ public class ScheduleService : IDisposable
     }
 
     /// <summary>
-    /// Gets the current time adjusted for any schedule timezone and DSt offsets
+    /// Gets the current time adjusted for any schedule timezone and DST offsets
     /// </summary>
     /// <returns></returns>
     public DateTimeOffset GetAdjustedTime()
     {
         var utc = _timeProvider.GetUtcNow().GetAwaiter().GetResult();
+
+        return GetAdjustedTime(utc);
+    }
+
+    /// <summary>
+    /// Gets the current time adjusted for any schedule timezone and DST offsets
+    /// </summary>
+    /// <returns></returns>
+    public DateTimeOffset GetAdjustedTime(DateTimeOffset utc)
+    {
         if (_scheduleCollection != null)
         {
-            utc = utc.AddHours(_scheduleCollection.Timezone.UtcOffsetHours);
-
-            // TODO: implement DST offset
+            var totalOffset = _scheduleCollection.Timezone.GetTotalUtcOffset(utc.DateTime);
+            utc = utc.AddHours(totalOffset);
         }
 
         return utc;
