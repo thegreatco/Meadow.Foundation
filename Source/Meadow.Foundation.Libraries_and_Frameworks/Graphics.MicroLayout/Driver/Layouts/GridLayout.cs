@@ -41,7 +41,7 @@ public class GridLayout : LayoutBase
 
     private readonly int _rows;
     private readonly int _columns;
-    private readonly Dictionary<IControl, (int row, int col, int rowspan, int colspan, Alignment alignment)> _controlPositions = new();
+    private readonly Dictionary<IControl, (int row, int col, int rowspan, int colspan, Alignment alignment)> _controlPositions = [];
 
     /// <summary>
     /// Gets or sets the padding (or indentation) of all controls from all 4 edges.
@@ -165,11 +165,8 @@ public class GridLayout : LayoutBase
         int cellHeight = (Height - 2 * Padding - (_rows - 1) * RowSpacing) / _rows;
         int totalWidth = cellWidth * colspan + ColumnSpacing * (colspan - 1);
         int totalHeight = cellHeight * rowspan + RowSpacing * (rowspan - 1);
-        int cellLeft = Left + Padding + col * (cellWidth + ColumnSpacing);
-        int cellTop = Top + Padding + row * (cellHeight + RowSpacing);
-
-        control.Width = totalWidth;
-        control.Height = totalHeight;
+        int cellLeft = Padding + col * (cellWidth + ColumnSpacing);
+        int cellTop = Padding + row * (cellHeight + RowSpacing);
 
         switch (alignment)
         {
@@ -199,6 +196,12 @@ public class GridLayout : LayoutBase
                 control.Width = totalWidth;
                 control.Height = totalHeight;
                 break;
+        }
+
+        if (alignment != Alignment.Stretch)
+        {
+            control.Width = totalWidth;
+            control.Height = totalHeight;
         }
     }
 
