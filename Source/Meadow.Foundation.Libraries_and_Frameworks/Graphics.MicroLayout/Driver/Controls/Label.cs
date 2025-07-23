@@ -139,25 +139,22 @@ public class Label : ClickableControl
             graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, BackgroundColor, true);
         }
 
-        var x = HorizontalAlignment switch
+        var xOffset = HorizontalAlignment switch
         {
             HorizontalAlignment.Center => Width / 2,
             HorizontalAlignment.Right => Width,
             _ => 0,
         };
-        var y = VerticalAlignment switch
+        var yOffset = VerticalAlignment switch
         {
             VerticalAlignment.Center => Height / 2,
             VerticalAlignment.Bottom => Height,
             _ => 0,
         };
 
-        x += Parent?.Left ?? 0;
-        y += Parent?.Top ?? 0;
-
         graphics.DrawText(
-            Left + x,
-            Top + y,
+            ScreenLeft + xOffset,
+            ScreenTop + yOffset,
             Text,
             TextColor,
             scaleFactor: _scaleFactor,
