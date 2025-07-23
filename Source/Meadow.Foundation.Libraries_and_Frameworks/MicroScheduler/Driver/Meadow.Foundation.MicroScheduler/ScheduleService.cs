@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Meadow.Foundation.Scheduling;
 
 /// <summary>
-/// Provides a service for managing and executing scheduled events on circuits.
-/// The service evaluates schedules periodically and triggers circuit state changes as needed.
+/// Provides a service for managing and executing scheduled events.
+/// The service evaluates schedules periodically and triggers state change events as needed.
 /// </summary>
 public class ScheduleService : IDisposable
 {
@@ -29,6 +29,23 @@ public class ScheduleService : IDisposable
     public ScheduleService()
         : this(new SystemTimeProvider())
     {
+    }
+
+    /// <summary>
+    /// Gets the current time adjusted for any schedule timezone and DSt offsets
+    /// </summary>
+    /// <returns></returns>
+    public DateTimeOffset GetAdjustedTime()
+    {
+        var utc = _timeProvider.GetUtcNow().GetAwaiter().GetResult();
+        if (_scheduleCollection != null)
+        {
+            utc = utc.AddHours(_scheduleCollection.Timezone.UtcOffsetHours);
+
+            // TODO: implement DST offset
+        }
+
+        return utc;
     }
 
     /// <summary>

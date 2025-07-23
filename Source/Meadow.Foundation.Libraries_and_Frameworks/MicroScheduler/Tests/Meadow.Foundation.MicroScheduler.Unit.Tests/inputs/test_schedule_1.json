@@ -1,4 +1,19 @@
 ﻿{
+  "timezone": {
+    "timezoneName": "America/Chicago",
+    "utcOffsetHours": -6.0,
+    "daylightSavingTime": {
+      "startMonth": 3,
+      "startDay": 0,
+      "startDayOfWeek": "Sunday",
+      "startHour": 2,
+      "endMonth": 11,
+      "endDay": 0,
+      "endDayOfWeek": "Sunday",
+      "endHour": 2,
+      "offsetHours": 1.0
+    }
+  },
   "schedules": [
     {
       "name": "light",

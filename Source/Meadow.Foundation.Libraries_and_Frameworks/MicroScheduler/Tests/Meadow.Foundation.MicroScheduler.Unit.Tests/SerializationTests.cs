@@ -191,7 +191,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Living Room",
+                    "name": "Living Room",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -231,7 +231,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Bedroom",
+                    "name": "Bedroom",
                     "events": [
                         {
                             "eventType": "Weekday",
@@ -271,7 +271,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Garden",
+                    "name": "Garden",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -310,7 +310,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Porch",
+                    "name": "Porch",
                     "events": [
                         {
                             "eventType": "SunsetOffset",
@@ -346,7 +346,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -495,7 +495,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "InvalidType",
@@ -520,7 +520,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "Daily",
@@ -546,7 +546,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -572,7 +572,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "Weekday",
@@ -642,7 +642,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -672,7 +672,7 @@ public class ScheduleSerializerTests
         {
             "schedules": [
                 {
-                    "scheduleName": "Test",
+                    "name": "Test",
                     "events": [
                         {
                             "eventType": "SunriseOffset",
@@ -697,6 +697,440 @@ public class ScheduleSerializerTests
 
     #endregion
 
+    #region Timezone Serialization Tests
+
+    [Fact]
+    public void SerializeScheduleCollection_WithTimezone_IncludesTimezoneInfo()
+    {
+        // Arrange
+        var schedule = new Schedule { Name = "Test Schedule" };
+        var collection = new ScheduleCollection(new[] { schedule })
+        {
+            Timezone = new TimezoneInfo
+            {
+                TimezoneName = "America/Chicago",
+                UtcOffsetHours = -6.0,
+                DaylightSavingTime = new DaylightSavingTimeInfo
+                {
+                    StartMonth = 3,
+                    StartDay = 0,
+                    StartDayOfWeek = DayOfWeek.Sunday,
+                    StartHour = 2,
+                    EndMonth = 11,
+                    EndDay = 0,
+                    EndDayOfWeek = DayOfWeek.Sunday,
+                    EndHour = 2,
+                    OffsetHours = 1.0
+                }
+            }
+        };
+
+        // Act
+        var json = ScheduleSerializer.SerializeScheduleCollection(collection);
+
+        // Assert
+        Assert.NotNull(json);
+        Assert.Contains("\"timezone\"", json);
+        Assert.Contains("\"timezoneName\"", json);
+        Assert.Contains("\"America/Chicago\"", json);
+        Assert.Contains("\"utcOffsetHours\"", json);
+        Assert.Contains("-6", json);
+        Assert.Contains("\"daylightSavingTime\"", json);
+        Assert.Contains("\"startMonth\"", json);
+        Assert.Contains("\"endMonth\"", json);
+        Assert.Contains("\"offsetHours\"", json);
+    }
+
+    [Fact]
+    public void SerializeScheduleCollection_WithTimezoneNoDST_SerializesCorrectly()
+    {
+        // Arrange
+        var schedule = new Schedule { Name = "Test Schedule" };
+        var collection = new ScheduleCollection(new[] { schedule })
+        {
+            Timezone = new TimezoneInfo
+            {
+                TimezoneName = "UTC",
+                UtcOffsetHours = 0.0,
+                DaylightSavingTime = null // No DST
+            }
+        };
+
+        // Act
+        var json = ScheduleSerializer.SerializeScheduleCollection(collection);
+
+        // Assert
+        Assert.NotNull(json);
+        Assert.Contains("\"timezone\"", json);
+        Assert.Contains("\"timezoneName\"", json);
+        Assert.Contains("\"UTC\"", json);
+        Assert.Contains("\"utcOffsetHours\"", json);
+        Assert.Contains("0", json);
+        // Should not contain DST info when null
+        Assert.DoesNotContain("\"daylightSavingTime\"", json);
+    }
+
+    [Fact]
+    public void DeserializeScheduleCollection_WithTimezone_ParsesTimezoneCorrectly()
+    {
+        // Arrange
+        var json = """
+        {
+            "timezone": {
+                "timezoneName": "America/New_York",
+                "utcOffsetHours": -5.0,
+                "daylightSavingTime": {
+                    "startMonth": 3,
+                    "startDay": 0,
+                    "startDayOfWeek": "Sunday",
+                    "startHour": 2,
+                    "endMonth": 11,
+                    "endDay": 0,
+                    "endDayOfWeek": "Sunday",
+                    "endHour": 2,
+                    "offsetHours": 1.0
+                }
+            },
+            "schedules": [
+                {
+                    "name": "Test Schedule",
+                    "events": []
+                }
+            ]
+        }
+        """;
+
+        // Act
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Timezone);
+        Assert.Equal("America/New_York", result.Timezone.TimezoneName);
+        Assert.Equal(-5.0, result.Timezone.UtcOffsetHours);
+        Assert.NotNull(result.Timezone.DaylightSavingTime);
+        Assert.Equal(3, result.Timezone.DaylightSavingTime.StartMonth);
+        Assert.Equal(0, result.Timezone.DaylightSavingTime.StartDay);
+        Assert.Equal(DayOfWeek.Sunday, result.Timezone.DaylightSavingTime.StartDayOfWeek);
+        Assert.Equal(2, result.Timezone.DaylightSavingTime.StartHour);
+        Assert.Equal(11, result.Timezone.DaylightSavingTime.EndMonth);
+        Assert.Equal(0, result.Timezone.DaylightSavingTime.EndDay);
+        Assert.Equal(DayOfWeek.Sunday, result.Timezone.DaylightSavingTime.EndDayOfWeek);
+        Assert.Equal(2, result.Timezone.DaylightSavingTime.EndHour);
+        Assert.Equal(1.0, result.Timezone.DaylightSavingTime.OffsetHours);
+    }
+
+    [Fact]
+    public void DeserializeScheduleCollection_WithTimezoneNoDST_ParsesCorrectly()
+    {
+        // Arrange
+        var json = """
+        {
+            "timezone": {
+                "timezoneName": "UTC",
+                "utcOffsetHours": 0.0
+            },
+            "schedules": [
+                {
+                    "name": "Test Schedule",
+                    "events": []
+                }
+            ]
+        }
+        """;
+
+        // Act
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Timezone);
+        Assert.Equal("UTC", result.Timezone.TimezoneName);
+        Assert.Equal(0.0, result.Timezone.UtcOffsetHours);
+        Assert.Null(result.Timezone.DaylightSavingTime);
+    }
+
+    [Fact]
+    public void DeserializeScheduleCollection_WithoutTimezone_UsesDefaultTimezone()
+    {
+        // Arrange
+        var json = """
+        {
+            "schedules": [
+                {
+                    "name": "Test Schedule",
+                    "events": []
+                }
+            ]
+        }
+        """;
+
+        // Act
+        var result = ScheduleSerializer.DeserializeScheduleCollection(json);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotNull(result.Timezone);
+        Assert.Equal("UTC", result.Timezone.TimezoneName);
+        Assert.Equal(0.0, result.Timezone.UtcOffsetHours);
+        Assert.Null(result.Timezone.DaylightSavingTime);
+    }
+
+    [Fact]
+    public void RoundTrip_TimezoneWithDST_MaintainsAllData()
+    {
+        // Arrange
+        var originalCollection = new ScheduleCollection();
+        originalCollection.Timezone = new TimezoneInfo
+        {
+            TimezoneName = "America/Denver",
+            UtcOffsetHours = -7.0,
+            DaylightSavingTime = new DaylightSavingTimeInfo
+            {
+                StartMonth = 3,
+                StartDay = 0,
+                StartDayOfWeek = DayOfWeek.Sunday,
+                StartHour = 2,
+                EndMonth = 11,
+                EndDay = 0,
+                EndDayOfWeek = DayOfWeek.Sunday,
+                EndHour = 2,
+                OffsetHours = 1.0
+            }
+        };
+
+        var schedule = new Schedule { Name = "Mountain Schedule" };
+        originalCollection.Add(schedule);
+
+        // Act
+        var json = ScheduleSerializer.SerializeScheduleCollection(originalCollection);
+        var deserializedCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
+
+        // Assert
+        Assert.Equal(originalCollection.Timezone.TimezoneName, deserializedCollection.Timezone.TimezoneName);
+        Assert.Equal(originalCollection.Timezone.UtcOffsetHours, deserializedCollection.Timezone.UtcOffsetHours);
+        
+        Assert.NotNull(deserializedCollection.Timezone.DaylightSavingTime);
+        var originalDST = originalCollection.Timezone.DaylightSavingTime!;
+        var deserializedDST = deserializedCollection.Timezone.DaylightSavingTime!;
+        
+        Assert.Equal(originalDST.StartMonth, deserializedDST.StartMonth);
+        Assert.Equal(originalDST.StartDay, deserializedDST.StartDay);
+        Assert.Equal(originalDST.StartDayOfWeek, deserializedDST.StartDayOfWeek);
+        Assert.Equal(originalDST.StartHour, deserializedDST.StartHour);
+        Assert.Equal(originalDST.EndMonth, deserializedDST.EndMonth);
+        Assert.Equal(originalDST.EndDay, deserializedDST.EndDay);
+        Assert.Equal(originalDST.EndDayOfWeek, deserializedDST.EndDayOfWeek);
+        Assert.Equal(originalDST.EndHour, deserializedDST.EndHour);
+        Assert.Equal(originalDST.OffsetHours, deserializedDST.OffsetHours);
+    }
+
+    [Fact]
+    public void RoundTrip_TimezoneWithoutDST_MaintainsAllData()
+    {
+        // Arrange
+        var originalCollection = new ScheduleCollection();
+        originalCollection.Timezone = new TimezoneInfo
+        {
+            TimezoneName = "Asia/Tokyo",
+            UtcOffsetHours = 9.0,
+            DaylightSavingTime = null
+        };
+
+        var schedule = new Schedule { Name = "Tokyo Schedule" };
+        originalCollection.Add(schedule);
+
+        // Act
+        var json = ScheduleSerializer.SerializeScheduleCollection(originalCollection);
+        var deserializedCollection = ScheduleSerializer.DeserializeScheduleCollection(json);
+
+        // Assert
+        Assert.Equal(originalCollection.Timezone.TimezoneName, deserializedCollection.Timezone.TimezoneName);
+        Assert.Equal(originalCollection.Timezone.UtcOffsetHours, deserializedCollection.Timezone.UtcOffsetHours);
+        Assert.Null(deserializedCollection.Timezone.DaylightSavingTime);
+    }
+
+    #endregion
+
+    #region Timezone DST Functionality Tests
+
+    [Fact]
+    public void TimezoneInfo_DST_CalculatesCorrectly()
+    {
+        // Arrange - Test timezone with DST
+        var timezone = new TimezoneInfo
+        {
+            TimezoneName = "America/Chicago",
+            UtcOffsetHours = -6.0,
+            DaylightSavingTime = new DaylightSavingTimeInfo
+            {
+                StartMonth = 3,     // March
+                StartDay = 0,       // Last occurrence  
+                StartDayOfWeek = DayOfWeek.Sunday,
+                StartHour = 2,      // 2 AM
+                EndMonth = 11,      // November
+                EndDay = 0,         // Last occurrence
+                EndDayOfWeek = DayOfWeek.Sunday,
+                EndHour = 2,        // 2 AM
+                OffsetHours = 1.0   // +1 hour during DST
+            }
+        };
+
+        // Test summer time (July - should be DST active)
+        var summerDate = new DateTime(2024, 7, 15, 12, 0, 0, DateTimeKind.Utc);
+        var isDSTActiveSummer = timezone.IsDaylightSavingTimeActive(summerDate);
+        var totalOffsetSummer = timezone.GetTotalUtcOffset(summerDate);
+
+        // Test winter time (January - should not be DST active)
+        var winterDate = new DateTime(2024, 1, 15, 12, 0, 0, DateTimeKind.Utc);
+        var isDSTActiveWinter = timezone.IsDaylightSavingTimeActive(winterDate);
+        var totalOffsetWinter = timezone.GetTotalUtcOffset(winterDate);
+
+        // Assert
+        Assert.True(isDSTActiveSummer, "DST should be active in July");
+        Assert.Equal(-5.0, totalOffsetSummer); // -6 + 1 = -5
+
+        Assert.False(isDSTActiveWinter, "DST should not be active in January");
+        Assert.Equal(-6.0, totalOffsetWinter); // -6 + 0 = -6
+    }
+
+    [Fact]
+    public void TimezoneInfo_WithoutDST_CalculatesCorrectly()
+    {
+        // Arrange - Test timezone without DST
+        var timezone = new TimezoneInfo
+        {
+            TimezoneName = "Asia/Tokyo",
+            UtcOffsetHours = 9.0,
+            DaylightSavingTime = null // No DST
+        };
+
+        // Test any date
+        var testDate = new DateTime(2024, 7, 15, 12, 0, 0, DateTimeKind.Utc);
+        var isDSTActive = timezone.IsDaylightSavingTimeActive(testDate);
+        var totalOffset = timezone.GetTotalUtcOffset(testDate);
+
+        // Assert
+        Assert.False(isDSTActive, "DST should never be active when not configured");
+        Assert.Equal(9.0, totalOffset); // Always +9
+    }
+
+    [Fact]
+    public void TimezoneInfo_ConvertUtcToLocal_WorksCorrectly()
+    {
+        // Arrange
+        var timezone = new TimezoneInfo
+        {
+            TimezoneName = "America/New_York",
+            UtcOffsetHours = -5.0,
+            DaylightSavingTime = new DaylightSavingTimeInfo
+            {
+                StartMonth = 3,
+                StartDay = 0,
+                StartDayOfWeek = DayOfWeek.Sunday,
+                StartHour = 2,
+                EndMonth = 11,
+                EndDay = 0,
+                EndDayOfWeek = DayOfWeek.Sunday,
+                EndHour = 2,
+                OffsetHours = 1.0
+            }
+        };
+
+        // Test summer conversion (DST active)
+        var utcSummer = new DateTime(2024, 7, 15, 16, 30, 0, DateTimeKind.Utc); // 4:30 PM UTC
+        var localSummer = timezone.ConvertUtcToLocal(utcSummer);
+
+        // Test winter conversion (DST not active)
+        var utcWinter = new DateTime(2024, 1, 15, 16, 30, 0, DateTimeKind.Utc); // 4:30 PM UTC
+        var localWinter = timezone.ConvertUtcToLocal(utcWinter);
+
+        // Assert
+        // Summer: UTC 16:30 -> EDT 12:30 (UTC-4 during DST)
+        Assert.Equal(new DateTime(2024, 7, 15, 12, 30, 0), localSummer);
+        
+        // Winter: UTC 16:30 -> EST 11:30 (UTC-5 during standard time)
+        Assert.Equal(new DateTime(2024, 1, 15, 11, 30, 0), localWinter);
+    }
+
+    [Fact]
+    public void TimezoneInfo_ConvertLocalToUtc_WorksCorrectly()
+    {
+        // Arrange
+        var timezone = new TimezoneInfo
+        {
+            TimezoneName = "America/Los_Angeles",
+            UtcOffsetHours = -8.0,
+            DaylightSavingTime = new DaylightSavingTimeInfo
+            {
+                StartMonth = 3,
+                StartDay = 0,
+                StartDayOfWeek = DayOfWeek.Sunday,
+                StartHour = 2,
+                EndMonth = 11,
+                EndDay = 0,
+                EndDayOfWeek = DayOfWeek.Sunday,
+                EndHour = 2,
+                OffsetHours = 1.0
+            }
+        };
+
+        // Test summer conversion (DST active)
+        var localSummer = new DateTime(2024, 7, 15, 9, 0, 0); // 9:00 AM PDT
+        var utcSummer = timezone.ConvertLocalToUtc(localSummer);
+
+        // Test winter conversion (DST not active)
+        var localWinter = new DateTime(2024, 1, 15, 9, 0, 0); // 9:00 AM PST
+        var utcWinter = timezone.ConvertLocalToUtc(localWinter);
+
+        // Assert
+        // Summer: PDT 9:00 -> UTC 16:00 (PDT is UTC-7)
+        Assert.Equal(new DateTime(2024, 7, 15, 16, 0, 0, DateTimeKind.Utc), utcSummer);
+        
+        // Winter: PST 9:00 -> UTC 17:00 (PST is UTC-8)
+        Assert.Equal(new DateTime(2024, 1, 15, 17, 0, 0, DateTimeKind.Utc), utcWinter);
+    }
+
+    [Fact]
+    public void SerializeScheduleCollection_PreservesTimezoneInJson()
+    {
+        // Arrange
+        var collection = new ScheduleCollection();
+        collection.Timezone = new TimezoneInfo
+        {
+            TimezoneName = "America/Chicago",
+            UtcOffsetHours = -6.0,
+            DaylightSavingTime = new DaylightSavingTimeInfo
+            {
+                StartMonth = 3,
+                StartDay = 0,
+                StartDayOfWeek = DayOfWeek.Sunday,
+                StartHour = 2,
+                EndMonth = 11,
+                EndDay = 0,
+                EndDayOfWeek = DayOfWeek.Sunday,
+                EndHour = 2,
+                OffsetHours = 1.0
+            }
+        };
+
+        // Act
+        var json = ScheduleSerializer.SerializeScheduleCollection(collection);
+
+        // Assert - Verify the JSON structure contains timezone information
+        Assert.Contains("\"timezone\"", json);
+        Assert.Contains("\"timezoneName\": \"America/Chicago\"", json);
+        Assert.Contains("\"utcOffsetHours\": -6", json);
+        Assert.Contains("\"daylightSavingTime\"", json);
+        Assert.Contains("\"startMonth\": 3", json);
+        Assert.Contains("\"endMonth\": 11", json);
+        Assert.Contains("\"offsetHours\": 1", json);
+        Assert.Contains("\"startDayOfWeek\": \"Sunday\"", json);
+        Assert.Contains("\"endDayOfWeek\": \"Sunday\"", json);
+    }
+
+    #endregion
+
     #region Integration Tests with Real Data
 
     [Fact]
@@ -714,6 +1148,15 @@ public class ScheduleSerializerTests
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
+
+        // Verify Timezone Information
+        Assert.NotNull(result.Timezone);
+        Assert.Equal("America/Chicago", result.Timezone.TimezoneName);
+        Assert.Equal(-6.0, result.Timezone.UtcOffsetHours);
+        Assert.NotNull(result.Timezone.DaylightSavingTime);
+        Assert.Equal(3, result.Timezone.DaylightSavingTime.StartMonth);
+        Assert.Equal(11, result.Timezone.DaylightSavingTime.EndMonth);
+        Assert.Equal(1.0, result.Timezone.DaylightSavingTime.OffsetHours);
 
         // Verify Light Schedule
         var lightSchedule = result["light"]!;
@@ -820,6 +1263,23 @@ public class ScheduleSerializerTests
 
         // Assert - Verify the data is identical after round trip
         Assert.Equal(scheduleCollection.Count, roundTripCollection.Count);
+
+        // Verify timezone data is preserved
+        Assert.Equal(scheduleCollection.Timezone.TimezoneName, roundTripCollection.Timezone.TimezoneName);
+        Assert.Equal(scheduleCollection.Timezone.UtcOffsetHours, roundTripCollection.Timezone.UtcOffsetHours);
+        if (scheduleCollection.Timezone.DaylightSavingTime != null)
+        {
+            Assert.NotNull(roundTripCollection.Timezone.DaylightSavingTime);
+            var originalDST = scheduleCollection.Timezone.DaylightSavingTime;
+            var roundTripDST = roundTripCollection.Timezone.DaylightSavingTime;
+            Assert.Equal(originalDST.StartMonth, roundTripDST.StartMonth);
+            Assert.Equal(originalDST.EndMonth, roundTripDST.EndMonth);
+            Assert.Equal(originalDST.OffsetHours, roundTripDST.OffsetHours);
+        }
+        else
+        {
+            Assert.Null(roundTripCollection.Timezone.DaylightSavingTime);
+        }
 
         for (int i = 0; i < scheduleCollection.Count; i++)
         {

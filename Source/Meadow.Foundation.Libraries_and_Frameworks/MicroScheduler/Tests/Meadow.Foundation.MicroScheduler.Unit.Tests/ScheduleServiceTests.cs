@@ -840,6 +840,12 @@ public class ScheduleServiceTests : IDisposable
         Assert.True(scheduleCollection.ContainsSunriseOrSunsetEvents);
         Assert.Equal(2, scheduleCollection.Count);
 
+        // Verify timezone information
+        Assert.NotNull(scheduleCollection.Timezone);
+        Assert.Equal("America/Chicago", scheduleCollection.Timezone.TimezoneName);
+        Assert.Equal(-6.0, scheduleCollection.Timezone.UtcOffsetHours);
+        Assert.NotNull(scheduleCollection.Timezone.DaylightSavingTime);
+
         var lightSchedule = scheduleCollection["light"]!;
         var fountainSchedule = scheduleCollection["fountain"]!;
 
