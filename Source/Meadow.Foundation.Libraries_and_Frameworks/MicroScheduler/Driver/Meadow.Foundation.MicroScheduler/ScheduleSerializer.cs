@@ -54,7 +54,7 @@ public static class ScheduleSerializer
     {
         return new SerializableSchedule
         {
-            circuitName = schedule.Name,
+            name = schedule.Name,
             events = schedule.Events.Select(ConvertEventToSerializable).ToArray()
         };
     }
@@ -68,7 +68,7 @@ public static class ScheduleSerializer
     {
         return new Schedule
         {
-            Name = serializable.circuitName,
+            Name = serializable.name,
             Events = serializable.events?.Select(ConvertEventFromSerializable).ToList() ?? new List<IScheduleEvent>()
         };
     }
@@ -234,9 +234,9 @@ internal class SerializableMasterSchedule
 internal class SerializableSchedule
 {
     /// <summary>
-    /// Gets or sets the circuit name.
+    /// Gets or sets the schedule name.
     /// </summary>
-    public string circuitName { get; set; }
+    public string name { get; set; }
 
     /// <summary>
     /// Gets or sets the array of serializable schedule events.

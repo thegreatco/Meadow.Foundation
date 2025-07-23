@@ -22,6 +22,8 @@ public partial class Spm1x : ISpm1x
     /// </summary>
     private readonly ModbusRtuClient _modbusClient;
 
+    private readonly int _currentWraps;
+
     /// <summary>
     /// Gets the Modbus address of the sensor device
     /// </summary>
@@ -38,9 +40,10 @@ public partial class Spm1x : ISpm1x
     /// </summary>
     /// <param name="modbusClient">The Modbus RTU client instance used for communication</param>
     /// <param name="modbusAddress">The Modbus slave address of the sensor (typically 1-247)</param>
+    /// <param name="currentWraps">The number of wire wraps in the current sensor</param>
     /// <exception cref="ArgumentNullException">Thrown when modbusClient is null</exception>
     /// <exception cref="ArgumentOutOfRangeException">Thrown when modbusAddress is outside valid range (1-247)</exception>
-    public Spm1x(ModbusRtuClient modbusClient, byte modbusAddress)
+    public Spm1x(ModbusRtuClient modbusClient, byte modbusAddress, int currentWraps = 1)
     {
 
         if (modbusAddress < 1 || modbusAddress > 254)
@@ -50,6 +53,7 @@ public partial class Spm1x : ISpm1x
 
         _modbusClient = modbusClient;
         ModbusAddress = modbusAddress;
+        _currentWraps = currentWraps;
     }
 
     /// <summary>
@@ -177,7 +181,7 @@ public partial class Spm1x : ISpm1x
         {
             throw new IOException("Failed to read current from sensor. No registers returned.");
         }
-        return new Current(registers[0] / 100d, Units.Current.UnitType.Amps);
+        return new Current(registers[0] / (100d * _currentWraps), Units.Current.UnitType.Amps);
     }
 
     /// <summary>
