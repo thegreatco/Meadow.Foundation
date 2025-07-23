@@ -18,20 +18,34 @@ public partial class C4001
         return GetStatusI2c();
     }
 
-    internal float GetTargetSpeed()
+    public float GetTargetSpeed()
     {
         return _buffer.Speed;
     }
 
-    internal float GetTargetRange()
+    public float GetTargetRange()
     {
         return _buffer.Range;
     }
 
-    internal uint GetTargetEnergy()
+    public uint GetTargetEnergy()
     {
         return _buffer.Energy;
     }
+
+    public bool IsMotionDetected()
+    {
+        if (communication == CommunicationType.I2C)
+        {
+            return IsMotionDetectedI2c();
+        }
+        else
+        {
+            return IsMotionDetectedSerial();
+        }
+    }
+
+
 
 
 }

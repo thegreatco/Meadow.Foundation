@@ -29,10 +29,118 @@ public partial class C4001
     {
         SensorStatus status = new SensorStatus();
 
-
+        //TODO
 
         return status;
     }
+
+    internal bool IsMotionDetectedSerial()
+    {
+        //TODO
+        return false;
+    }
+
+    internal void SetSensorSerial(SensorCommand command)
+    {
+        //TODO
+    }
+
+    internal void SetSensorModeSerial(SensorMode mode)
+    {
+        //TODO
+    }
+
+    internal bool SetTrigSensitivitySerial(byte sensitivity)
+    {
+        //TODO
+        return false;
+    }
+
+    internal byte GetTrigSensitivitySerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal bool SetKeepSensitivitySerial(byte sensitivity)
+    {
+        //TODO
+        return false;
+    }
+
+
+    internal byte GetKeepSensitivitySerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal bool SetDelaySerial(byte delay)
+    {
+        //TODO
+        return false;
+    }
+
+    internal byte GetTrigDelaySerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal ushort GetKeepTimeoutSerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal bool SetDetectionRangeSerial(ushort range)
+    {
+        //TODO
+        return false;
+    }
+
+    internal ushort GetTrigRangeSerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal ushort GetMaxRangeSerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal ushort GetMinRangeSerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal byte GetTargetNumberSerial()
+    {
+        //TODO
+        return 0;
+    }
+
+    internal bool SetDetectThresholdSerial(ushort min, ushort max, ushort threshold)
+    {
+        //TODO
+        return false;
+    }
+
+    internal bool SetIoPolaritySerial(byte polarity)
+    {
+        //TODO
+        return false;
+    }
+
+    internal bool SetPwmI2cSerial(byte pwm1, byte pwm2, byte timer)
+    {
+        //TODO
+        return false;
+    }
+
 
     private void SerialMessagePort_MessageReceived(object sender, SerialMessageData e)
     {
