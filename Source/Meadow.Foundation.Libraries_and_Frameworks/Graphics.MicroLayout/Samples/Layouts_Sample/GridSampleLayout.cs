@@ -41,6 +41,6 @@ public class GridSampleLayout : StackLayout
             }
         }
 
-        this.Controls.Add(title, testLabel1, testLabel2, grid);
+        Controls.Add(title, testLabel1, testLabel2, grid);
     }
 }
