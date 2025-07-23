@@ -41,11 +41,12 @@ public class Schedule
     }
 
     /// <summary>
-    /// Gets the currently active event for a specific date/time.
+    /// Gets the most recent event that has fired before or at the specified date/time.
+    /// This determines the current state of the schedule at the given time.
     /// </summary>
-    /// <param name="currentTime">The date/time to check for active events.</param>
+    /// <param name="currentTime">The date/time to check for the most recent event.</param>
     /// <param name="sunTimes">Optional sunrise and sunset times for the current day, required if the schedule contains sunrise/sunset offset events.</param>
-    /// <returns>The highest priority active event, or null if no events are active.</returns>
+    /// <returns>The most recent event that has fired, or null if no events have fired yet.</returns>
     public IScheduleEvent? GetActiveEvent(DateTimeOffset currentTime, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes = null)
     {
         if (Events == null || !Events.Any())
@@ -58,30 +59,31 @@ public class Schedule
             throw new ArgumentException("Sunrise/sunset times are required when the schedule contains sunrise or sunset offset events.", nameof(sunTimes));
         }
 
-        var activeEvents = new List<(IScheduleEvent Event, int Priority)>();
+        var mostRecentEvent = (Event: (IScheduleEvent?)null, TriggerTime: DateTimeOffset.MinValue);
+        var currentDate = currentTime.Date;
+        var previousDate = currentDate.AddDays(-1);
 
-        foreach (var scheduleEvent in Events)
+        // Check events from current day and previous day to find most recent
+        var datesToCheck = new[] { previousDate, currentDate };
+
+        foreach (var dateToCheck in datesToCheck)
         {
-            if (scheduleEvent.IsDisabled)
-                continue;
-
-            if (IsEventActive(scheduleEvent, currentTime, sunTimes))
+            foreach (var scheduleEvent in Events)
             {
-                var priority = GetEventPriority(scheduleEvent);
-                activeEvents.Add((scheduleEvent, priority));
+                if (scheduleEvent.IsDisabled)
+                    continue;
+
+                var triggerTime = GetEventTriggerTimeForDate(scheduleEvent, dateToCheck, sunTimes);
+
+                // Only consider events that have already occurred (triggerTime <= currentTime)
+                if (triggerTime.HasValue && triggerTime <= currentTime && triggerTime > mostRecentEvent.TriggerTime)
+                {
+                    mostRecentEvent = (scheduleEvent, triggerTime.Value);
+                }
             }
         }
 
-        if (!activeEvents.Any())
-        {
-            return null;
-        }
-
-        // Return the highest priority event (lowest number = highest priority)
-        return activeEvents
-            .OrderBy(e => e.Priority)
-            .ThenBy(e => GetEventSpecificity(e.Event))
-            .First().Event;
+        return mostRecentEvent.Event;
     }
 
     /// <summary>
@@ -129,48 +131,22 @@ public class Schedule
             .First();
     }
 
-    private bool IsEventActive(IScheduleEvent scheduleEvent, DateTimeOffset currentTime, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes)
-    {
-        var currentTimeOfDay = currentTime.TimeOfDay;
-        var currentDayOfWeek = currentTime.DayOfWeek;
-
-        return scheduleEvent switch
-        {
-            DailyScheduleEvent daily =>
-                IsTimeMatch(daily.EventTime.TimeOfDay, currentTimeOfDay),
-
-            WeekdayScheduleEvent weekday =>
-                weekday.DaysOfWeek.Contains(currentDayOfWeek) &&
-                IsTimeMatch(weekday.EventTime.TimeOfDay, currentTimeOfDay),
-
-            SunriseOffsetScheduleEvent sunrise =>
-                (sunrise.DaysOfWeek == null || sunrise.DaysOfWeek.Contains(currentDayOfWeek)) &&
-                IsTimeMatch(sunTimes!.Value.Sunrise.Add(sunrise.Offset).TimeOfDay, currentTimeOfDay),
-
-            SunsetOffsetScheduleEvent sunset =>
-                (sunset.DaysOfWeek == null || sunset.DaysOfWeek.Contains(currentDayOfWeek)) &&
-                IsTimeMatch(sunTimes!.Value.Sunset.Add(sunset.Offset).TimeOfDay, currentTimeOfDay),
-
-            _ => false
-        };
-    }
-
     private DateTimeOffset? GetNextTriggerTime(IScheduleEvent scheduleEvent, DateTimeOffset currentTime, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes, DateTimeOffset searchEndTime)
     {
         var checkDate = currentTime.Date;
-        
+
         while (checkDate <= searchEndTime.Date)
         {
             var triggerTime = GetEventTriggerTime(scheduleEvent, checkDate, sunTimes);
-            
+
             if (triggerTime.HasValue && triggerTime > currentTime)
             {
                 return triggerTime;
             }
-            
+
             checkDate = checkDate.AddDays(1);
         }
-        
+
         return null;
     }
 
@@ -184,7 +160,7 @@ public class Schedule
                 new DateTimeOffset(date.Add(daily.EventTime.TimeOfDay), TimeSpan.Zero),
 
             WeekdayScheduleEvent weekday =>
-                weekday.DaysOfWeek.Contains(dayOfWeek) 
+                weekday.DaysOfWeek.Contains(dayOfWeek)
                     ? new DateTimeOffset(date.Add(weekday.EventTime.TimeOfDay), TimeSpan.Zero)
                     : null,
 
@@ -200,6 +176,34 @@ public class Schedule
                     ? sunTimes!.Value.Sunset.Date == date
                         ? sunTimes.Value.Sunset.Add(sunset.Offset)
                         : null
+                    : null,
+
+            _ => null
+        };
+    }
+
+    private DateTimeOffset? GetEventTriggerTimeForDate(IScheduleEvent scheduleEvent, DateTime date, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes)
+    {
+        var dayOfWeek = date.DayOfWeek;
+
+        return scheduleEvent switch
+        {
+            DailyScheduleEvent daily =>
+                new DateTimeOffset(date.Add(daily.EventTime.TimeOfDay), TimeSpan.Zero),
+
+            WeekdayScheduleEvent weekday =>
+                weekday.DaysOfWeek.Contains(dayOfWeek)
+                    ? new DateTimeOffset(date.Add(weekday.EventTime.TimeOfDay), TimeSpan.Zero)
+                    : null,
+
+            SunriseOffsetScheduleEvent sunrise =>
+                (sunrise.DaysOfWeek == null || sunrise.DaysOfWeek.Contains(dayOfWeek))
+                    ? new DateTimeOffset(date, TimeSpan.Zero).Add(sunTimes!.Value.Sunrise.TimeOfDay).Add(sunrise.Offset)
+                    : null,
+
+            SunsetOffsetScheduleEvent sunset =>
+                (sunset.DaysOfWeek == null || sunset.DaysOfWeek.Contains(dayOfWeek))
+                    ? new DateTimeOffset(date, TimeSpan.Zero).Add(sunTimes!.Value.Sunset.TimeOfDay).Add(sunset.Offset)
                     : null,
 
             _ => null
