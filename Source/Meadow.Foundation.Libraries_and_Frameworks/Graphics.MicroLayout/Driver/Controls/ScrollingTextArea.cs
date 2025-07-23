@@ -38,7 +38,7 @@ public class ScrollingTextArea : LayoutBase
 
         BackgroundColor = Color.Black;
         DefaultRowColor = Color.LightGray;
-        RowCount = this.Height / _rowHeight;
+        RowCount = Height / _rowHeight;
 
         _labels = new Label[RowCount];
 
@@ -49,43 +49,33 @@ public class ScrollingTextArea : LayoutBase
     public override IControl? Parent
     {
         get => base.Parent;
-        set
-        {
-            base.Parent = value;
-
-            var x = value?.Left ?? 0;
-            var y = value?.Top ?? 0;
-
-            for (var i = 0; i < _labels.Length; i++)
-            {
-                _labels[i].Left = x;
-                _labels[i].Top = y;
-
-                y += _rowHeight;
-            }
-        }
+        set => base.Parent = value;
     }
 
     private void CreateRowLabels(int rowCount)
     {
-        var x = Parent?.Left ?? 0;
-        var y = Parent?.Top ?? 0;
+        var currentRelativeY = 0;
 
         for (var i = 0; i < rowCount; i++)
         {
-            _labels[i] =
-                new Label(x, Top + y, this.Width, _rowHeight)
-                {
-                    Font = _font,
-                    TextColor = DefaultRowColor,
-                    BackgroundColor = this.BackgroundColor ?? Color.Transparent,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Text = string.Empty
-                };
+            _labels[i] = new Label(
+                0,
+                currentRelativeY,
+                Width,
+                _rowHeight)
+            {
+                Font = _font,
+                TextColor = DefaultRowColor,
+                BackgroundColor = BackgroundColor ?? Color.Transparent,
+                VerticalAlignment = VerticalAlignment.Center,
+                Text = string.Empty
+            };
+
+            _labels[i].Parent = this;
 
             Controls.Add(_labels[i]);
 
-            y += _rowHeight;
+            currentRelativeY += _rowHeight;
         }
     }
 
@@ -108,8 +98,6 @@ public class ScrollingTextArea : LayoutBase
     /// <param name="color">The (optional) color for the row</param>
     public void Add(string message, Color? color = null)
     {
-        //_screen.BeginUpdate();
-
         while (_currentRow >= RowCount)
         {
             for (var r = 0; r < RowCount - 1; r++)
@@ -136,13 +124,27 @@ public class ScrollingTextArea : LayoutBase
     }
 
     /// <inheritdoc/>
-    protected override void OnDraw(MicroGraphics graphics)
-    {
-    }
-
-    /// <inheritdoc/>
     internal override void PerformLayout()
     {
-        // nop
+        var currentRelativeY = 0;
+
+        foreach (var label in _labels)
+        {
+            if (label == null)
+            {
+                continue;
+            }
+
+            label.Left = 0;
+            label.Top = currentRelativeY;
+            label.Width = Width;
+            label.Height = _rowHeight;
+            currentRelativeY += _rowHeight;
+        }
+    }
+
+    protected override void OnDraw(MicroGraphics graphics)
+    {
+        base.OnDraw(graphics);
     }
 }
