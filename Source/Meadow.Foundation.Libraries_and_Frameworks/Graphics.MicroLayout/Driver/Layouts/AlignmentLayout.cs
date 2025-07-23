@@ -54,7 +54,18 @@ public class AlignmentLayout : LayoutBase
     /// <summary>
     /// Gets or sets the padding around the controls in the layout.
     /// </summary>
-    public int Padding { get; set; } = 2;
+    public int Padding
+    {
+        get => _padding;
+        set
+        {
+            if (_padding == value) { return; }
+            _padding = value;
+            Invalidate();
+        }
+    }
+
+    private int _padding = 2;
 
     private readonly Dictionary<IControl, DockPosition> _dockPositions = new();
 
@@ -67,7 +78,15 @@ public class AlignmentLayout : LayoutBase
     /// <param name="height">The height of the layout.</param>
     public AlignmentLayout(int left, int top, int width, int height)
         : base(left, top, width, height)
-    { }
+    {
+        Controls.ControlAdded += OnControlsChanged;
+        Controls.ControlRemoved += OnControlsChanged;
+    }
+
+    private void OnControlsChanged(object sender, IControl e)
+    {
+        Invalidate();
+    }
 
     /// <summary>
     /// Adds a control to the layout at the specified docking position.
@@ -76,8 +95,8 @@ public class AlignmentLayout : LayoutBase
     /// <param name="position">The docking position for the control.</param>
     public void Add(IControl control, DockPosition position)
     {
-        Controls.Add(control);
         _dockPositions[control] = position;
+        Controls.Add(control);
     }
 
     /// <summary>
@@ -95,50 +114,67 @@ public class AlignmentLayout : LayoutBase
 
     /// <summary>
     /// Arranges the layout of the specified control based on its docking position.
+    /// Note: This layout does not "consume" space like a traditional DockPanel.
+    /// Multiple controls at the same position will overlap.
     /// </summary>
     /// <param name="control">The control to arrange.</param>
     /// <param name="position">The docking position of the control.</param>
+    /// <summary>
     private void SetControlPosition(IControl control, DockPosition position)
     {
+        int contentX = Padding;
+        int contentY = Padding;
+        int contentWidth = Width - (2 * Padding);
+        int contentHeight = Height - (2 * Padding);
+
+        if (contentWidth < 0) contentWidth = 0;
+        if (contentHeight < 0) contentHeight = 0;
+
+        int controlX = 0;
+        int controlY = 0;
+
         switch (position)
         {
             case DockPosition.Top:
-                control.Left = base.Width / 2 - control.Width / 2;
-                control.Top = Padding;
+                controlX = contentX + (contentWidth / 2) - (control.Width / 2);
+                controlY = contentY;
                 break;
             case DockPosition.Bottom:
-                control.Left = Width / 2 - control.Width / 2;
-                control.Top = Height - Padding - control.Height;
+                controlX = contentX + (contentWidth / 2) - (control.Width / 2);
+                controlY = contentY + contentHeight - control.Height;
                 break;
             case DockPosition.Left:
-                control.Left = Padding;
-                control.Top = Height / 2 - control.Height / 2;
+                controlX = contentX;
+                controlY = contentY + (contentHeight / 2) - (control.Height / 2);
                 break;
             case DockPosition.Right:
-                control.Left = Width - control.Width - Padding;
-                control.Top = Height / 2 - control.Height / 2;
+                controlX = contentX + contentWidth - control.Width;
+                controlY = contentY + (contentHeight / 2) - (control.Height / 2);
                 break;
             case DockPosition.TopLeft:
-                control.Left = Padding;
-                control.Top = Padding;
+                controlX = contentX;
+                controlY = contentY;
                 break;
             case DockPosition.TopRight:
-                control.Left = Width - control.Width - Padding;
-                control.Top = Padding;
+                controlX = contentX + contentWidth - control.Width;
+                controlY = contentY;
                 break;
             case DockPosition.BottomLeft:
-                control.Left = Padding;
-                control.Top = Height - control.Height - Padding;
+                controlX = contentX;
+                controlY = contentY + contentHeight - control.Height;
                 break;
             case DockPosition.BottomRight:
-                control.Left = Width - control.Width - Padding;
-                control.Top = Height - control.Height - Padding;
+                controlX = contentX + contentWidth - control.Width;
+                controlY = contentY + contentHeight - control.Height;
                 break;
             case DockPosition.Center:
-                control.Left = Width / 2 - control.Width / 2;
-                control.Top = Height / 2 - control.Height / 2;
+                controlX = contentX + (contentWidth / 2) - (control.Width / 2);
+                controlY = contentY + (contentHeight / 2) - (control.Height / 2);
                 break;
         }
+
+        control.Left = controlX;
+        control.Top = controlY;
     }
 
     /// <InheritDoc/>
@@ -146,7 +182,7 @@ public class AlignmentLayout : LayoutBase
     {
         lock (Controls.SyncRoot)
         {
-            foreach (var control in Controls) // Iterate through the actual children
+            foreach (var control in Controls)
             {
                 if (_dockPositions.TryGetValue(control, out DockPosition position))
                 {
