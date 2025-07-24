@@ -60,7 +60,7 @@ public class Schedule
         }
 
         var mostRecentEvent = (Event: (IScheduleEvent?)null, TriggerTime: DateTimeOffset.MinValue);
-        var currentDate = currentTime.Date;
+        var currentDate = new DateTimeOffset(currentTime.Date, TimeSpan.Zero);
         var previousDate = currentDate.AddDays(-1);
 
         // Check events from current day and previous day to find most recent
@@ -133,9 +133,9 @@ public class Schedule
 
     private DateTimeOffset? GetNextTriggerTime(IScheduleEvent scheduleEvent, DateTimeOffset currentTime, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes, DateTimeOffset searchEndTime)
     {
-        var checkDate = currentTime.Date;
+        var checkDate = new DateTimeOffset(currentTime.Date, TimeSpan.Zero);
 
-        while (checkDate <= searchEndTime.Date)
+        while (checkDate.Date <= searchEndTime.Date)
         {
             var triggerTime = GetEventTriggerTime(scheduleEvent, checkDate, sunTimes);
 
@@ -150,30 +150,30 @@ public class Schedule
         return null;
     }
 
-    private DateTimeOffset? GetEventTriggerTime(IScheduleEvent scheduleEvent, DateTime date, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes)
+    private DateTimeOffset? GetEventTriggerTime(IScheduleEvent scheduleEvent, DateTimeOffset date, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes)
     {
         var dayOfWeek = date.DayOfWeek;
 
         return scheduleEvent switch
         {
             DailyScheduleEvent daily =>
-                new DateTimeOffset(date.Add(daily.EventTime.TimeOfDay), TimeSpan.Zero),
+                new DateTimeOffset(date.Date.Add(daily.EventTime.TimeOfDay), TimeSpan.Zero),
 
             WeekdayScheduleEvent weekday =>
                 weekday.DaysOfWeek.Contains(dayOfWeek)
-                    ? new DateTimeOffset(date.Add(weekday.EventTime.TimeOfDay), TimeSpan.Zero)
+                    ? new DateTimeOffset(date.Date.Add(weekday.EventTime.TimeOfDay), TimeSpan.Zero)
                     : null,
 
             SunriseOffsetScheduleEvent sunrise =>
                 (sunrise.DaysOfWeek == null || sunrise.DaysOfWeek.Contains(dayOfWeek))
-                    ? sunTimes!.Value.Sunrise.Date == date
+                    ? sunTimes!.Value.Sunrise.Date == date.Date
                         ? sunTimes.Value.Sunrise.Add(sunrise.Offset)
                         : null
                     : null,
 
             SunsetOffsetScheduleEvent sunset =>
                 (sunset.DaysOfWeek == null || sunset.DaysOfWeek.Contains(dayOfWeek))
-                    ? sunTimes!.Value.Sunset.Date == date
+                    ? sunTimes!.Value.Sunset.Date == date.Date
                         ? sunTimes.Value.Sunset.Add(sunset.Offset)
                         : null
                     : null,
@@ -182,28 +182,28 @@ public class Schedule
         };
     }
 
-    private DateTimeOffset? GetEventTriggerTimeForDate(IScheduleEvent scheduleEvent, DateTime date, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes)
+    private DateTimeOffset? GetEventTriggerTimeForDate(IScheduleEvent scheduleEvent, DateTimeOffset date, (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes)
     {
         var dayOfWeek = date.DayOfWeek;
 
         return scheduleEvent switch
         {
             DailyScheduleEvent daily =>
-                new DateTimeOffset(date.Add(daily.EventTime.TimeOfDay), TimeSpan.Zero),
+                new DateTimeOffset(date.Date.Add(daily.EventTime.TimeOfDay), TimeSpan.Zero),
 
             WeekdayScheduleEvent weekday =>
                 weekday.DaysOfWeek.Contains(dayOfWeek)
-                    ? new DateTimeOffset(date.Add(weekday.EventTime.TimeOfDay), TimeSpan.Zero)
+                    ? new DateTimeOffset(date.Date.Add(weekday.EventTime.TimeOfDay), TimeSpan.Zero)
                     : null,
 
             SunriseOffsetScheduleEvent sunrise =>
                 (sunrise.DaysOfWeek == null || sunrise.DaysOfWeek.Contains(dayOfWeek))
-                    ? new DateTimeOffset(date, TimeSpan.Zero).Add(sunTimes!.Value.Sunrise.TimeOfDay).Add(sunrise.Offset)
+                    ? new DateTimeOffset(date.Date, TimeSpan.Zero).Add(sunTimes!.Value.Sunrise.TimeOfDay).Add(sunrise.Offset)
                     : null,
 
             SunsetOffsetScheduleEvent sunset =>
                 (sunset.DaysOfWeek == null || sunset.DaysOfWeek.Contains(dayOfWeek))
-                    ? new DateTimeOffset(date, TimeSpan.Zero).Add(sunTimes!.Value.Sunset.TimeOfDay).Add(sunset.Offset)
+                    ? new DateTimeOffset(date.Date, TimeSpan.Zero).Add(sunTimes!.Value.Sunset.TimeOfDay).Add(sunset.Offset)
                     : null,
 
             _ => null

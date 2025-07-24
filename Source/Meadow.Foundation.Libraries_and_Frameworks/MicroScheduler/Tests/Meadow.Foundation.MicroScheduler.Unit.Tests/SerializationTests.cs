@@ -42,7 +42,7 @@ public class ScheduleSerializerTests
     public void SerializeMasterSchedule_WithDailyEvent_ReturnsValidJson()
     {
         // Arrange
-        var dailyEvent = new DailyScheduleEvent(new DateTime(2024, 1, 1, 18, 30, 0), "TURN_ON");
+        var dailyEvent = new DailyScheduleEvent(new DateTimeOffset(2024, 1, 1, 18, 30, 0, TimeSpan.Zero), "TURN_ON");
         var schedule = new Schedule
         {
             Name = "Living Room",
@@ -220,7 +220,7 @@ public class ScheduleSerializerTests
         Assert.Equal(ScheduleEventType.Daily, dailyEvent.EventType);
         Assert.Equal("TURN_ON", dailyEvent.Data);
         Assert.False(dailyEvent.IsDisabled);
-        Assert.Equal(new DateTime(2024, 1, 1, 18, 30, 0), dailyEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 18, 30, 0, TimeSpan.Zero), dailyEvent.EventTime);
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class ScheduleSerializerTests
 
         Assert.Equal(ScheduleEventType.Weekday, weekdayEvent.EventType);
         Assert.Equal("WAKE_UP", weekdayEvent.Data);
-        Assert.Equal(new DateTime(2024, 1, 1, 7, 0, 0), weekdayEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 7, 0, 0, TimeSpan.Zero), weekdayEvent.EventTime);
         Assert.Equal(3, weekdayEvent.DaysOfWeek.Length);
         Assert.Contains(DayOfWeek.Monday, weekdayEvent.DaysOfWeek);
         Assert.Contains(DayOfWeek.Wednesday, weekdayEvent.DaysOfWeek);
@@ -909,11 +909,11 @@ public class ScheduleSerializerTests
         // Assert
         Assert.Equal(originalCollection.Timezone.TimezoneName, deserializedCollection.Timezone.TimezoneName);
         Assert.Equal(originalCollection.Timezone.UtcOffsetHours, deserializedCollection.Timezone.UtcOffsetHours);
-        
+
         Assert.NotNull(deserializedCollection.Timezone.DaylightSavingTime);
         var originalDST = originalCollection.Timezone.DaylightSavingTime!;
         var deserializedDST = deserializedCollection.Timezone.DaylightSavingTime!;
-        
+
         Assert.Equal(originalDST.StartMonth, deserializedDST.StartMonth);
         Assert.Equal(originalDST.StartDay, deserializedDST.StartDay);
         Assert.Equal(originalDST.StartDayOfWeek, deserializedDST.StartDayOfWeek);
@@ -1048,7 +1048,7 @@ public class ScheduleSerializerTests
         // Assert
         // Summer: UTC 16:30 -> EDT 12:30 (UTC-4 during DST)
         Assert.Equal(new DateTime(2024, 7, 15, 12, 30, 0), localSummer);
-        
+
         // Winter: UTC 16:30 -> EST 11:30 (UTC-5 during standard time)
         Assert.Equal(new DateTime(2024, 1, 15, 11, 30, 0), localWinter);
     }
@@ -1086,7 +1086,7 @@ public class ScheduleSerializerTests
         // Assert
         // Summer: PDT 9:00 -> UTC 16:00 (PDT is UTC-7)
         Assert.Equal(new DateTime(2024, 7, 15, 16, 0, 0, DateTimeKind.Utc), utcSummer);
-        
+
         // Winter: PST 9:00 -> UTC 17:00 (PST is UTC-8)
         Assert.Equal(new DateTime(2024, 1, 15, 17, 0, 0, DateTimeKind.Utc), utcWinter);
     }
@@ -1168,17 +1168,17 @@ public class ScheduleSerializerTests
         Assert.Equal(2, lightDailyEvents.Count);
 
         var lightOnEvent = lightDailyEvents.First(e => e.Data == "true");
-        Assert.Equal(new DateTime(2024, 1, 1, 18, 0, 0), lightOnEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 18, 0, 0, TimeSpan.Zero), lightOnEvent.EventTime);
         Assert.False(lightOnEvent.IsDisabled);
 
         var lightOffEvent = lightDailyEvents.First(e => e.Data == "false");
-        Assert.Equal(new DateTime(2024, 1, 1, 23, 30, 0), lightOffEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 23, 30, 0, TimeSpan.Zero), lightOffEvent.EventTime);
         Assert.False(lightOffEvent.IsDisabled);
 
         // Verify Light Weekday Event
         var lightWeekdayEvent = lightSchedule.Events.OfType<WeekdayScheduleEvent>().Single();
         Assert.Equal("true", lightWeekdayEvent.Data);
-        Assert.Equal(new DateTime(2024, 1, 1, 17, 30, 0), lightWeekdayEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 17, 30, 0, TimeSpan.Zero), lightWeekdayEvent.EventTime);
         Assert.False(lightWeekdayEvent.IsDisabled);
         Assert.Equal(5, lightWeekdayEvent.DaysOfWeek.Length);
         Assert.Contains(DayOfWeek.Monday, lightWeekdayEvent.DaysOfWeek);
@@ -1213,17 +1213,17 @@ public class ScheduleSerializerTests
         Assert.Equal(2, fountainDailyEvents.Count);
 
         var fountainOnEvent = fountainDailyEvents.First(e => e.Data == "true");
-        Assert.Equal(new DateTime(2024, 1, 1, 8, 0, 0), fountainOnEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 8, 0, 0, TimeSpan.Zero), fountainOnEvent.EventTime);
         Assert.False(fountainOnEvent.IsDisabled);
 
         var fountainOffEvent = fountainDailyEvents.First(e => e.Data == "false");
-        Assert.Equal(new DateTime(2024, 1, 1, 22, 0, 0), fountainOffEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 22, 0, 0, TimeSpan.Zero), fountainOffEvent.EventTime);
         Assert.False(fountainOffEvent.IsDisabled);
 
         // Verify Fountain Weekday Event
         var fountainWeekdayEvent = fountainSchedule.Events.OfType<WeekdayScheduleEvent>().Single();
         Assert.Equal("true", fountainWeekdayEvent.Data);
-        Assert.Equal(new DateTime(2024, 1, 1, 6, 30, 0), fountainWeekdayEvent.EventTime);
+        Assert.Equal(new DateTimeOffset(2024, 1, 1, 6, 30, 0, TimeSpan.Zero), fountainWeekdayEvent.EventTime);
         Assert.False(fountainWeekdayEvent.IsDisabled);
         Assert.Equal(3, fountainWeekdayEvent.DaysOfWeek.Length);
         Assert.Contains(DayOfWeek.Monday, fountainWeekdayEvent.DaysOfWeek);

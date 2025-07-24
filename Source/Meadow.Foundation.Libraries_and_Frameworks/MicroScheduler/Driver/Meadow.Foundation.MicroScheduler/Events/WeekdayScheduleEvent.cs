@@ -15,7 +15,7 @@ public class WeekdayScheduleEvent : ScheduleEventBase
     /// <summary>
     /// Gets the time when this event should trigger (in UTC).
     /// </summary>
-    public DateTime EventTime { get; }
+    public DateTimeOffset EventTime { get; }
 
     /// <summary>
     /// Gets the days of the week when this event should be active.
@@ -28,7 +28,7 @@ public class WeekdayScheduleEvent : ScheduleEventBase
     /// <param name="eventTimeUtc">The time when this event should trigger (in UTC).</param>
     /// <param name="data">Data to be passed when this event triggers.</param>
     /// <param name="daysOfWeek">The days of the week when this event should be active.</param>
-    public WeekdayScheduleEvent(DateTime eventTimeUtc, string? data, DayOfWeek[] daysOfWeek)
+    public WeekdayScheduleEvent(DateTimeOffset eventTimeUtc, string? data, DayOfWeek[] daysOfWeek)
     {
         EventTime = eventTimeUtc;
         Data = data;

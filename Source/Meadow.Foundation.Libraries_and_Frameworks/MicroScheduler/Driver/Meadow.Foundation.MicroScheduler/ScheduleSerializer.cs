@@ -1,6 +1,7 @@
 ﻿using Meadow.Foundation.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Meadow.Foundation.Scheduling;
@@ -105,12 +106,12 @@ public static class ScheduleSerializer
         {
             case DailyScheduleEvent daily:
                 result.data = daily.Data;
-                result.eventTime = daily.EventTime.ToString("yyyy-MM-ddTHH:mm:ss");
+                result.eventTime = daily.EventTime.UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
                 break;
 
             case WeekdayScheduleEvent weekday:
                 result.data = weekday.Data;
-                result.eventTime = weekday.EventTime.ToString("yyyy-MM-ddTHH:mm:ss");
+                result.eventTime = weekday.EventTime.UtcDateTime.ToString("yyyy-MM-ddTHH:mm:ss");
                 result.daysOfWeek = weekday.DaysOfWeek?.Select(d => d.ToString()).ToArray();
                 break;
 
@@ -149,11 +150,11 @@ public static class ScheduleSerializer
         IScheduleEvent result = eventType switch
         {
             ScheduleEventType.Daily => new DailyScheduleEvent(
-                DateTime.Parse(serializable.eventTime),
+                DateTimeOffset.Parse(serializable.eventTime, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                 serializable.data),
 
             ScheduleEventType.Weekday => new WeekdayScheduleEvent(
-                DateTime.Parse(serializable.eventTime),
+                DateTimeOffset.Parse(serializable.eventTime, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                 serializable.data,
                 ParseDaysOfWeek(serializable.daysOfWeek)),
 

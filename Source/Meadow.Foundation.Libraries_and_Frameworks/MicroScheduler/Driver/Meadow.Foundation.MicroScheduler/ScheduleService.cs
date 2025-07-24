@@ -82,7 +82,7 @@ public class ScheduleService : IDisposable
         {
             // Create timer that ticks every minute, starting at the next minute boundary
             var now = await _timeProvider.GetUtcNow();
-            var nextMinute = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0).AddMinutes(1);
+            var nextMinute = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, TimeSpan.Zero).AddMinutes(1);
             var initialDelay = nextMinute - now;
 
             _timer = new Timer(OnTimerTickCallback, null, initialDelay, TimeSpan.FromMinutes(1));
