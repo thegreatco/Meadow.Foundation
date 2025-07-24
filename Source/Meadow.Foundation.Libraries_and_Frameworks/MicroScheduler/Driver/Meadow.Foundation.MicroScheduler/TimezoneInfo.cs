@@ -1,4 +1,3 @@
-using Meadow.Foundation.Serialization;
 using System;
 
 namespace Meadow.Foundation.Scheduling;
@@ -31,13 +30,13 @@ public class TimezoneInfo
     /// </summary>
     /// <param name="utcDate">The UTC date to check.</param>
     /// <returns>True if DST is active on the given date, false otherwise.</returns>
-    public bool IsDaylightSavingTimeActive(DateTime utcDate)
+    public bool IsDaylightSavingTimeActive(DateTimeOffset utcDate)
     {
         if (DaylightSavingTime == null) return false;
 
         var localDate = utcDate.AddHours(UtcOffsetHours);
         var year = localDate.Year;
-        
+
         var startDate = DaylightSavingTime.GetStartDate(year);
         var endDate = DaylightSavingTime.GetEndDate(year);
 
@@ -57,7 +56,7 @@ public class TimezoneInfo
     /// </summary>
     /// <param name="utcDate">The UTC date to calculate offset for.</param>
     /// <returns>The total offset in hours from UTC.</returns>
-    public double GetTotalUtcOffset(DateTime utcDate)
+    public double GetTotalUtcOffset(DateTimeOffset utcDate)
     {
         var offset = UtcOffsetHours;
         if (IsDaylightSavingTimeActive(utcDate))
@@ -72,7 +71,7 @@ public class TimezoneInfo
     /// </summary>
     /// <param name="utcTime">The UTC time to convert.</param>
     /// <returns>The equivalent local time.</returns>
-    public DateTime ConvertUtcToLocal(DateTime utcTime)
+    public DateTimeOffset ConvertUtcToLocal(DateTimeOffset utcTime)
     {
         return utcTime.AddHours(GetTotalUtcOffset(utcTime));
     }
@@ -176,7 +175,7 @@ public class DaylightSavingTimeInfo
             // Last occurrence or count from end
             var lastDayOfMonth = DateTime.DaysInMonth(year, month);
             var lastDate = new DateTime(year, month, lastDayOfMonth, hour, 0, 0);
-            
+
             if (day == 0)
             {
                 // Last occurrence

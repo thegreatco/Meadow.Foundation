@@ -99,7 +99,7 @@ public class ScheduleCollectionModel : INotifyPropertyChanged
     private void RefreshSchedules()
     {
         Schedules.Clear();
-        foreach (var schedule in _scheduleCollection.Schedules)
+        foreach (var schedule in _scheduleCollection)
         {
             var scheduleModel = new ScheduleModel(schedule, _scheduleCollection.Timezone);
             Schedules.Add(scheduleModel);
@@ -117,13 +117,13 @@ public class ScheduleCollectionModel : INotifyPropertyChanged
     public void AddSchedule(string name)
     {
         var schedule = new Schedule { Name = name };
-        _scheduleCollection.Schedules.Add(schedule);
+        _scheduleCollection.Add(schedule);
         Schedules.Add(new ScheduleModel(schedule, _scheduleCollection.Timezone));
     }
 
     public void RemoveSchedule(ScheduleModel scheduleModel)
     {
-        _scheduleCollection.Schedules.Remove(scheduleModel.Schedule);
+        _scheduleCollection.Remove(scheduleModel.Schedule);
         Schedules.Remove(scheduleModel);
     }
 
@@ -212,20 +212,20 @@ public class ScheduleModel : INotifyPropertyChanged
     public void ApplyChanges()
     {
         var eventsToUpdate = Events.Where(e => e.IsDirty).ToList();
-        
+
         foreach (var eventModel in eventsToUpdate)
         {
             // Remove the old event
             _schedule.Events.Remove(eventModel.ScheduleEvent);
-            
+
             // Create and add the updated event
             var updatedEvent = eventModel.CreateUpdatedEvent();
             _schedule.Events.Add(updatedEvent);
-            
+
             // Mark as clean
             eventModel.MarkClean();
         }
-        
+
         // Refresh the UI models to reflect the new underlying events
         if (eventsToUpdate.Count > 0)
         {
@@ -288,48 +288,48 @@ public class ScheduleEventModel : INotifyPropertyChanged
     {
         var selectedType = _selectedEventType ?? _scheduleEvent.EventType.ToString();
         var eventData = Data ?? "true"; // Default to "true" if no data
-        
+
         // Get current days of week if applicable
         var daysOfWeek = GetSelectedDaysOfWeek() ?? GetOriginalDaysOfWeek();
-        
+
         return selectedType switch
         {
             "Daily" => new DailyScheduleEvent(
-                GetEventDateTime(), 
+                GetEventDateTime(),
                 eventData)
             {
                 IsDisabled = IsDisabled
             },
-            
+
             "Weekday" => new WeekdayScheduleEvent(
-                GetEventDateTime(), 
-                eventData, 
+                GetEventDateTime(),
+                eventData,
                 daysOfWeek ?? new[] { DayOfWeek.Monday })
             {
                 IsDisabled = IsDisabled
             },
-            
+
             "SunriseOffset" => new SunriseOffsetScheduleEvent(
-                GetOffsetTimeSpan(), 
-                eventData, 
+                GetOffsetTimeSpan(),
+                eventData,
                 daysOfWeek ?? new[] { DayOfWeek.Monday })
             {
                 IsDisabled = IsDisabled
             },
-            
+
             "SunsetOffset" => new SunsetOffsetScheduleEvent(
-                GetOffsetTimeSpan(), 
-                eventData, 
+                GetOffsetTimeSpan(),
+                eventData,
                 daysOfWeek ?? new[] { DayOfWeek.Monday })
             {
                 IsDisabled = IsDisabled
             },
-            
+
             _ => _scheduleEvent // Fallback to original event
         };
     }
 
-    private DateTime GetEventDateTime()
+    private DateTimeOffset GetEventDateTime()
     {
         // Use the EventTime if available (from TimePicker), otherwise use current event time
         if (EventTime.HasValue)
@@ -337,7 +337,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
             var baseDate = new DateTime(1989, 6, 3); // Use a consistent base date
             return baseDate.Date.Add(EventTime.Value);
         }
-        
+
         // Fallback to original event time
         return _scheduleEvent switch
         {
@@ -359,7 +359,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
         if (_daySelections != null && _daySelections.Count > 0)
         {
             var days = new List<DayOfWeek>();
-            
+
             if (MondaySelected) days.Add(DayOfWeek.Monday);
             if (TuesdaySelected) days.Add(DayOfWeek.Tuesday);
             if (WednesdaySelected) days.Add(DayOfWeek.Wednesday);
@@ -367,10 +367,10 @@ public class ScheduleEventModel : INotifyPropertyChanged
             if (FridaySelected) days.Add(DayOfWeek.Friday);
             if (SaturdaySelected) days.Add(DayOfWeek.Saturday);
             if (SundaySelected) days.Add(DayOfWeek.Sunday);
-            
+
             return days.ToArray(); // Return empty array if no days selected, not null
         }
-        
+
         return null; // No UI changes, preserve original
     }
 
@@ -390,13 +390,13 @@ public class ScheduleEventModel : INotifyPropertyChanged
     public List<string> AvailableEventTypes => new()
     {
         "Daily",
-        "Weekday", 
+        "Weekday",
         "SunriseOffset",
         "SunsetOffset"
     };
 
-    public string EventType 
-    { 
+    public string EventType
+    {
         get => _selectedEventType ?? _scheduleEvent.EventType.ToString();
         set
         {
@@ -447,7 +447,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
         get => Data?.ToLower() switch
         {
             "true" => "Turn On",
-            "false" => "Turn Off", 
+            "false" => "Turn Off",
             _ => Data ?? ""
         };
         set
@@ -478,7 +478,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
         {
             if (_offsetMinutes.HasValue)
                 return _offsetMinutes.Value;
-                
+
             return _scheduleEvent switch
             {
                 SunriseOffsetScheduleEvent sunrise => Math.Abs((int)sunrise.Offset.TotalMinutes),
@@ -505,7 +505,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
         {
             if (_isOffsetBefore.HasValue)
                 return _isOffsetBefore.Value;
-                
+
             return _scheduleEvent switch
             {
                 SunriseOffsetScheduleEvent sunrise => sunrise.Offset < TimeSpan.Zero,
@@ -559,7 +559,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
         {
             if (_eventTime.HasValue)
                 return _eventTime.Value;
-                
+
             return _scheduleEvent switch
             {
                 DailyScheduleEvent daily => daily.EventTime.TimeOfDay,
@@ -681,12 +681,12 @@ public class ScheduleEventModel : INotifyPropertyChanged
         }
     }
 
-    private string FormatTime(DateTime utcTime)
+    private string FormatTime(DateTimeOffset utcTime)
     {
         return utcTime.ToString("HH:mm");
     }
 
-    private string FormatLocalTime(DateTime utcTime)
+    private string FormatLocalTime(DateTimeOffset utcTime)
     {
         var localTime = _timezone.ConvertUtcToLocal(utcTime);
         var isDst = _timezone.IsDaylightSavingTimeActive(utcTime);
@@ -712,7 +712,7 @@ public class ScheduleEventModel : INotifyPropertyChanged
         // Check if we have a UI override first
         if (_daySelections?.ContainsKey(day) == true)
             return _daySelections[day];
-            
+
         // Fall back to original event
         return _scheduleEvent switch
         {
@@ -726,14 +726,14 @@ public class ScheduleEventModel : INotifyPropertyChanged
     private void SetDaySelected(DayOfWeek day, bool selected)
     {
         Console.WriteLine($"SetDaySelected: {day} = {selected} for {_scheduleEvent.EventType}");
-        
+
         // Initialize the dictionary if needed
         if (_daySelections == null)
             _daySelections = new Dictionary<DayOfWeek, bool>();
-            
+
         // Store the selection
         _daySelections[day] = selected;
-        
+
         IsDirty = true;
         OnPropertyChanged($"{day}Selected");
         OnPropertyChanged(nameof(TimeDisplay)); // Update time display as it shows days
