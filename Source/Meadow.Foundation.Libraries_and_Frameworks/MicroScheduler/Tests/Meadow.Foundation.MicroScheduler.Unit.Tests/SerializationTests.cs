@@ -1038,19 +1038,19 @@ public class ScheduleSerializerTests
         };
 
         // Test summer conversion (DST active)
-        var utcSummer = new DateTime(2024, 7, 15, 16, 30, 0, DateTimeKind.Utc); // 4:30 PM UTC
+        var utcSummer = new DateTimeOffset(2024, 7, 15, 16, 30, 0, TimeSpan.Zero); // 4:30 PM UTC
         var localSummer = timezone.ConvertUtcToLocal(utcSummer);
 
         // Test winter conversion (DST not active)
-        var utcWinter = new DateTime(2024, 1, 15, 16, 30, 0, DateTimeKind.Utc); // 4:30 PM UTC
+        var utcWinter = new DateTimeOffset(2024, 1, 15, 16, 30, 0, TimeSpan.Zero); // 4:30 PM UTC
         var localWinter = timezone.ConvertUtcToLocal(utcWinter);
 
         // Assert
         // Summer: UTC 16:30 -> EDT 12:30 (UTC-4 during DST)
-        Assert.Equal(new DateTime(2024, 7, 15, 12, 30, 0), localSummer);
+        Assert.Equal(new DateTimeOffset(2024, 7, 15, 12, 30, 0, TimeSpan.Zero), localSummer);
 
         // Winter: UTC 16:30 -> EST 11:30 (UTC-5 during standard time)
-        Assert.Equal(new DateTime(2024, 1, 15, 11, 30, 0), localWinter);
+        Assert.Equal(new DateTimeOffset(2024, 1, 15, 11, 30, 0, TimeSpan.Zero), localWinter);
     }
 
     [Fact]
