@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 namespace Meadow.Foundation.Scheduling;
 
 /// <summary>
-/// Provides a service for managing and executing scheduled events on circuits.
-/// The service evaluates schedules periodically and triggers circuit state changes as needed.
+/// Provides a service for managing and executing scheduled events.
+/// The service evaluates schedules periodically and triggers state change events as needed.
 /// </summary>
 public class ScheduleService : IDisposable
 {
@@ -29,6 +29,32 @@ public class ScheduleService : IDisposable
     public ScheduleService()
         : this(new SystemTimeProvider())
     {
+    }
+
+    /// <summary>
+    /// Gets the current time adjusted for any schedule timezone and DST offsets
+    /// </summary>
+    /// <returns></returns>
+    public DateTimeOffset GetAdjustedTime()
+    {
+        var utc = _timeProvider.GetUtcNow().GetAwaiter().GetResult();
+
+        return GetAdjustedTime(utc);
+    }
+
+    /// <summary>
+    /// Gets the current time adjusted for any schedule timezone and DST offsets
+    /// </summary>
+    /// <returns></returns>
+    public DateTimeOffset GetAdjustedTime(DateTimeOffset utc)
+    {
+        if (_scheduleCollection != null)
+        {
+            var totalOffset = _scheduleCollection.Timezone.GetTotalUtcOffset(utc.DateTime);
+            utc = utc.AddHours(totalOffset);
+        }
+
+        return utc;
     }
 
     /// <summary>
@@ -56,7 +82,7 @@ public class ScheduleService : IDisposable
         {
             // Create timer that ticks every minute, starting at the next minute boundary
             var now = await _timeProvider.GetUtcNow();
-            var nextMinute = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0).AddMinutes(1);
+            var nextMinute = new DateTimeOffset(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0, TimeSpan.Zero).AddMinutes(1);
             var initialDelay = nextMinute - now;
 
             _timer = new Timer(OnTimerTickCallback, null, initialDelay, TimeSpan.FromMinutes(1));

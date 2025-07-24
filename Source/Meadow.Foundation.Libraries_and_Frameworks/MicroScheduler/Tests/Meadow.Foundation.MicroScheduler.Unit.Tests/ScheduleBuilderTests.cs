@@ -126,7 +126,7 @@ public class ScheduleBuilderTests
         var builder = new ScheduleBuilder("Test");
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => builder.AddDaily(default(DateTime)));
+        Assert.Throws<ArgumentException>(() => builder.AddDaily(default(DateTimeOffset)));
     }
 
     [Theory]

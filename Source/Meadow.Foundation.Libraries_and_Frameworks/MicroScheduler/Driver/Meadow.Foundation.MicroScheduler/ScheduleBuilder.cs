@@ -33,11 +33,11 @@ public class ScheduleBuilder
     /// <param name="data">Optional data to be passed when this event triggers.</param>
     /// <param name="isDisabled">Whether this event should be disabled initially. Default is false.</param>
     /// <returns>The current <see cref="ScheduleBuilder"/> instance for method chaining.</returns>
-    /// <exception cref="ArgumentException">Thrown when eventTime is default DateTime.</exception>
-    public ScheduleBuilder AddDaily(DateTime eventTime, string? data = null, bool isDisabled = false)
+    /// <exception cref="ArgumentException">Thrown when eventTime is default DateTimeOffset.</exception>
+    public ScheduleBuilder AddDaily(DateTimeOffset eventTime, string? data = null, bool isDisabled = false)
     {
         if (eventTime == default)
-            throw new ArgumentException("Event time cannot be default DateTime.", nameof(eventTime));
+            throw new ArgumentException("Event time cannot be default DateTimeOffset.", nameof(eventTime));
 
         var scheduleEvent = new DailyScheduleEvent(eventTime, data)
         {
@@ -61,7 +61,7 @@ public class ScheduleBuilder
         if (time < TimeSpan.Zero || time >= TimeSpan.FromDays(1))
             throw new ArgumentOutOfRangeException(nameof(time), "Time must be between 00:00:00 and 23:59:59.");
 
-        var eventTime = DateTime.UtcNow.Date.Add(time);
+        var eventTime = new DateTimeOffset(DateTimeOffset.UtcNow.Date.Add(time), TimeSpan.Zero);
         return AddDaily(eventTime, data, isDisabled);
     }
 
@@ -92,11 +92,11 @@ public class ScheduleBuilder
     /// <param name="daysOfWeek">The days of the week when this event should be active.</param>
     /// <param name="isDisabled">Whether this event should be disabled initially. Default is false.</param>
     /// <returns>The current <see cref="ScheduleBuilder"/> instance for method chaining.</returns>
-    /// <exception cref="ArgumentException">Thrown when eventTime is default DateTime or daysOfWeek is null/empty.</exception>
-    public ScheduleBuilder AddWeekday(DateTime eventTime, string? data, DayOfWeek[] daysOfWeek, bool isDisabled = false)
+    /// <exception cref="ArgumentException">Thrown when eventTime is default DateTimeOffset or daysOfWeek is null/empty.</exception>
+    public ScheduleBuilder AddWeekday(DateTimeOffset eventTime, string? data, DayOfWeek[] daysOfWeek, bool isDisabled = false)
     {
         if (eventTime == default)
-            throw new ArgumentException("Event time cannot be default DateTime.", nameof(eventTime));
+            throw new ArgumentException("Event time cannot be default DateTimeOffset.", nameof(eventTime));
         if (daysOfWeek == null || daysOfWeek.Length == 0)
             throw new ArgumentException("Days of week cannot be null or empty.", nameof(daysOfWeek));
 
@@ -124,7 +124,7 @@ public class ScheduleBuilder
         if (time < TimeSpan.Zero || time >= TimeSpan.FromDays(1))
             throw new ArgumentOutOfRangeException(nameof(time), "Time must be between 00:00:00 and 23:59:59.");
 
-        var eventTime = DateTime.UtcNow.Date.Add(time);
+        var eventTime = new DateTimeOffset(DateTimeOffset.UtcNow.Date.Add(time), TimeSpan.Zero);
         return AddWeekday(eventTime, data, daysOfWeek, isDisabled);
     }
 

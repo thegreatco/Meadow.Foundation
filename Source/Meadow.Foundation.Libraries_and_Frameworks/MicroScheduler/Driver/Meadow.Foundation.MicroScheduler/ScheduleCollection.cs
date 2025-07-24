@@ -1,11 +1,12 @@
-﻿using Meadow.Foundation.Scheduling;
-using Meadow.Foundation.Serialization;
+﻿using Meadow.Foundation.Serialization;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
+
+namespace Meadow.Foundation.Scheduling;
 
 /// <summary>
 /// Represents a collection of schedules that can be managed as a single unit.
@@ -15,6 +16,11 @@ public class ScheduleCollection : IEnumerable<Schedule>
     internal SemaphoreSlim SyncRoot { get; } = new SemaphoreSlim(1, 1);
 
     private readonly List<Schedule> _schedules = new();
+
+    /// <summary>
+    /// Gets or sets the timezone information for this schedule collection.
+    /// </summary>
+    public TimezoneInfo Timezone { get; set; } = new();
 
     public static ScheduleCollection LoadFrom(FileInfo scheduleFile)
     {
@@ -61,6 +67,16 @@ public class ScheduleCollection : IEnumerable<Schedule>
     public void Add(Schedule schedule)
     {
         _schedules.Add(schedule);
+    }
+
+    /// <summary>
+    /// Removes the specified schedule from the collection.
+    /// </summary>
+    /// <remarks>If the specified schedule is not found in the collection, no action is taken.</remarks>
+    /// <param name="schedule">The schedule to remove from the collection. Cannot be <see langword="null"/>.</param>
+    public void Remove(Schedule schedule)
+    {
+        _schedules.Remove(schedule);
     }
 
     /// <summary>
