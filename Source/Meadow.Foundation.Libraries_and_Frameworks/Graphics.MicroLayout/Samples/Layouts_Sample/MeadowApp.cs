@@ -25,6 +25,8 @@ public class MeadowApp : App<Desktop>
 
         _layouts.Add(new ScrollableTextLayout(screen.Width, screen.Height));
         _layouts.Add(new GridSampleLayout(screen.Width, screen.Height));
+        _layouts.Add(new StackSampleLayout(screen.Width, screen.Height));
+        _layouts.Add(new AlignmentSampleLayout(screen.Width, screen.Height));
 
         var right = new PushButton(keyboard.Pins.Right);
         right.PressStarted += (s, e) =>

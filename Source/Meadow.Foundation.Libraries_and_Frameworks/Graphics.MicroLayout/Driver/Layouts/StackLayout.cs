@@ -61,7 +61,6 @@ public class StackLayout : LayoutBase
             if (_stackOrientation != value)
             {
                 _stackOrientation = value;
-                LayoutControls();
                 Invalidate();
             }
         }
@@ -78,7 +77,6 @@ public class StackLayout : LayoutBase
             if (_crossAxisAlignment != value)
             {
                 _crossAxisAlignment = value;
-                LayoutControls();
                 Invalidate();
             }
         }
@@ -95,7 +93,6 @@ public class StackLayout : LayoutBase
             if (_spacing != value)
             {
                 _spacing = value;
-                LayoutControls();
                 Invalidate();
             }
         }
@@ -111,7 +108,6 @@ public class StackLayout : LayoutBase
         {
             if (_padding == value) { return; }
             _padding = value;
-            LayoutControls();
             Invalidate();
         }
     }
