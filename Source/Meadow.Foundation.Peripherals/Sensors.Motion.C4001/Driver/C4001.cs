@@ -23,12 +23,28 @@ public partial class C4001
     private int _flashNumber = 0;
 
     /// <summary>
+    /// Set the Sensor sampling mode
+    /// </summary>
+    public bool SetSensorMode(SensorMode mode)
+    {
+        return SetSensorModeI2c(mode);
+    }
+
+    /// <summary>
     /// Get the current status of the sensor
     /// </summary>
     /// <returns>The current status of the sensor.</returns>
     public SensorStatus GetStatus()
     {
         return GetStatusI2c();
+    }
+
+    /// <summary>
+    /// Get the target number
+    /// </summary>
+    public byte GetTargetNumber()
+    {
+        return GetTargetNumberI2c();
     }
 
     /// <summary>

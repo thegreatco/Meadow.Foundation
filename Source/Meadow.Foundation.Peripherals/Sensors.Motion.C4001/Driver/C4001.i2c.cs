@@ -85,18 +85,10 @@ public partial class C4001 : II2cPeripheral
 
     internal bool SetSensorModeI2c(SensorMode mode)
     {
+        SetSensorI2c(SensorCommand.ChangeMode);
         var status = GetStatusI2c();
-        if (status.WorkMode == (byte)mode)
-        {
-            return true;
-        }
-        else
-        {
-            SetSensorI2c(SensorCommand.ChangeMode);
-            status = GetStatusI2c();
 
-            return status.WorkMode == (byte)mode;
-        }
+        return status.WorkMode == (byte)mode;
     }
 
     internal bool SetTrigSensitivityI2c(byte sensitivity)

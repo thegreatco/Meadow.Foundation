@@ -17,6 +17,8 @@ namespace Sensors.Motion.C4001_Sample
 
             sensor = new C4001(Device.CreateI2cBus(), (byte)C4001.Addresses.Default);
 
+            sensor.SetSensorMode(C4001.SensorMode.ExitMode);
+
             return Task.CompletedTask;
         }
 
@@ -24,6 +26,9 @@ namespace Sensors.Motion.C4001_Sample
         {
             while (true)
             {
+                byte targetNumber = sensor.GetTargetNumber();
+                Resolver.Log.Info($"Target Number: {targetNumber}");
+
                 var status = sensor.GetStatus();
                 Resolver.Log.Info($"C4001 Status: WorkStatus={status.WorkStatus}, WorkMode={status.WorkMode}, InitStatus={status.InitStatus}");
 
@@ -39,7 +44,7 @@ namespace Sensors.Motion.C4001_Sample
                 bool motionDetected = sensor.IsMotionDetected();
                 Resolver.Log.Info($"Motion Detected: {motionDetected}");
 
-                await Task.Delay(1000);
+                await Task.Delay(2000);
             }
         }
 

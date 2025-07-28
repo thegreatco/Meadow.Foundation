@@ -2,11 +2,23 @@
 
 public partial class C4001
 {
+    /// <summary>
+    /// Represents the current status of the C4001 sensor.
+    /// </summary>
     public struct SensorStatus
     {
-        public byte WorkStatus;  // 0=stop, 1=start
-        public byte WorkMode;    // 0=presence, 1=speed
-        public byte InitStatus;  // 0=not init, 1=init success
+        /// <summary>
+        /// Indicates the sensor's work status (0 = stop, 1 = start).
+        /// </summary>
+        public byte WorkStatus;
+        /// <summary>
+        /// Indicates the sensor's work mode (0 = presence, 1 = speed).
+        /// </summary>
+        public byte WorkMode;
+        /// <summary>
+        /// Indicates the sensor's initialization status (0 = not initialized, 1 = initialization successful).
+        /// </summary>
+        public byte InitStatus;
     }
 
     internal struct PrivateData

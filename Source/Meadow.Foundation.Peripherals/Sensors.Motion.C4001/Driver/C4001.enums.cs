@@ -70,9 +70,18 @@ public partial class C4001
         MICRO_MOTION = 0x26
     }
 
-    internal enum SensorMode : byte
+    /// <summary>
+    /// The sensor sampling mode
+    /// </summary>
+    public enum SensorMode : byte
     {
+        /// <summary>
+        /// Exit mode
+        /// </summary>
         ExitMode = 0x00,
+        /// <summary>
+        /// Speed mode
+        /// </summary>
         SpeedMode = 0x01
     }
 
