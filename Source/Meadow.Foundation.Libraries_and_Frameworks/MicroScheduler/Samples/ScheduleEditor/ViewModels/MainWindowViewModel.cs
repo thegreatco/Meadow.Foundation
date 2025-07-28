@@ -1,37 +1,49 @@
+using Avalonia.Controls;
+using Avalonia.Platform.Storage;
+using Meadow.CLI;
+using Meadow.CLI.Commands.DeviceManagement;
+using Meadow.Foundation.Scheduling;
+using ReactiveUI;
+using ScheduleEditor.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.IO.Ports;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Avalonia.Controls;
-using Avalonia.Platform.Storage;
-using ReactiveUI;
-using ScheduleEditor.Models;
-using Meadow.Foundation.Scheduling;
 
 namespace ScheduleEditor.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
+    private const string DefaultFileName = "schedules.json";
+
     private ScheduleCollectionModel _scheduleCollection;
     private ScheduleModel? _selectedSchedule;
     private ScheduleEventModel? _selectedEvent;
     private bool _isFileModified;
     private bool _hasUnsavedChanges;
     private string? _selectedSerialPort;
-    
+    private readonly MeadowConnectionManager? _connectionManager;
+
     public event Action<List<SerialPortModel>, string?>? SerialPortsUpdated;
 
     public MainWindowViewModel()
     {
         _scheduleCollection = new ScheduleCollectionModel();
         SerialPorts = new ObservableCollection<SerialPortModel>();
-        
+
+        try
+        {
+            _connectionManager = new MeadowConnectionManager(new SettingsManager());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Warning: Could not initialize Meadow connection manager: {ex.Message}");
+        }
+
         // Commands
         NewFileCommand = ReactiveCommand.CreateFromTask(NewFile);
         OpenFileCommand = ReactiveCommand.CreateFromTask(OpenFile);
@@ -45,7 +57,9 @@ public class MainWindowViewModel : ViewModelBase
         SaveChangesCommand = ReactiveCommand.CreateFromTask(SaveChanges, this.WhenAnyValue(x => x.HasUnsavedChanges));
         RefreshSerialPortsCommand = ReactiveCommand.CreateFromTask(RefreshSerialPorts);
         SelectSerialPortCommand = ReactiveCommand.Create<string>(SelectSerialPort);
-        
+        LoadFromDeviceCommand = ReactiveCommand.CreateFromTask(LoadFromDevice, this.WhenAnyValue(x => x.SelectedSerialPort).Select(port => !string.IsNullOrEmpty(port)));
+        SaveToDeviceCommand = ReactiveCommand.CreateFromTask(SaveToDevice, this.WhenAnyValue(x => x.SelectedSerialPort).Select(port => !string.IsNullOrEmpty(port)));
+
         // Initialize serial ports asynchronously
         _ = RefreshSerialPorts();
 
@@ -62,9 +76,9 @@ public class MainWindowViewModel : ViewModelBase
             {
                 _scheduleCollection.PropertyChanged -= OnScheduleCollectionPropertyChanged;
             }
-            
+
             this.RaiseAndSetIfChanged(ref _scheduleCollection, value);
-            
+
             if (_scheduleCollection != null)
             {
                 _scheduleCollection.PropertyChanged += OnScheduleCollectionPropertyChanged;
@@ -75,15 +89,15 @@ public class MainWindowViewModel : ViewModelBase
     public ScheduleModel? SelectedSchedule
     {
         get => _selectedSchedule;
-        set 
+        set
         {
             if (_selectedSchedule != null)
             {
                 _selectedSchedule.PropertyChanged -= OnSelectedSchedulePropertyChanged;
             }
-            
+
             this.RaiseAndSetIfChanged(ref _selectedSchedule, value);
-            
+
             if (_selectedSchedule != null)
             {
                 _selectedSchedule.PropertyChanged += OnSelectedSchedulePropertyChanged;
@@ -109,7 +123,7 @@ public class MainWindowViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _hasUnsavedChanges, value);
     }
 
-    public string WindowTitle => 
+    public string WindowTitle =>
         $"Schedule Editor - {(string.IsNullOrEmpty(ScheduleCollection.FileName) ? "Untitled" : Path.GetFileName(ScheduleCollection.FileName))}" +
         (IsFileModified ? "*" : "");
 
@@ -134,6 +148,8 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand SaveChangesCommand { get; }
     public ICommand RefreshSerialPortsCommand { get; }
     public ICommand SelectSerialPortCommand { get; }
+    public ICommand LoadFromDeviceCommand { get; }
+    public ICommand SaveToDeviceCommand { get; }
 
     private async Task NewFile()
     {
@@ -170,7 +186,7 @@ public class MainWindowViewModel : ViewModelBase
                 var filePath = files[0].Path.LocalPath;
                 var fileInfo = new FileInfo(filePath);
                 var collection = Meadow.Foundation.Scheduling.ScheduleCollection.LoadFrom(fileInfo);
-                
+
                 ScheduleCollection = new ScheduleCollectionModel(collection)
                 {
                     FileName = filePath
@@ -198,7 +214,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             // Apply any pending changes before saving
             ApplyAllPendingChanges();
-            
+
             var json = ScheduleSerializer.SerializeScheduleCollection(ScheduleCollection.ScheduleCollection);
             if (json != null)
             {
@@ -224,7 +240,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             Title = "Save Schedule File",
             DefaultExtension = "json",
-            SuggestedFileName = "schedule.json",
+            SuggestedFileName = DefaultFileName,
             FileTypeChoices = new[]
             {
                 new FilePickerFileType("JSON Files") { Patterns = new[] { "*.json" } },
@@ -237,10 +253,10 @@ public class MainWindowViewModel : ViewModelBase
             try
             {
                 var filePath = file.Path.LocalPath;
-                
+
                 // Apply any pending changes before saving
                 ApplyAllPendingChanges();
-                
+
                 var json = ScheduleSerializer.SerializeScheduleCollection(ScheduleCollection.ScheduleCollection);
                 if (json != null)
                 {
@@ -282,14 +298,14 @@ public class MainWindowViewModel : ViewModelBase
     private async Task AddEvent()
     {
         if (SelectedSchedule == null) return;
-        
+
         // TODO: Show dialog to select event type and configure it
         // For now, create a simple daily event
         var dailyEvent = new DailyScheduleEvent(
             DateTime.UtcNow.Date.AddHours(12), // Noon UTC
             "true"
         );
-        
+
         SelectedSchedule.AddEvent(dailyEvent);
         IsFileModified = true;
         this.RaisePropertyChanged(nameof(WindowTitle));
@@ -318,7 +334,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         // Apply all pending changes to the underlying schedule objects
         ApplyAllPendingChanges();
-        
+
         HasUnsavedChanges = false;
         IsFileModified = true;
         this.RaisePropertyChanged(nameof(WindowTitle));
@@ -337,12 +353,13 @@ public class MainWindowViewModel : ViewModelBase
     {
         try
         {
-            var portNames = SerialPort.GetPortNames();
+            // Use Meadow connection manager to get Meadow-specific ports
+            var meadowPorts = await MeadowConnectionManager.GetSerialPorts();
             var currentSelection = SelectedSerialPort;
-            
+
             SerialPorts.Clear();
-            
-            foreach (var portName in portNames.OrderBy(p => p))
+
+            foreach (var portName in meadowPorts.OrderBy(p => p))
             {
                 var portModel = new SerialPortModel(portName);
                 var isSelected = portName == currentSelection;
@@ -352,20 +369,20 @@ public class MainWindowViewModel : ViewModelBase
                 }
                 SerialPorts.Add(portModel);
             }
-            
+
             // If the previously selected port is no longer available, clear the selection
-            if (!string.IsNullOrEmpty(currentSelection) && !portNames.Contains(currentSelection))
+            if (!string.IsNullOrEmpty(currentSelection) && !meadowPorts.Contains(currentSelection))
             {
                 SelectedSerialPort = null;
             }
-            
+
             // Notify the UI to update the menu
             SerialPortsUpdated?.Invoke(SerialPorts.ToList(), SelectedSerialPort);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error refreshing serial ports: {ex.Message}");
-            
+
             // Notify the UI with empty list on error
             SerialPortsUpdated?.Invoke(new List<SerialPortModel>(), SelectedSerialPort);
         }
@@ -378,7 +395,7 @@ public class MainWindowViewModel : ViewModelBase
         {
             port.IsSelected = false;
         }
-        
+
         // Select the clicked port
         var selectedPort = SerialPorts.FirstOrDefault(p => p.PortName == portName);
         if (selectedPort != null)
@@ -386,9 +403,136 @@ public class MainWindowViewModel : ViewModelBase
             selectedPort.IsSelected = true;
             SelectedSerialPort = portName;
         }
-        
+
         // Notify the UI to update the menu
         SerialPortsUpdated?.Invoke(SerialPorts.ToList(), SelectedSerialPort);
+    }
+
+    private async Task LoadFromDevice()
+    {
+        if (string.IsNullOrEmpty(SelectedSerialPort) || _connectionManager == null)
+            return;
+
+        try
+        {
+            // Show confirmation dialog if there are unsaved changes
+            if (IsFileModified)
+            {
+                // TODO: Show confirmation dialog
+                Console.WriteLine("Warning: Unsaved changes will be lost");
+            }
+
+            Console.WriteLine($"Loading {DefaultFileName} from device on {SelectedSerialPort}...");
+
+            var connection = _connectionManager.GetConnectionForRoute(SelectedSerialPort);
+            if (connection == null)
+            {
+                Console.WriteLine("Unable to create connection to device");
+                return;
+            }
+
+            // Attach to the device
+            var device = await connection.Attach();
+            if (device == null)
+            {
+                Console.WriteLine("Unable to attach to device");
+                return;
+            }
+
+            // Read the schedule file from the device
+            var jsonContent = await connection.ReadFileString(DefaultFileName);
+
+            if (string.IsNullOrEmpty(jsonContent))
+            {
+                Console.WriteLine($"No {DefaultFileName} file found on device or file is empty");
+                return;
+            }
+
+            // Deserialize the schedule from JSON
+            var collection = ScheduleSerializer.DeserializeScheduleCollection(jsonContent);
+
+            ScheduleCollection = new ScheduleCollectionModel(collection)
+            {
+                FileName = $"{DefaultFileName} (from device)"
+            };
+
+            IsFileModified = false;
+            this.RaisePropertyChanged(nameof(WindowTitle));
+
+            Console.WriteLine("Schedule loaded successfully from device");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading from device: {ex.Message}");
+        }
+    }
+
+    private async Task SaveToDevice()
+    {
+        if (string.IsNullOrEmpty(SelectedSerialPort) || _connectionManager == null)
+            return;
+
+        try
+        {
+            Console.WriteLine($"Saving {DefaultFileName} to device on {SelectedSerialPort}...");
+
+            // Apply any pending changes before saving
+            ApplyAllPendingChanges();
+
+            var connection = _connectionManager.GetConnectionForRoute(SelectedSerialPort);
+            if (connection == null)
+            {
+                Console.WriteLine("Unable to create connection to device");
+                return;
+            }
+
+            // Attach to the device
+            var device = await connection.Attach();
+            if (device == null)
+            {
+                Console.WriteLine("Unable to attach to device");
+                return;
+            }
+
+            // Serialize the schedule to JSON
+            var json = ScheduleSerializer.SerializeScheduleCollection(ScheduleCollection.ScheduleCollection);
+            if (json == null)
+            {
+                Console.WriteLine("Failed to serialize schedule");
+                return;
+            }
+
+            // Save the JSON to a temporary local file first
+            var tempPath = Path.GetTempFileName();
+            await File.WriteAllTextAsync(tempPath, json);
+
+            try
+            {
+                // Write the schedule file to the device
+                var result = await connection.WriteFile(tempPath, DefaultFileName);
+
+                if (result)
+                {
+                    Console.WriteLine("Schedule saved successfully to device");
+                }
+                else
+                {
+                    Console.WriteLine("Failed to save schedule to device");
+                }
+            }
+            finally
+            {
+                // Clean up the temporary file
+                if (File.Exists(tempPath))
+                {
+                    File.Delete(tempPath);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving to device: {ex.Message}");
+        }
     }
 
     private void OnScheduleCollectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

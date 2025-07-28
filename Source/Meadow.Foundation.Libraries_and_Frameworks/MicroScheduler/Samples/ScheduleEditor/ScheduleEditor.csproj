@@ -26,11 +26,12 @@
     <PackageReference Include="Avalonia.ReactiveUI" />
       <PackageReference Include="Avalonia.Controls.DataGrid" />
       <PackageReference Include="Avalonia.Themes.Fluent" />
-      <PackageReference Include="System.IO.Ports" />
       <PackageReference Include="Velopack" />      
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\Meadow.CLI\Source\Meadow.HCom\Meadow.HCom.csproj" />
+    <ProjectReference Include="..\..\..\..\..\..\Meadow.CLI\Source\Meadow.Tooling.Core\Meadow.Tooling.Core.csproj" />
     <ProjectReference Include="..\..\Driver\Meadow.Foundation.MicroScheduler\Meadow.Foundation.MicroScheduler.csproj" />
   </ItemGroup>
 </Project>

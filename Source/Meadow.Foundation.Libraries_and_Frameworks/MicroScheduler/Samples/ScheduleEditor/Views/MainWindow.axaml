@@ -40,6 +40,9 @@
             <MenuItem Header="_Device" x:Name="DeviceMenu">
                 <MenuItem Header="_Refresh Ports" Command="{Binding RefreshSerialPortsCommand}"/>
                 <Separator/>
+                <MenuItem Header="_Load from Device" Command="{Binding LoadFromDeviceCommand}"/>
+                <MenuItem Header="_Save to Device" Command="{Binding SaveToDeviceCommand}"/>
+                <Separator/>
                 <MenuItem Header="Available Ports:" IsEnabled="False" FontWeight="Bold"/>
                 <MenuItem Header="Loading..." IsEnabled="False"/>
             </MenuItem>
