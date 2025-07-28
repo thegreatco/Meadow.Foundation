@@ -1,0 +1,101 @@
+{
+  "schedules": [
+    {
+      "name": "Lights",
+      "events": [
+        {
+          "eventType": "Daily",
+          "offset": null,
+          "daysOfWeek": null,
+          "isDisabled": false,
+          "data": "true",
+          "eventTime": "2024-01-01T23:00:00"
+        },
+        {
+          "eventType": "Daily",
+          "offset": null,
+          "daysOfWeek": null,
+          "isDisabled": false,
+          "data": "false",
+          "eventTime": "2024-01-01T06:00:00"
+        },
+        {
+          "eventType": "Weekday",
+          "offset": null,
+          "daysOfWeek": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ],
+          "isDisabled": false,
+          "data": "true",
+          "eventTime": "1989-06-03T21:45:00"
+        },
+        {
+          "eventType": "Weekday",
+          "offset": null,
+          "daysOfWeek": [ "Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ],
+          "isDisabled": false,
+          "data": "false",
+          "eventTime": "1989-06-03T22:15:00"
+        },
+        {
+          "eventType": "SunsetOffset",
+          "offset": "00:15:00",
+          "daysOfWeek": [ "Saturday", "Sunday" ],
+          "isDisabled": false,
+          "data": "true",
+          "eventTime": null
+        },
+        {
+          "eventType": "SunriseOffset",
+          "offset": "-00:40:00",
+          "daysOfWeek": [ "Saturday", "Sunday" ],
+          "isDisabled": false,
+          "data": "false",
+          "eventTime": null
+        }
+      ]
+    },
+    {
+      "name": "Fountain",
+      "events": [
+        {
+          "eventType": "Daily",
+          "offset": null,
+          "daysOfWeek": null,
+          "isDisabled": false,
+          "data": "true",
+          "eventTime": "2024-01-01T13:00:00"
+        },
+        {
+          "eventType": "Daily",
+          "offset": null,
+          "daysOfWeek": null,
+          "isDisabled": false,
+          "data": "false",
+          "eventTime": "2024-01-01T02:00:00"
+        },
+        {
+          "eventType": "Weekday",
+          "offset": null,
+          "daysOfWeek": [ "Monday", "Wednesday", "Friday" ],
+          "isDisabled": false,
+          "data": "true",
+          "eventTime": "2024-01-01T11:30:00"
+        }
+      ]
+    }
+  ],
+  "timezone": {
+    "utcOffsetHours": -5,
+    "daylightSavingTime": {
+      "endDayOfWeek": "Sunday",
+      "endHour": 2,
+      "offsetHours": 1,
+      "endMonth": 11,
+      "endDay": 0,
+      "startDayOfWeek": "Sunday",
+      "startMonth": 3,
+      "startDay": 0,
+      "startHour": 2
+    },
+    "timezoneName": "America/New_York"
+  }
+}

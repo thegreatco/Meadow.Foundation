@@ -26,6 +26,7 @@
     <PackageReference Include="Avalonia.ReactiveUI" />
       <PackageReference Include="Avalonia.Controls.DataGrid" />
       <PackageReference Include="Avalonia.Themes.Fluent" />
+      <PackageReference Include="System.IO.Ports" />
       <PackageReference Include="Velopack" />      
   </ItemGroup>
 

@@ -37,6 +37,12 @@
                 <MenuItem Header="_Save" Command="{Binding SaveFileCommand}" HotKey="Ctrl+S"/>
                 <MenuItem Header="Save _As..." Command="{Binding SaveAsFileCommand}" HotKey="Ctrl+Shift+S"/>
             </MenuItem>
+            <MenuItem Header="_Device" x:Name="DeviceMenu">
+                <MenuItem Header="_Refresh Ports" Command="{Binding RefreshSerialPortsCommand}"/>
+                <Separator/>
+                <MenuItem Header="Available Ports:" IsEnabled="False" FontWeight="Bold"/>
+                <MenuItem Header="Loading..." IsEnabled="False"/>
+            </MenuItem>
         </Menu>
 
         <!-- Main Content -->

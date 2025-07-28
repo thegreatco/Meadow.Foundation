@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.IO.Ports;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -20,10 +23,14 @@ public class MainWindowViewModel : ViewModelBase
     private ScheduleEventModel? _selectedEvent;
     private bool _isFileModified;
     private bool _hasUnsavedChanges;
+    private string? _selectedSerialPort;
+    
+    public event Action<List<SerialPortModel>, string?>? SerialPortsUpdated;
 
     public MainWindowViewModel()
     {
         _scheduleCollection = new ScheduleCollectionModel();
+        SerialPorts = new ObservableCollection<SerialPortModel>();
         
         // Commands
         NewFileCommand = ReactiveCommand.CreateFromTask(NewFile);
@@ -36,6 +43,11 @@ public class MainWindowViewModel : ViewModelBase
         RemoveEventCommand = ReactiveCommand.Create(RemoveEvent, this.WhenAnyValue(x => x.SelectedEvent).Select(evt => evt != null));
         EditEventCommand = ReactiveCommand.CreateFromTask(EditEvent, this.WhenAnyValue(x => x.SelectedEvent).Select(evt => evt != null));
         SaveChangesCommand = ReactiveCommand.CreateFromTask(SaveChanges, this.WhenAnyValue(x => x.HasUnsavedChanges));
+        RefreshSerialPortsCommand = ReactiveCommand.CreateFromTask(RefreshSerialPorts);
+        SelectSerialPortCommand = ReactiveCommand.Create<string>(SelectSerialPort);
+        
+        // Initialize serial ports asynchronously
+        _ = RefreshSerialPorts();
 
         // Subscribe to property changes to track modifications
         _scheduleCollection.PropertyChanged += OnScheduleCollectionPropertyChanged;
@@ -101,6 +113,14 @@ public class MainWindowViewModel : ViewModelBase
         $"Schedule Editor - {(string.IsNullOrEmpty(ScheduleCollection.FileName) ? "Untitled" : Path.GetFileName(ScheduleCollection.FileName))}" +
         (IsFileModified ? "*" : "");
 
+    public ObservableCollection<SerialPortModel> SerialPorts { get; }
+
+    public string? SelectedSerialPort
+    {
+        get => _selectedSerialPort;
+        set => this.RaiseAndSetIfChanged(ref _selectedSerialPort, value);
+    }
+
     // Commands
     public ICommand NewFileCommand { get; }
     public ICommand OpenFileCommand { get; }
@@ -112,6 +132,8 @@ public class MainWindowViewModel : ViewModelBase
     public ICommand RemoveEventCommand { get; }
     public ICommand EditEventCommand { get; }
     public ICommand SaveChangesCommand { get; }
+    public ICommand RefreshSerialPortsCommand { get; }
+    public ICommand SelectSerialPortCommand { get; }
 
     private async Task NewFile()
     {
@@ -309,6 +331,64 @@ public class MainWindowViewModel : ViewModelBase
         {
             schedule.ApplyChanges();
         }
+    }
+
+    private async Task RefreshSerialPorts()
+    {
+        try
+        {
+            var portNames = SerialPort.GetPortNames();
+            var currentSelection = SelectedSerialPort;
+            
+            SerialPorts.Clear();
+            
+            foreach (var portName in portNames.OrderBy(p => p))
+            {
+                var portModel = new SerialPortModel(portName);
+                var isSelected = portName == currentSelection;
+                if (isSelected)
+                {
+                    portModel.IsSelected = true;
+                }
+                SerialPorts.Add(portModel);
+            }
+            
+            // If the previously selected port is no longer available, clear the selection
+            if (!string.IsNullOrEmpty(currentSelection) && !portNames.Contains(currentSelection))
+            {
+                SelectedSerialPort = null;
+            }
+            
+            // Notify the UI to update the menu
+            SerialPortsUpdated?.Invoke(SerialPorts.ToList(), SelectedSerialPort);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error refreshing serial ports: {ex.Message}");
+            
+            // Notify the UI with empty list on error
+            SerialPortsUpdated?.Invoke(new List<SerialPortModel>(), SelectedSerialPort);
+        }
+    }
+
+    private void SelectSerialPort(string portName)
+    {
+        // Clear all selections
+        foreach (var port in SerialPorts)
+        {
+            port.IsSelected = false;
+        }
+        
+        // Select the clicked port
+        var selectedPort = SerialPorts.FirstOrDefault(p => p.PortName == portName);
+        if (selectedPort != null)
+        {
+            selectedPort.IsSelected = true;
+            SelectedSerialPort = portName;
+        }
+        
+        // Notify the UI to update the menu
+        SerialPortsUpdated?.Invoke(SerialPorts.ToList(), SelectedSerialPort);
     }
 
     private void OnScheduleCollectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)

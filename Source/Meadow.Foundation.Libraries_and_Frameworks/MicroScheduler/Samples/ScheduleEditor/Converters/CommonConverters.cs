@@ -78,3 +78,20 @@ public class BooleanToActionConverter : IValueConverter
         return value?.ToString();
     }
 }
+
+public class BoolToCheckmarkConverter : IValueConverter
+{
+    public static readonly BoolToCheckmarkConverter Instance = new();
+
+    public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        if (value is bool boolValue && boolValue)
+            return "✓";
+        return null;
+    }
+
+    public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

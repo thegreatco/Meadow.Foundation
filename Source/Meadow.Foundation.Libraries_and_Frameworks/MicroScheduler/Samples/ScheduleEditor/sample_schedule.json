@@ -16,7 +16,7 @@
   },
   "schedules": [
     {
-      "circuitName": "Lights",
+      "name": "Lights",
       "events": [
         {
           "eventType": "Daily",
@@ -40,7 +40,7 @@
       ]
     },
     {
-      "circuitName": "Fountain",
+      "name": "Fountain",
       "events": [
         {
           "eventType": "Daily",

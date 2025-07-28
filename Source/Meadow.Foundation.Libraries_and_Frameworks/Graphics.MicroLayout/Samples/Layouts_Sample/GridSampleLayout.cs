@@ -9,6 +9,11 @@ public class GridSampleLayout : StackLayout
     public GridSampleLayout(int width, int height)
         : base(0, 0, width, height)
     {
+        var buffer = LoadJpeg(LoadResource(imageRes));
+        var image = Image.LoadFromPixelData(Buffer);
+        var picture = new Picture(320, 240, image);
+        this.Controls.Add(picture);
+
         var title = new Label(width, 22, text: "Grid Example")
         {
             Font = new Font12x20(),
