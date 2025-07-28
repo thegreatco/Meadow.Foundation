@@ -20,12 +20,27 @@ namespace Sensors.Motion.C4001_Sample
             return Task.CompletedTask;
         }
 
-        public override Task Run()
+        public override async Task Run()
         {
-            var status = sensor.GetStatus();
-            Resolver.Log.Info($"C4001 Status: {status.WorkStatus} {status.WorkMode} {status.InitStatus}");
+            while (true)
+            {
+                var status = sensor.GetStatus();
+                Resolver.Log.Info($"C4001 Status: WorkStatus={status.WorkStatus}, WorkMode={status.WorkMode}, InitStatus={status.InitStatus}");
 
-            return base.Run();
+                var targetSpeed = sensor.GetTargetSpeed();
+                Resolver.Log.Info($"Target Speed: {targetSpeed.MetersPerSecond:N2} m/s");
+
+                var targetRange = sensor.GetTargetRange();
+                Resolver.Log.Info($"Target Range: {targetRange.Meters:N2} m");
+
+                uint targetEnergy = sensor.GetTargetEnergy();
+                Resolver.Log.Info($"Target Energy: {targetEnergy}");
+
+                bool motionDetected = sensor.IsMotionDetected();
+                Resolver.Log.Info($"Motion Detected: {motionDetected}");
+
+                await Task.Delay(1000);
+            }
         }
 
         //<!=SNOP=>
