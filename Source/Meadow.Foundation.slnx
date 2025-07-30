@@ -1912,7 +1912,10 @@
     <File Path="../../Meadow.Contracts/Source/Directory.Packages.props" />
   </Folder>
   <Folder Name="/_External/">
+    <Project Path="../../Meadow.CLI/Source/Meadow.Cloud.Client/Meadow.Cloud.Client.csproj" />
     <Project Path="../../Meadow.CLI/Source/Meadow.HCom/Meadow.HCom.csproj" />
+    <Project Path="../../Meadow.CLI/Source/Meadow.Linker/Meadow.Linker.csproj" />
+    <Project Path="../../Meadow.CLI/Source/Meadow.SoftwareManager/Meadow.SoftwareManager.csproj" />
     <Project Path="../../Meadow.CLI/Source/Meadow.Tooling.Core/Meadow.Tooling.Core.csproj" />
     <Project Path="../../Meadow.Contracts/Source/Meadow.Contracts/Meadow.Contracts.csproj" />
     <Project Path="../../Meadow.Core/Source/implementations/desktop/Meadow.Desktop/Meadow.Desktop.csproj" />
