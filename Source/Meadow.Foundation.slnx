@@ -94,6 +94,7 @@
   <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/">
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/BarChart_Sample/BarChart_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/Charts_Sample/Charts_Sample.csproj" />
+    <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/Gauge_Sample/Gauge_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/HMI_Sample/HMI_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/Layouts_Sample/Layouts_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/ListBox_Sample/ListBox_Sample.csproj" />
@@ -1911,10 +1912,6 @@
   </Folder>
   <Folder Name="/_External/">
     <Project Path="../../Meadow.CLI/Source/Meadow.Cloud.Client/Meadow.Cloud.Client.csproj" />
-    <Project Path="../../Meadow.CLI/Source/Meadow.HCom/Meadow.HCom.csproj" />
-    <Project Path="../../Meadow.CLI/Source/Meadow.Linker/Meadow.Linker.csproj" />
-    <Project Path="../../Meadow.CLI/Source/Meadow.SoftwareManager/Meadow.SoftwareManager.csproj" />
-    <Project Path="../../Meadow.CLI/Source/Meadow.Tooling.Core/Meadow.Tooling.Core.csproj" />
     <Project Path="../../Meadow.Contracts/Source/Meadow.Contracts/Meadow.Contracts.csproj" />
     <Project Path="../../Meadow.Core/Source/implementations/desktop/Meadow.Desktop/Meadow.Desktop.csproj" />
     <Project Path="../../Meadow.Core/Source/implementations/f7/Meadow.F7/Meadow.F7.csproj">
