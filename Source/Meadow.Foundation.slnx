@@ -94,7 +94,6 @@
   <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/">
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/BarChart_Sample/BarChart_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/Charts_Sample/Charts_Sample.csproj" />
-    <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/Gauge_Sample/Gauge_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/HMI_Sample/HMI_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/Layouts_Sample/Layouts_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/ListBox_Sample/ListBox_Sample.csproj" />
