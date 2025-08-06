@@ -104,9 +104,7 @@
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/Driver/Meadow.Foundation.MicroScheduler/Meadow.Foundation.MicroScheduler.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/Tests/Meadow.Foundation.MicroScheduler.Unit.Tests/Meadow.Foundation.MicroScheduler.Unit.Tests.csproj" />
   </Folder>
-  <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/Samples/">
-    <Project Path="Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/Samples/ScheduleEditor/ScheduleEditor.csproj" />
-  </Folder>
+  <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/Samples/" />
   <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/Sensors.Location.Gnss.NmeaProcessor/" />
   <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/Sensors.Location.Gnss.NmeaProcessor/Driver/">
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Sensors.Location.Gnss.NmeaProcessor/Driver/Sensors.Location.Gnss.NmeaProcessor.csproj">
@@ -1912,8 +1910,6 @@
     <File Path="../../Meadow.Contracts/Source/Directory.Packages.props" />
   </Folder>
   <Folder Name="/_External/">
-    <Project Path="../../Meadow.CLI/Source/Meadow.HCom/Meadow.HCom.csproj" />
-    <Project Path="../../Meadow.CLI/Source/Meadow.Tooling.Core/Meadow.Tooling.Core.csproj" />
     <Project Path="../../Meadow.Contracts/Source/Meadow.Contracts/Meadow.Contracts.csproj" />
     <Project Path="../../Meadow.Core/Source/implementations/desktop/Meadow.Desktop/Meadow.Desktop.csproj" />
     <Project Path="../../Meadow.Core/Source/implementations/f7/Meadow.F7/Meadow.F7.csproj">
