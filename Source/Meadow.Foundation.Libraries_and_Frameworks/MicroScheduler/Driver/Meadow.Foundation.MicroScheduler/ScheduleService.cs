@@ -166,6 +166,16 @@ public class ScheduleService : IDisposable
     }
 
     /// <summary>
+    /// Updates the current location with the specified latitude and longitude.
+    /// </summary>
+    /// <param name="latitude">The latitude of the new location, in decimal degrees. Must be in the range -90 to 90.</param>
+    /// <param name="longitude">The longitude of the new location, in decimal degrees. Must be in the range -180 to 180.</param>
+    public void UpdateLocation(double latitude, double longitude)
+    {
+        _timeProvider.UpdateLocation(latitude, longitude);
+    }
+
+    /// <summary>
     /// Evaluates all schedules against the current time and updates circuit states as needed.
     /// </summary>
     /// <returns>A task that represents the asynchronous evaluation operation.</returns>
