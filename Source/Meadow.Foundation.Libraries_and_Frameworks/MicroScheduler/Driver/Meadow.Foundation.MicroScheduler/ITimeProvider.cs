@@ -19,4 +19,11 @@ public interface ITimeProvider
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains a tuple with the sunrise and sunset times in UTC.</returns>
     ValueTask<(DateTimeOffset sunrise, DateTimeOffset sunset)> GetUtcSunriseAndSunset();
+
+    /// <summary>
+    /// Updates the current location of the object using the specified latitude and longitude.
+    /// </summary>
+    /// <param name="latitude">The latitude of the new location, in decimal degrees. Must be in the range -90 to 90.</param>
+    /// <param name="longitude">The longitude of the new location, in decimal degrees. Must be in the range -180 to 180.</param>
+    void UpdateLocation(double latitude, double longitude);
 }
