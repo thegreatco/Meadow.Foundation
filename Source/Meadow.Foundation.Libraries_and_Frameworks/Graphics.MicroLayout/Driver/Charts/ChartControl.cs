@@ -25,7 +25,7 @@ public abstract class ChartControl : ThemedControl
     /// <summary>
     /// The default width of the control margin
     /// </summary>
-    protected const int DefaultMargin = 0;
+    protected const int DefaultMargin = 2;
 
     /// <summary>
     /// The default width of the control's axis lines
