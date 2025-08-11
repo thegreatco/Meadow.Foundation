@@ -18,6 +18,11 @@ public class LineChart : ChartControl
     public bool ShowYAxisLabels { get; set; }
 
     /// <summary>
+    /// Use antialiased lines
+    /// </summary>
+    public bool UseAntialiasing { get; set; }
+
+    /// <summary>
     /// The collection of data series to plot
     /// </summary>
     public LineChartSeriesCollection Series { get; set; } = new();
@@ -215,12 +220,24 @@ public class LineChart : ChartControl
                 }
                 else
                 {
-                    graphics.DrawLine(
-                        lastX + ParentOffsetX,
-                        lastY + ParentOffsetY,
-                        scaledX,
-                        scaledY,
-                        series.LineColor);
+                    if(UseAntialiasing)
+                    {
+                        graphics.DrawLineAntialiased(
+                            lastX + ParentOffsetX,
+                            lastY + ParentOffsetY,
+                            scaledX,
+                            scaledY,
+                            series.LineColor);
+                    }
+                    else
+                    {
+                        graphics.DrawLine(
+                            lastX + ParentOffsetX,
+                            lastY + ParentOffsetY,
+                            scaledX,
+                            scaledY,
+                            series.LineColor);
+                    }
                 }
 
                 lastX = scaledX;
