@@ -54,7 +54,6 @@ public class MeadowApp : App<Desktop>
         return base.Run();
     }
 
-
     private void ShowCurrentLayout()
     {
         for (var i = 0; i < _layouts.Count; i++)

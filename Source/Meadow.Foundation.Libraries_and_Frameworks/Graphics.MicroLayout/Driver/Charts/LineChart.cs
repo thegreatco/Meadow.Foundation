@@ -12,11 +12,11 @@ public class LineChart : ChartControl
     /// </summary>
     public bool AlwaysShowYOrigin { get; set; } = true;
 
-    //    public bool ShowXAxisLabels { get; set; }
     /// <summary>
     /// When true, Y-axis labels will be shown
     /// </summary>
     public bool ShowYAxisLabels { get; set; }
+
     /// <summary>
     /// The collection of data series to plot
     /// </summary>
@@ -39,8 +39,7 @@ public class LineChart : ChartControl
     /// <param name="height">The control's height</param>
     public LineChart(int left, int top, int width, int height)
         : base(left, top, width, height)
-    {
-    }
+    { }
 
     /// <inheritdoc/>
     protected override void OnDraw(MicroGraphics graphics)
