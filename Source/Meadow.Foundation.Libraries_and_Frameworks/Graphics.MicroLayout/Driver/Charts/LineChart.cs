@@ -46,7 +46,7 @@ public class LineChart : ChartControl
     {
         graphics.DrawRectangle(Left, Top, Width, Height, BackgroundColor, true);
 
-        ChartAreaTop = Top + DefaultMargin * 2 - AxisStroke;
+        ChartAreaTop = Top + DefaultMargin * 2;
         ChartAreaBottom = Bottom - DefaultMargin;
 
         if (Series.Count > 0)
@@ -112,28 +112,31 @@ public class LineChart : ChartControl
             if (XAxisYIntercept != YMinimumValue)
             {
                 graphics.DrawText(
-                    x: Left + DefaultMargin + ParentOffsetX,
+                    x: ChartAreaLeft - AxisStroke - 1,
                     y: XAxisScaledPosition - (font.Height / 2) + +ParentOffsetY, // centered on tick
                     color: AxisLabelColor,
-                     text: XAxisYIntercept.ToString("0.0"),
-                    font: font);
+                    text: XAxisYIntercept.ToString("0.0"),
+                    font: font,
+                    alignmentH: HorizontalAlignment.Right);
             }
 
             // max label
             graphics.DrawText(
-                x: Left + DefaultMargin + ParentOffsetX,
-                y: ChartAreaTop - font.Height + DefaultMargin,
+                x: ChartAreaLeft - AxisStroke - 1,
+                y: ChartAreaTop + DefaultMargin + 1,
                 color: AxisLabelColor,
                 text: YMaximumValue.ToString("0.0"),
-                font: font);
+                font: font,
+                alignmentH: HorizontalAlignment.Right);
 
             // min label
             graphics.DrawText(
-                x: Left + DefaultMargin + ParentOffsetX,
+                x: ChartAreaLeft - AxisStroke - 1,
                 y: ChartAreaBottom - font.Height + ParentOffsetY,
                 color: AxisLabelColor,
                 text: YMinimumValue.ToString("0.0"),
-                font: font);
+                font: font,
+                alignmentH: HorizontalAlignment.Right);
         }
     }
 
@@ -170,7 +173,7 @@ public class LineChart : ChartControl
         if (ShowYAxisLabels)
         {
             // TODO: this needs to be label-based
-            leftMargin += GetAxisFont().Width * YMaximumValue.ToString("0.0").Length;
+            leftMargin += GetAxisFont().Width * YMaximumValue.ToString("0000").Length;
         }
 
         // TODO: deal with chart with negative values

@@ -1,50 +1,29 @@
 ﻿using Meadow;
-using Meadow.Foundation.Graphics;
 using Meadow.Foundation.Graphics.MicroLayout;
 
 namespace Charts_Sample;
 
-public class LineChartLayout : StackLayout
+public class LineChartLayout : AbsoluteLayout
 {
     private const int PointsPerSeries = 50;
 
     public LineChartLayout(int width, int height)
-        : base(0, 0, width, height, Orientation.Vertical)
+        : base(0, 0, width, height)
     {
-        var title = new Label(width, 22, text: "Basic Chart Example")
-        {
-            Font = new Font12x16(),
-            TextColor = Color.Black,
-            BackgroundColor = Color.LightGray,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        var horizontalStack = new StackLayout(
-            10, 10,
-            width - 20, height - 20,
-            Orientation.Horizontal,
-            CrossAxisAlignment.Center);
-        horizontalStack.BackgroundColor = Color.DarkGray;
-
         var chart = new LineChart(0, 0, width, height)
         {
-            BackgroundColor = Color.FromHex("111111"),
+            BackgroundColor = Color.Black,
             ShowYAxisLabels = true,
-
+            AxisStroke = 1,
+            AxisColor = Color.Gray,
         };
 
         chart.Series.Add(
             GetSineSeries(),
             GetCosineSeries(4, 4.2, 0));
 
-        horizontalStack.Controls.Add(chart);
+        Controls.Add(chart);
 
-        Controls.Add(title);
-        Controls.Add(horizontalStack);
-
-        Padding = 5;
-        Spacing = 5;
         BackgroundColor = Color.DimGray;
     }
 
@@ -52,13 +31,12 @@ public class LineChartLayout : StackLayout
     {
         var series = new LineChartSeries()
         {
-            LineColor = Color.Red,
+            LineColor = Color.DarkGreen,
             PointColor = Color.Green,
             LineStroke = 1,
-            PointSize = 6,
+            PointSize = 5,
             ShowLines = true,
             ShowPoints = false,
-
         };
 
         for (var p = 0; p < PointsPerSeries; p++)
@@ -74,9 +52,9 @@ public class LineChartLayout : StackLayout
         var series = new LineChartSeries()
         {
             LineColor = Color.DarkBlue,
-            PointColor = Color.DarkGreen,
+            PointColor = Color.Blue,
             LineStroke = 1,
-            PointSize = 6,
+            PointSize = 5,
             ShowLines = true,
             ShowPoints = false,
 
