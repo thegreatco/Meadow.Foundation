@@ -34,7 +34,7 @@ public abstract class ProgrammableAnalogInputModuleBase : IProgrammableAnalogInp
         return ReadNtc(channelNumber, 3950, new Temperature(25, Temperature.UnitType.Celsius), new Resistance(10_000, Resistance.UnitType.Ohms));
     }
 
-    public object ReadChannelAsConfiguredUnit(int channelNumber)
+    public IUnit ReadChannelAsConfiguredUnit(int channelNumber)
     {
         switch (channelConfigs[channelNumber].ChannelType)
         {
@@ -48,7 +48,7 @@ public abstract class ProgrammableAnalogInputModuleBase : IProgrammableAnalogInp
         throw new NotSupportedException();
     }
 
-    private object ReadCurrentAsUnits(int channelNumber, ConfigurableAnalogInputChannelType channelType)
+    private IUnit ReadCurrentAsUnits(int channelNumber, ConfigurableAnalogInputChannelType channelType)
     {
         Current current;
 
@@ -91,7 +91,7 @@ public abstract class ProgrammableAnalogInputModuleBase : IProgrammableAnalogInp
         throw new NotSupportedException();
     }
 
-    private object ReadVoltageAsUnits(int channelNumber)
+    private IUnit ReadVoltageAsUnits(int channelNumber)
     {
         var current = Read0_10V(channelNumber);
 

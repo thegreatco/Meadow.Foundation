@@ -16,6 +16,11 @@ public class DisplayScreen : IControlContainer
     private bool _updateInProgress = false;
     private Color _backgroundColor;
 
+    /// <summary>
+    /// Occurs when the bounds of the object change.
+    /// </summary>
+    /// <remarks>This event is raised whenever the size or position of the object's bounds is modified.
+    /// Subscribers can use this event to respond to changes in the object's layout or dimensions.</remarks>
     public event EventHandler? BoundsChanged;
 
     /// <summary>
@@ -238,8 +243,6 @@ public class DisplayScreen : IControlContainer
                 {
                     if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
                     {
-                        _graphics.Clear(BackgroundColor);
-
                         foreach (var control in Controls)
                         {
                             if (control != null)

@@ -19,6 +19,8 @@ public abstract class LayoutBase : ThemedControl, ILayout
         get => base.IsVisible;
         set
         {
+            if (base.IsVisible == value) return;
+
             base.IsVisible = value;
             Invalidate();
         }

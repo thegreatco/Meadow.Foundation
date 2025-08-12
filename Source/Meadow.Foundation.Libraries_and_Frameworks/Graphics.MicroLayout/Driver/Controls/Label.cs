@@ -73,7 +73,7 @@ public class Label : ClickableControl
 
     private string _text = string.Empty;
 
-    private DisplayTheme? _theme;
+    private readonly DisplayTheme? _theme;
     private Color? _textColor;
     private Color? _backColor;
     private VerticalAlignment _verticalAlignment = VerticalAlignment.Center;
@@ -116,16 +116,6 @@ public class Label : ClickableControl
     {
         ScaleFactor = scaleFactor;
         Text = text;
-    }
-
-    /// <summary>
-    /// Applies the specified display theme to the label display control.
-    /// </summary>
-    /// <param name="theme">The display theme to apply.</param>
-    public override void ApplyTheme(DisplayTheme theme)
-    {
-        _theme = theme;
-        Invalidate();
     }
 
     /// <summary>

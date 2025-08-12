@@ -9,6 +9,8 @@ public class GridSampleLayout : StackLayout
     public GridSampleLayout(int width, int height)
         : base(0, 0, width, height)
     {
+        this.BackgroundColor = Color.LightGray;
+
         var title = new Label(width, 22, text: "Grid Example")
         {
             Font = new Font12x20(),
