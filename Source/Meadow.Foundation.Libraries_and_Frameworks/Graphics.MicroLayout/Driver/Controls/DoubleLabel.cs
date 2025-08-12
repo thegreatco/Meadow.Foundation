@@ -28,8 +28,8 @@ public class DoubleLabel : ClickableControl
     /// </summary>
     public Color BackgroundColor
     {
-        get => _backColor ?? _theme?.BackgroundColor ?? DefaultBackColor;
-        set => SetInvalidatingProperty(ref _backColor, value);
+        get => _backgroundColor ?? _theme?.BackgroundColor ?? DefaultBackgroundColor;
+        set => SetInvalidatingProperty(ref _backgroundColor, value);
     }
 
     /// <summary>
@@ -78,14 +78,14 @@ public class DoubleLabel : ClickableControl
     }
 
     private static Color DefaultTextColor = Color.White;
-    private static Color DefaultBackColor = Color.Transparent;
+    private static Color DefaultBackgroundColor = Color.Transparent;
 
     private string _text = string.Empty;
     private string _textSecondary = string.Empty;
 
     private DisplayTheme? _theme;
     private Color? _textColor;
-    private Color? _backColor;
+    private Color? _backgroundColor;
     private HorizontalAlignment _horizontalAlignment;
     private IFont? _font;
     private IFont? _fontSecondary;
