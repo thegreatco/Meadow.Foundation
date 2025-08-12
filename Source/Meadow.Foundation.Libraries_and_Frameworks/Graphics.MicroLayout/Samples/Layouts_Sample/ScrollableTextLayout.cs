@@ -9,6 +9,8 @@ public class ScrollableTextLayout : AbsoluteLayout
     public ScrollableTextLayout(int width, int height)
         : base(0, 0, width, height)
     {
+        this.BackgroundColor = Color.LightGray;
+
         var title = new Label(0, 0, width, 22, text: "Scrollable Text Example")
         {
             Font = new Font12x20(),
@@ -26,5 +28,10 @@ public class ScrollableTextLayout : AbsoluteLayout
         }
 
         Controls.Add(title, scrollableText);
+    }
+
+    protected override void OnDraw(MicroGraphics graphics)
+    {
+        base.OnDraw(graphics);
     }
 }

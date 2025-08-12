@@ -11,5 +11,5 @@ public interface IProgrammableAnalogInputModule
     Current Read0_20mA(int channelNumber);
     Current Read4_20mA(int channelNumber);
     Temperature ReadNtc(int channelNumber, double beta, Temperature referenceTemperature, Resistance resistanceAtRefTemp);
-    object ReadChannelAsConfiguredUnit(int channelNumber);
+    IUnit ReadChannelAsConfiguredUnit(int channelNumber);
 }

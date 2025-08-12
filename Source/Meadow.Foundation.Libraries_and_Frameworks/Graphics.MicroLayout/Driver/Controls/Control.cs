@@ -189,8 +189,8 @@ public abstract class Control : IControl
             if (IsVisible)
             {
                 OnDraw(graphics);
-                IsInvalid = false;
             }
+            IsInvalid = false;
         }
     }
 
