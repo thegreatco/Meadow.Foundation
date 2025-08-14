@@ -197,23 +197,20 @@ public class DisplayScreen : IControlContainer
         IsInvalid = true;
     }
 
-    private void DrawLoopOnCaller()
+    private void DrawLoopProc()
     {
-        while (true)
+        lock (Controls.SyncRoot)
         {
             if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
             {
                 _graphics.Clear(BackgroundColor);
 
-                lock (Controls.SyncRoot)
+                foreach (var control in Controls)
                 {
-                    foreach (var control in Controls)
+                    if (control != null)
                     {
-                        if (control != null)
-                        {
-                            // TODO: micrographics supports invalidating regions - we need to update to invalidate only regions here, too
-                            Refresh(control);
-                        }
+                        // TODO: micrographics supports invalidating regions - we need to update to invalidate only regions here, too
+                        Refresh(control);
                     }
                 }
                 try
@@ -228,44 +225,29 @@ public class DisplayScreen : IControlContainer
                 }
                 IsInvalid = false;
             }
+        }
+    }
+
+    private void DrawLoopOnCaller()
+    { // this loop is used by platforms where drawing can happen on any thread (e.g. meadow, or Linux with a SPI display)
+        while (true)
+        {
+            if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
+            {
+                DrawLoopProc();
+            }
 
             Thread.Sleep(50);
         }
     }
 
     private void DrawLoopThreaded()
-    {
+    { // this loop is used by desktop platforms where drawing must happen on a UI thread
         while (true)
         {
             Resolver.App.InvokeOnMainThread((_) =>
             {
-                lock (Controls.SyncRoot)
-                {
-                    if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
-                    {
-                        _graphics.Clear(BackgroundColor);
-
-                        foreach (var control in Controls)
-                        {
-                            if (control != null)
-                            {
-                                // TODO: micrographics supports invalidating regions - we need to update to invalidate only regions here, too
-                                Refresh(control);
-                            }
-                        }
-                        try
-                        {
-                            _graphics.Show();
-                        }
-                        catch (Exception ex)
-                        {
-                            // it possible to have a callee error (e.g. an I2C bus problem)
-                            // we'll report it and continue running
-                            Resolver.Log.Warn($"MicroGraphics.Show error while drawing screen: {ex.Message}");
-                        }
-                        IsInvalid = false;
-                    }
-                }
+                DrawLoopProc();
             });
 
             Thread.Sleep(50);
