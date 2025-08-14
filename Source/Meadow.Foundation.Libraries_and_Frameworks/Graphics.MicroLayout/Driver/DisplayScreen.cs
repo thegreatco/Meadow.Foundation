@@ -243,6 +243,8 @@ public class DisplayScreen : IControlContainer
                 {
                     if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
                     {
+                        _graphics.Clear(BackgroundColor);
+
                         foreach (var control in Controls)
                         {
                             if (control != null)
