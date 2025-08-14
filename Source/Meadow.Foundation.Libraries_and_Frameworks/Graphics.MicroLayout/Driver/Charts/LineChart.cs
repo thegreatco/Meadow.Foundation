@@ -178,7 +178,7 @@ public class LineChart : ChartControl
         if (ShowYAxisLabels)
         {
             // TODO: this needs to be label-based
-            leftMargin += GetAxisFont().Width * YMaximumValue.ToString("0000").Length;
+            leftMargin += GetAxisFont().Width * YMaximumValue.ToString("000.0").Length;
         }
 
         // TODO: deal with chart with negative values
@@ -220,7 +220,7 @@ public class LineChart : ChartControl
                 }
                 else
                 {
-                    if(UseAntialiasing)
+                    if (UseAntialiasing)
                     {
                         graphics.DrawLineAntialiased(
                             lastX + ParentOffsetX,

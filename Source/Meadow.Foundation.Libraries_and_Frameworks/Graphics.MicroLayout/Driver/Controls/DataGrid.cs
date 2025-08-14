@@ -14,12 +14,12 @@ namespace Meadow.Foundation.Graphics.MicroLayout;
 public class DataGrid : ThemedControl
 {
     private static Color DefaultTextColor = Color.White;
-    private static Color DefaultBackColor = Color.Black;
-    private static Color DefaultHeaderBackColor = Color.DarkGray;
+    private static Color DefaultBackgroundColor = Color.Black;
+    private static Color DefaultHeaderBackgroundColor = Color.DarkGray;
 
     private readonly List<object[]> _rows = new();
     private Color? _textColor;
-    private Color? _backColor;
+    private Color? _backgroundColor;
     private readonly DisplayTheme? _theme;
 
     /// <summary>
@@ -83,7 +83,7 @@ public class DataGrid : ThemedControl
     /// <summary>
     /// Gets or sets the background color of the header.
     /// </summary>
-    public Color HeaderBackgroundColor { get; set; } = DefaultHeaderBackColor;
+    public Color HeaderBackgroundColor { get; set; } = DefaultHeaderBackgroundColor;
     /// <summary>
     /// Gets or sets the color of the header text.
     /// </summary>
@@ -120,8 +120,8 @@ public class DataGrid : ThemedControl
     /// </summary>
     public Color BackgroundColor
     {
-        get => _backColor ?? _theme?.BackgroundColor ?? DefaultBackColor;
-        set => SetInvalidatingProperty(ref _backColor, value);
+        get => _backgroundColor ?? _theme?.BackgroundColor ?? DefaultBackgroundColor;
+        set => SetInvalidatingProperty(ref _backgroundColor, value);
     }
 
     /// <summary>
@@ -252,24 +252,24 @@ public class DataGrid : ThemedControl
 
             var r = 0;
 
-            Color rowBackColor;
+            Color rowBackgroundColor;
             Color rowTextColor;
 
             foreach (var row in _rows)
             {
                 if (++r % 2 == 0)
                 {
-                    rowBackColor = EvenRowBackgroundColor ?? BackgroundColor;
+                    rowBackgroundColor = EvenRowBackgroundColor ?? BackgroundColor;
                     rowTextColor = EvenRowTextColor ?? TextColor;
                 }
                 else
                 {
-                    rowBackColor = BackgroundColor;
+                    rowBackgroundColor = BackgroundColor;
                     rowTextColor = TextColor;
                 }
 
                 DrawRow(graphics,
-                        rowBackColor,
+                        rowBackgroundColor,
                         rowTextColor,
                         x,
                         y,
@@ -306,7 +306,7 @@ public class DataGrid : ThemedControl
         }
     }
 
-    private void DrawRow(MicroGraphics graphics, Color backColor, Color textColor, int x, int y, object[] values)
+    private void DrawRow(MicroGraphics graphics, Color backgroundColor, Color textColor, int x, int y, object[] values)
     {
         for (int i = 0; i < Columns.Length; i++)
         {
@@ -314,7 +314,7 @@ public class DataGrid : ThemedControl
             var value = values[i]?.ToString() ?? string.Empty;
             // TODO: alternating back color?
             // Draw cell background
-            graphics.DrawRectangle(x, y, column.Width, RowHeight, backColor, true);
+            graphics.DrawRectangle(x, y, column.Width, RowHeight, backgroundColor, true);
 
             // TODO: cell borders?
             //graphics.Stroke = 1;
