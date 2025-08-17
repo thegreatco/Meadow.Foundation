@@ -47,6 +47,11 @@ public class DataGrid : ThemedControl
         public VerticalAlignment VerticalAlignment { get; set; } = VerticalAlignment.Top;
 
         /// <summary>
+        /// Gets or sets the color of the text.
+        /// </summary>
+        public Color? TextColor { get; set; } = null;
+
+        /// <summary>
         /// Represents the definition of a column, including its width and optional header text.
         /// </summary>
         /// <param name="width">The width of the column, specified as an integer. Must be a positive value.</param>
@@ -63,10 +68,18 @@ public class DataGrid : ThemedControl
     /// </summary>
     public int RowHeight { get; set; } = 20;
     /// <summary>
+    /// Gets or sets the height, in pixels, of the header row in the table.
+    /// </summary>
+    public int HeaderRowHeight { get; set; } = 20;
+    /// <summary>
+    /// Gets the number of data rows currently stored in the collection.
+    /// </summary>
+    public int RowCount => _rows.Count;
+
+    /// <summary>
     /// Gets the collection of column definitions for the current layout.
     /// </summary>
     public ColumnDefinition[] Columns { get; }
-
     /// <summary>
     /// Gets or sets the background color of the header.
     /// </summary>
@@ -83,6 +96,15 @@ public class DataGrid : ThemedControl
     /// Gets or sets the text color for even rows in a display or grid.
     /// </summary>
     public Color? EvenRowTextColor { get; set; } = null;
+
+    /// <summary>
+    /// Gets or sets the font used to render data rows in the table.
+    /// </summary>
+    public IFont? RowFont { get; set; } = null;
+    /// <summary>
+    /// Gets or sets the font used for rendering headers.
+    /// </summary>
+    public IFont? HeaderFont { get; set; } = null;
 
     /// <summary>
     /// Gets or sets the text color of the label text.
@@ -127,7 +149,13 @@ public class DataGrid : ThemedControl
     /// <param name="values">An array of values to populate the new row. The number of values must not exceed the number of columns.</param>
     public void AddRow(params object[] values)
     {
-        _rows.Add(values[..Columns.Length]);
+        object[] rowValues = new object[Columns.Length];
+        for (int i = 0; i < Columns.Length; i++)
+        {
+            rowValues[i] = i < values.Length ? values[i] : string.Empty;
+        }
+
+        _rows.Add(rowValues);
 
         // TODO: clear and draw just the added row area
         this.Invalidate();
@@ -191,13 +219,18 @@ public class DataGrid : ThemedControl
         {
             throw new ArgumentOutOfRangeException("Row or column index is out of range.");
         }
-        _rows[rowIndex][columnIndex] = value;
 
-        // TODO: clear and draw just the cell area
+        if (_rows[rowIndex][columnIndex] != value)
+        {
+            _rows[rowIndex][columnIndex] = value;
 
-        this.Invalidate();
+            // TODO: clear and draw just the cell area
+
+            this.Invalidate();
+        }
     }
 
+    /// <inheritdoc/>
     protected override void OnDraw(MicroGraphics graphics)
     {
         int x = ScreenLeft;
@@ -212,17 +245,9 @@ public class DataGrid : ThemedControl
 
             if (Columns.Any(c => c.Header != null))
             {
-                // TODO: header background color?
-                // draw the header row
-                DrawRow(
-                    graphics,
-                    HeaderBackgroundColor,
-                    HeaderTextColor,
-                    x,
-                    y,
-                    Columns.Select(c => c.Header ?? string.Empty).ToArray());
+                DrawHeaderRow(graphics, x, y);
 
-                y += RowHeight; // move down for header row
+                y += HeaderRowHeight;
             }
 
             var r = 0;
@@ -256,6 +281,31 @@ public class DataGrid : ThemedControl
         }
     }
 
+    private void DrawHeaderRow(MicroGraphics graphics, int x, int y)
+    {
+        for (int i = 0; i < Columns.Length; i++)
+        {
+            var column = Columns[i];
+            var value = column.Header ?? string.Empty;
+
+            // Draw row background
+            graphics.DrawRectangle(x, y, column.Width, HeaderRowHeight, HeaderBackgroundColor, true);
+
+            // TODO: cell borders?
+
+            // Draw row content
+            graphics.DrawText(
+                x + 2, // TODO: padding?
+                y + 2, // TODO: padding?
+                value,
+                HeaderTextColor,
+                alignmentH: column.HorizontalAlignment,
+                alignmentV: column.VerticalAlignment,
+                font: HeaderFont);
+            x += column.Width;
+        }
+    }
+
     private void DrawRow(MicroGraphics graphics, Color backgroundColor, Color textColor, int x, int y, object[] values)
     {
         for (int i = 0; i < Columns.Length; i++)
@@ -275,9 +325,10 @@ public class DataGrid : ThemedControl
                 x + 2, // TODO: padding?
                 y + 2, // TODO: padding?
                 value,
-                textColor,
+                column.TextColor ?? textColor,
                 alignmentH: column.HorizontalAlignment,
-                alignmentV: column.VerticalAlignment);
+                alignmentV: column.VerticalAlignment,
+                font: RowFont);
             x += column.Width;
 
 
