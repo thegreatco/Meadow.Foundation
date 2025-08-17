@@ -34,9 +34,9 @@ public class LineSeriesPointCollection : IEnumerable<LineSeriesPoint>
     public int Count => _points.Count;
 
     /// <summary>
-    /// Gets the last point in the collection.
+    /// Gets the last point in the collection
     /// </summary>
-    public LineSeriesPoint Last => _points.Last();
+    public LineSeriesPoint Last => _points.LastOrDefault();
 
     /// <summary>
     /// Adds a point to the collection
@@ -113,6 +113,24 @@ public class LineSeriesPointCollection : IEnumerable<LineSeriesPoint>
                 _points.Remove(point);
             }
 
+            RecalculateMinMax();
+        }
+    }
+
+    /// <summary>
+    /// Shifts all points in the collection by the specified X offset.
+    /// </summary>
+    /// <param name="offset">The value to add to the X coordinate of each point.</param>
+    public void PanX(double offset)
+    {
+        lock (_points)
+        {
+            for (int i = 0; i < _points.Count; i++)
+            {
+                var point = _points[i];
+                point.X += offset;
+                _points[i] = point;
+            }
             RecalculateMinMax();
         }
     }
