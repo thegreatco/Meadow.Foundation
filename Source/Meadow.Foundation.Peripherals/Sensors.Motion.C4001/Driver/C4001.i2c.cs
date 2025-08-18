@@ -273,16 +273,13 @@ public partial class C4001 : II2cPeripheral
 
     internal bool SetPwmI2c(byte pwm1, byte pwm2, byte timer)
     {
-        if (pwm1 > 100 || pwm2 > 100)
-            return false;
-
-        // The C++ code returns true for I2C so replicating that here
-        return true;
+        // PWM isn't supported over I2C
+        return false;
     }
 
     internal PwmData GetPwmI2c()
     {
-        // Return default PWM data since PWM is not supported over I2C
+        // PWM isn't supported over I2C
         return new PwmData();
     }
 
