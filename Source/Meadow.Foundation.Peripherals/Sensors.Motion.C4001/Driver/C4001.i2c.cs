@@ -217,9 +217,9 @@ public partial class C4001 : II2cPeripheral
         {
             _flashNumber = 0;
             _buffer.Number = 1;
-            _buffer.Range = (short)((ushort)(temp[1] | (temp[2] << 8))) / 100.0f;
-            _buffer.Speed = (short)((ushort)(temp[3] | (temp[4] << 8))) / 100.0f;
-            _buffer.Energy = (uint)(temp[5] | (temp[6] << 8));
+            _buffer.Range = BitConverter.ToInt16(temp, 1) / 100.0f;
+            _buffer.Speed = BitConverter.ToInt16(temp, 3) / 100.0f;
+            _buffer.Energy = (uint)BitConverter.ToInt16(temp, 5);
         }
         else
         {
@@ -321,8 +321,4 @@ public partial class C4001 : II2cPeripheral
         I2cComms!.ReadRegister((byte)Registers.MICRO_MOTION, buffer);
         return (SwitchState)buffer[0];
     }
-
-
-
-
 }

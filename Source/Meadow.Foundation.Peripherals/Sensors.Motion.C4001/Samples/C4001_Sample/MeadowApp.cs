@@ -1,6 +1,7 @@
 ﻿using Meadow;
 using Meadow.Devices;
 using Meadow.Foundation.Sensors.Motion;
+using System;
 using System.Threading.Tasks;
 
 namespace Sensors.Motion.C4001_Sample
@@ -26,23 +27,30 @@ namespace Sensors.Motion.C4001_Sample
         {
             while (true)
             {
-                byte targetNumber = sensor.GetTargetNumber();
-                Resolver.Log.Info($"Target Number: {targetNumber}");
+                try
+                {
+                    byte targetNumber = sensor.GetTargetNumber();
+                    Resolver.Log.Info($"Target Number: {targetNumber}");
 
-                var status = sensor.GetStatus();
-                Resolver.Log.Info($"C4001 Status: WorkStatus={status.WorkStatus}, WorkMode={status.WorkMode}, InitStatus={status.InitStatus}");
+                    var status = sensor.GetStatus();
+                    Resolver.Log.Info($"C4001 Status: WorkStatus={status.WorkStatus}, WorkMode={status.WorkMode}, InitStatus={status.InitStatus}");
 
-                var targetSpeed = sensor.GetTargetSpeed();
-                Resolver.Log.Info($"Target Speed: {targetSpeed.MetersPerSecond:N2} m/s");
+                    var targetSpeed = sensor.GetTargetSpeed();
+                    Resolver.Log.Info($"Target Speed: {targetSpeed.MetersPerSecond:N2} m/s");
 
-                var targetRange = sensor.GetTargetRange();
-                Resolver.Log.Info($"Target Range: {targetRange.Meters:N2} m");
+                    var targetRange = sensor.GetTargetRange();
+                    Resolver.Log.Info($"Target Range: {targetRange.Meters:N2} m");
 
-                uint targetEnergy = sensor.GetTargetEnergy();
-                Resolver.Log.Info($"Target Energy: {targetEnergy}");
+                    uint targetEnergy = sensor.GetTargetEnergy();
+                    Resolver.Log.Info($"Target Energy: {targetEnergy}");
 
-                bool motionDetected = sensor.IsMotionDetected();
-                Resolver.Log.Info($"Motion Detected: {motionDetected}");
+                    bool motionDetected = sensor.IsMotionDetected();
+                    Resolver.Log.Info($"Motion Detected: {motionDetected}");
+                }
+                catch (Exception ex)
+                {
+                    Resolver.Log.Error($"Error: {ex.Message}");
+                }
 
                 await Task.Delay(2000);
             }
