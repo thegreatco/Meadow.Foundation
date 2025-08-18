@@ -8,7 +8,7 @@ namespace Meadow.Foundation.Graphics.MicroLayout;
 /// </summary>
 public class Picture : ThemedControl
 {
-    private Color _backColor = Color.Transparent;
+    private Color _backgroundColor = Color.Transparent;
     private VerticalAlignment _verticalAlignment = VerticalAlignment.Center;
     private HorizontalAlignment _horizontalAlignment = HorizontalAlignment.Center;
     private MF.Image? _image = default!;
@@ -47,7 +47,7 @@ public class Picture : ThemedControl
     {
         if (theme != null)
         {
-            if (theme.BackgroundColor != null) BackColor = theme.BackgroundColor.Value;
+            if (theme.BackgroundColor != null) BackgroundColor = theme.BackgroundColor.Value;
         }
     }
 
@@ -81,10 +81,10 @@ public class Picture : ThemedControl
     /// <summary>
     /// Gets or sets the background color of the image display control.
     /// </summary>
-    public Color BackColor
+    public Color BackgroundColor
     {
-        get => _backColor;
-        set => SetInvalidatingProperty(ref _backColor, value);
+        get => _backgroundColor;
+        set => SetInvalidatingProperty(ref _backgroundColor, value);
     }
 
     /// <summary>
@@ -95,14 +95,14 @@ public class Picture : ThemedControl
     {
         if (Image == null) { return; }
 
-        if (BackColor != Color.Transparent)
+        if (BackgroundColor != Color.Transparent)
         {
             graphics.DrawRectangle(
                 Left + (Parent?.Left ?? 0),
                 Top + (Parent?.Top ?? 0),
                 Width,
                 Height,
-                BackColor,
+                BackgroundColor,
                 true);
         }
 

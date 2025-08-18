@@ -19,6 +19,8 @@ public abstract class LayoutBase : ThemedControl, ILayout
         get => base.IsVisible;
         set
         {
+            if (base.IsVisible == value) return;
+
             base.IsVisible = value;
             Invalidate();
         }
@@ -29,14 +31,14 @@ public abstract class LayoutBase : ThemedControl, ILayout
     /// </summary>
     public Color? BackgroundColor
     {
-        get => _backColor;
-        set => SetInvalidatingProperty(ref _backColor, value);
+        get => _backgroundColor;
+        set => SetInvalidatingProperty(ref _backgroundColor, value);
     }
 
     /// <inheritdoc/>
     public override bool IsInvalid => base.IsInvalid || Controls.Any(c => c.IsInvalid && c.IsVisible);
 
-    private Color? _backColor;
+    private Color? _backgroundColor;
 
     /// <summary>
     /// Creates a LayoutBase

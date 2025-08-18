@@ -1,19 +1,10 @@
 ﻿namespace Meadow.Foundation.Graphics.MicroLayout;
 
 /// <summary>
-/// Represents a label display control in the user interface.
+/// Represents a two row label display control in the user interface.
 /// </summary>
-public class Label : ClickableControl
+public class DoubleLabel : ClickableControl
 {
-    /// <summary>
-    /// Gets or sets the vertical alignment of the label text within the label display control.
-    /// </summary>
-    public VerticalAlignment VerticalAlignment
-    {
-        get => _verticalAlignment;
-        set => SetInvalidatingProperty(ref _verticalAlignment, value);
-    }
-
     /// <summary>
     /// Gets or sets the horizontal alignment of the label text within the label display control.
     /// </summary>
@@ -51,12 +42,30 @@ public class Label : ClickableControl
     }
 
     /// <summary>
+    /// Gets or sets the 2nd row of text to be displayed on the label.
+    /// </summary>
+    public string TextSecondary
+    {
+        get => _textSecondary;
+        set => SetInvalidatingProperty(ref _textSecondary, value);
+    }
+
+    /// <summary>
     /// Gets or sets the font used for displaying the label text.
     /// </summary>
     public IFont? Font
     {
         get => _font;
         set => SetInvalidatingProperty(ref _font, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the font used for th displaying the 2nd row of label text.
+    /// </summary>
+    public IFont? FontSecondary
+    {
+        get => _fontSecondary;
+        set => SetInvalidatingProperty(ref _fontSecondary, value);
     }
 
     /// <summary>
@@ -72,13 +81,14 @@ public class Label : ClickableControl
     private static Color DefaultBackgroundColor = Color.Transparent;
 
     private string _text = string.Empty;
+    private string _textSecondary = string.Empty;
 
-    private readonly DisplayTheme? _theme;
+    private DisplayTheme? _theme;
     private Color? _textColor;
     private Color? _backgroundColor;
-    private VerticalAlignment _verticalAlignment = VerticalAlignment.Center;
     private HorizontalAlignment _horizontalAlignment;
     private IFont? _font;
+    private IFont? _fontSecondary;
     private ScaleFactor _scaleFactor = ScaleFactor.X1;
 
     /// <summary>
@@ -87,7 +97,8 @@ public class Label : ClickableControl
     /// <param name="width">The width of the label display control.</param>
     /// <param name="height">The height of the label display control.</param>
     /// <param name="text">The initial Text for the control</param>
-    public Label(int width, int height, string text = nameof(Label))
+    /// /<param name="textSecondary">The initial Text for the control</param>
+    public DoubleLabel(int width, int height, string text = nameof(Label), string textSecondary = "")
         : this(0, 0, width, height, ScaleFactor.X1, text)
     { }
 
@@ -98,8 +109,9 @@ public class Label : ClickableControl
     /// <param name="height">The height of the label display control.</param>
     /// <param name="scaleFactor">The scale factor used for drawing text</param>
     /// <param name="text">The initial Text for the control</param>
-    public Label(int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label))
-        : this(0, 0, width, height, scaleFactor, text)
+    /// <param name="textSecondary">The initial Text for the control</param>
+    public DoubleLabel(int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label), string textSecondary = "")
+        : this(0, 0, width, height, scaleFactor, text, textSecondary)
     { }
 
     /// <summary>
@@ -111,11 +123,23 @@ public class Label : ClickableControl
     /// <param name="height">The height of the label display control.</param>
     /// <param name="scaleFactor">The scale factor used for drawing text</param>
     /// <param name="text">The initial Text for the control</param>
-    public Label(int left, int top, int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label))
+    /// <param name="textSecondary">The initial Text for the control</param>
+    public DoubleLabel(int left, int top, int width, int height, ScaleFactor scaleFactor = ScaleFactor.X1, string text = nameof(Label), string textSecondary = "")
         : base(left, top, width, height)
     {
         ScaleFactor = scaleFactor;
         Text = text;
+        TextSecondary = textSecondary;
+    }
+
+    /// <summary>
+    /// Applies the specified display theme to the label display control.
+    /// </summary>
+    /// <param name="theme">The display theme to apply.</param>
+    public override void ApplyTheme(DisplayTheme theme)
+    {
+        _theme = theme;
+        Invalidate();
     }
 
     /// <summary>
@@ -135,12 +159,7 @@ public class Label : ClickableControl
             HorizontalAlignment.Right => Width,
             _ => 0,
         };
-        var yOffset = VerticalAlignment switch
-        {
-            VerticalAlignment.Center => Height / 2,
-            VerticalAlignment.Bottom => Height,
-            _ => 0,
-        };
+        var yOffset = Height / 4;
 
         graphics.DrawText(
             ScreenLeft + xOffset,
@@ -149,7 +168,19 @@ public class Label : ClickableControl
             TextColor,
             scaleFactor: _scaleFactor,
             alignmentH: HorizontalAlignment,
-            alignmentV: VerticalAlignment,
+            alignmentV: VerticalAlignment.Center,
             font: Font);
+
+        yOffset = Height * 3 / 4;
+
+        graphics.DrawText(
+            ScreenLeft + xOffset,
+            ScreenTop + yOffset,
+            TextSecondary,
+            TextColor,
+            scaleFactor: _scaleFactor,
+            alignmentH: HorizontalAlignment,
+            alignmentV: VerticalAlignment.Center,
+            font: FontSecondary);
     }
 }

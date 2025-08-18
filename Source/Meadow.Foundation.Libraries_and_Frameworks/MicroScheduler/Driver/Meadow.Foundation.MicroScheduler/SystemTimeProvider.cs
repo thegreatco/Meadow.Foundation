@@ -324,4 +324,9 @@ public class SystemTimeProvider : ITimeProvider, IDisposable
             _disposed = true;
         }
     }
+    /// <inheritdoc/>
+    public void UpdateLocation(double latitude, double longitude)
+    {
+        _location = ((float)latitude, (float)longitude);
+    }
 }
