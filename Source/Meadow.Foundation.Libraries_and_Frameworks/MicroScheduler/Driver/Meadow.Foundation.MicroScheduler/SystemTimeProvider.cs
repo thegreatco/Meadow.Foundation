@@ -124,12 +124,12 @@ public class SystemTimeProvider : ITimeProvider, IDisposable
         /// <summary>
         /// Gets or sets the results from the API.
         /// </summary>
-        public SunriseSunsetResults results { get; set; }
+        public SunriseSunsetResults results { get; set; } = new SunriseSunsetResults();
 
         /// <summary>
         /// Gets or sets the status of the API response.
         /// </summary>
-        public string status { get; set; }
+        public string status { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -140,52 +140,52 @@ public class SystemTimeProvider : ITimeProvider, IDisposable
         /// <summary>
         /// Gets or sets the sunrise time.
         /// </summary>
-        public string sunrise { get; set; }
+        public string sunrise { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the sunset time.
         /// </summary>
-        public string sunset { get; set; }
+        public string sunset { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the solar noon time.
         /// </summary>
-        public string solar_noon { get; set; }
+        public string solar_noon { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the day length.
         /// </summary>
-        public string day_length { get; set; }
+        public string day_length { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the civil twilight begin time.
         /// </summary>
-        public string civil_twilight_begin { get; set; }
+        public string civil_twilight_begin { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the civil twilight end time.
         /// </summary>
-        public string civil_twilight_end { get; set; }
+        public string civil_twilight_end { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the nautical twilight begin time.
         /// </summary>
-        public string nautical_twilight_begin { get; set; }
+        public string nautical_twilight_begin { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the nautical twilight end time.
         /// </summary>
-        public string nautical_twilight_end { get; set; }
+        public string nautical_twilight_end { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the astronomical twilight begin time.
         /// </summary>
-        public string astronomical_twilight_begin { get; set; }
+        public string astronomical_twilight_begin { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the astronomical twilight end time.
         /// </summary>
-        public string astronomical_twilight_end { get; set; }
+        public string astronomical_twilight_end { get; set; } = string.Empty;
     }
 
     /// <summary>
