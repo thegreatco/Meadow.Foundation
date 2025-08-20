@@ -571,16 +571,6 @@ namespace Meadow.Foundation.Graphics
         public void DrawVerticalLine(int x, int y, int length)
         {
             DrawVerticalLine(x, y, length, PenColor);
-
-            if (Stroke > 1)
-            {
-                int xOffset = Stroke >> 1;
-
-                for (int i = 0; i < Stroke; i++)
-                {
-                    DrawVerticalLine(x - xOffset + i, y, length);
-                }
-            }
         }
 
         /// <summary>
@@ -1420,10 +1410,12 @@ namespace Meadow.Foundation.Graphics
 
             var fontToDraw = (font ?? CurrentFont) ?? throw new Exception("CurrentFont must be set before calling DrawText.");
 
+            var textSize = MeasureText(text, fontToDraw, scaleFactor);
+
             byte[] bitMap = GetBytesForTextBitmap(text, fontToDraw);
 
-            x = GetXForAlignment(x, MeasureText(text, fontToDraw, scaleFactor).Width, alignmentH);
-            y = GetYForAlignment(y, MeasureText(text, fontToDraw, scaleFactor).Height, alignmentV);
+            x = GetXForAlignment(x, textSize.Width, alignmentH);
+            y = GetYForAlignment(y, textSize.Height, alignmentV);
 
             DrawBitmap(x, y, bitMap.Length / fontToDraw.Height * 8, fontToDraw.Height, bitMap, color, scaleFactor);
         }
