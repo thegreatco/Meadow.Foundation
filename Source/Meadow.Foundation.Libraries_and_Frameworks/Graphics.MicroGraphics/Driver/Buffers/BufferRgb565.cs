@@ -44,8 +44,7 @@ namespace Meadow.Foundation.Graphics.Buffers
             fixed (byte* ptr = Buffer)
             {
                 var pixelPtr = (ushort*)(ptr + ((y * Width + x) << 1));
-                var value = *pixelPtr;
-                return (ushort)((value << 8) | (value >> 8)); // Handle endianness
+                return *pixelPtr;
             }
         }
 
