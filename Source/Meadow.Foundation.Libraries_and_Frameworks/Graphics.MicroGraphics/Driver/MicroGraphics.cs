@@ -571,16 +571,6 @@ namespace Meadow.Foundation.Graphics
         public void DrawVerticalLine(int x, int y, int length)
         {
             DrawVerticalLine(x, y, length, PenColor);
-
-            if (Stroke > 1)
-            {
-                int xOffset = Stroke >> 1;
-
-                for (int i = 0; i < Stroke; i++)
-                {
-                    DrawVerticalLine(x - xOffset + i, y, length);
-                }
-            }
         }
 
         /// <summary>
