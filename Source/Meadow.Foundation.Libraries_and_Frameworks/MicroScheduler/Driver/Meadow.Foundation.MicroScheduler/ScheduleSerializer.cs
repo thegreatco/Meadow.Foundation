@@ -20,7 +20,7 @@ public static class ScheduleSerializer
     {
         var serializable = new SerializableMasterSchedule
         {
-            schedules = collection.Schedules?.Select(ConvertToSerializable).ToArray(),
+            schedules = collection.Schedules?.Select(ConvertToSerializable).ToArray() ?? Array.Empty<SerializableSchedule>(),
             timezone = ConvertTimezoneToSerializable(collection.Timezone)
         };
 
@@ -29,7 +29,7 @@ public static class ScheduleSerializer
             OmitNulls = true,
             WriteIndented = true
         };
-        
+
         return MicroJson.Serialize(serializable, options);
     }
 
@@ -51,7 +51,7 @@ public static class ScheduleSerializer
         var collection = new ScheduleCollection(
             serializable.schedules.Select(ConvertFromSerializable)
             );
-        
+
         if (serializable.timezone != null)
         {
             collection.Timezone = ConvertTimezoneFromSerializable(serializable.timezone);
@@ -156,7 +156,7 @@ public static class ScheduleSerializer
             ScheduleEventType.Weekday => new WeekdayScheduleEvent(
                 DateTimeOffset.Parse(serializable.eventTime, null, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal),
                 serializable.data,
-                ParseDaysOfWeek(serializable.daysOfWeek)),
+                ParseDaysOfWeek(serializable.daysOfWeek) ?? []),
 
             ScheduleEventType.SunriseOffset => new SunriseOffsetScheduleEvent(
                 ParseTimeSpanOffset(serializable.offset),
@@ -180,10 +180,12 @@ public static class ScheduleSerializer
     /// </summary>
     /// <param name="daysOfWeekStrings">The array of day-of-week strings to parse.</param>
     /// <returns>An array of DayOfWeek values, or null if the input is null.</returns>
-    private static DayOfWeek[] ParseDaysOfWeek(string[] daysOfWeekStrings)
+    private static DayOfWeek[]? ParseDaysOfWeek(string[]? daysOfWeekStrings)
     {
         if (daysOfWeekStrings == null)
+        {
             return null;
+        }
 
         return daysOfWeekStrings
             .Select(d => Enum.Parse<DayOfWeek>(d))
@@ -214,10 +216,12 @@ public static class ScheduleSerializer
     /// <param name="offsetString">The offset string to parse.</param>
     /// <returns>A TimeSpan representing the offset.</returns>
     /// <exception cref="ArgumentException">Thrown when the offset format is invalid.</exception>
-    private static TimeSpan ParseTimeSpanOffset(string offsetString)
+    private static TimeSpan ParseTimeSpanOffset(string? offsetString)
     {
         if (string.IsNullOrEmpty(offsetString))
+        {
             return TimeSpan.Zero;
+        }
 
         // Handle negative offsets
         var isNegative = offsetString.StartsWith("-");
@@ -300,7 +304,7 @@ internal class SerializableMasterSchedule
     /// <summary>
     /// Gets or sets the array of serializable schedules.
     /// </summary>
-    public SerializableSchedule[] schedules { get; set; }
+    public SerializableSchedule[] schedules { get; set; } = Array.Empty<SerializableSchedule>();
 
     /// <summary>
     /// Gets or sets the timezone information.
@@ -316,12 +320,12 @@ internal class SerializableSchedule
     /// <summary>
     /// Gets or sets the schedule name.
     /// </summary>
-    public string name { get; set; }
+    public string name { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the array of serializable schedule events.
     /// </summary>
-    public SerializableScheduleEvent[] events { get; set; }
+    public SerializableScheduleEvent[] events { get; set; } = Array.Empty<SerializableScheduleEvent>();
 }
 
 /// <summary>
@@ -332,7 +336,7 @@ internal class SerializableScheduleEvent
     /// <summary>
     /// Gets or sets the event type as a string.
     /// </summary>
-    public string eventType { get; set; }
+    public string eventType { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets a value indicating whether the event is disabled.
@@ -347,17 +351,17 @@ internal class SerializableScheduleEvent
     /// <summary>
     /// Gets or sets the event time for Daily and Weekday events.
     /// </summary>
-    public string eventTime { get; set; }
+    public string? eventTime { get; set; }
 
     /// <summary>
     /// Gets or sets the offset for Sunrise/Sunset offset events in TimeSpan format.
     /// </summary>
-    public string offset { get; set; }
+    public string? offset { get; set; }
 
     /// <summary>
     /// Gets or sets the days of week for Weekday and offset events.
     /// </summary>
-    public string[] daysOfWeek { get; set; }
+    public string[]? daysOfWeek { get; set; }
 }
 
 /// <summary>
@@ -368,7 +372,7 @@ internal class SerializableTimezone
     /// <summary>
     /// Gets or sets the timezone name.
     /// </summary>
-    public string timezoneName { get; set; }
+    public string timezoneName { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the UTC offset in hours.
@@ -399,7 +403,7 @@ internal class SerializableDaylightSavingTime
     /// <summary>
     /// Gets or sets the start day of week.
     /// </summary>
-    public string startDayOfWeek { get; set; }
+    public string startDayOfWeek { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the start hour.
@@ -419,7 +423,7 @@ internal class SerializableDaylightSavingTime
     /// <summary>
     /// Gets or sets the end day of week.
     /// </summary>
-    public string endDayOfWeek { get; set; }
+    public string endDayOfWeek { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the end hour.

@@ -189,24 +189,27 @@ public class ScheduleService : IDisposable
         var currentTime = await _timeProvider.GetUtcNow();
         (DateTimeOffset Sunrise, DateTimeOffset Sunset)? sunTimes = null;
 
-        if (_scheduleCollection.ContainsSunriseOrSunsetEvents)
+        if (_scheduleCollection?.ContainsSunriseOrSunsetEvents ?? false)
         {
             sunTimes = await _timeProvider.GetUtcSunriseAndSunset();
         }
 
-        foreach (var schedule in _scheduleCollection)
+        if (_scheduleCollection != null)
         {
-            var activeEvents = EvaluateSchedule(schedule, currentTime, sunTimes);
-
-            if (activeEvents != null)
+            foreach (var schedule in _scheduleCollection)
             {
-                foreach (var evt in activeEvents)
+                var activeEvents = EvaluateSchedule(schedule, currentTime, sunTimes);
+
+                if (activeEvents != null)
                 {
-                    RaiseScheduleEvents(new ScheduleEventTriggeredEventArgs(
-                        schedule,
-                        evt.Event,
-                        evt.Event.Data,
-                        currentTime));
+                    foreach (var evt in activeEvents)
+                    {
+                        RaiseScheduleEvents(new ScheduleEventTriggeredEventArgs(
+                            schedule,
+                            evt.Event,
+                            evt.Event.Data,
+                            currentTime));
+                    }
                 }
             }
         }
