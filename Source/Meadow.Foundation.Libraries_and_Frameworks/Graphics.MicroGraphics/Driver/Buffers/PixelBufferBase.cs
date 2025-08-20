@@ -552,7 +552,7 @@ namespace Meadow.Foundation.Graphics.Buffers
                 {
                     if (disposing)
                     {
-                        Buffer = new byte[0];
+                        Buffer = [];
                     }
                 }
             }

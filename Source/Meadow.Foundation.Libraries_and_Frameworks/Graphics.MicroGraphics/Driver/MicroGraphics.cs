@@ -208,6 +208,18 @@ namespace Meadow.Foundation.Graphics
             }
         }
 
+        private void DrawPixelUnchecked(int x, int y, Color color)
+        {
+            if (display is IRotatableDisplay)
+            {
+                PixelBuffer.SetPixel(x, y, color);
+            }
+            else
+            {
+                PixelBuffer.SetPixel(GetXForRotation(x, y), GetYForRotation(x, y), color);
+            }
+        }
+
         /// <summary>
         /// Draw a single pixel 
         /// </summary>
@@ -1992,20 +2004,41 @@ namespace Meadow.Foundation.Graphics
                 throw new ArgumentException("Width and height do not match the bitmap size.");
             }
 
-            int scale = (int)scaleFactor;
-
-            for (var ordinate = 0; ordinate < height; ordinate++)
+            if (scaleFactor == ScaleFactor.X1) //split into two paths for performance
             {
-                for (var abscissa = 0; abscissa < width; abscissa++)
+                for (var ordinate = 0; ordinate < height; ordinate++)
                 {
-                    var b = bitmap[(ordinate * width) + abscissa];
-                    byte mask = 0x01;
-
-                    for (var pixel = 0; pixel < 8; pixel++)
+                    for (var abscissa = 0; abscissa < width; abscissa++)
                     {
-                        if ((b & mask) > 0)
+                        var b = bitmap[(ordinate * width) + abscissa];
+
+                        if (b == 0) continue; //save a loop if a byte is empty
+
+                        for (var pixel = 0; pixel < 8; pixel++)
                         {
-                            if (scaleFactor != ScaleFactor.X1)
+                            if (((b >> pixel) & 1) == 1)
+                            {
+                                DrawPixel(x + (8 * abscissa) + pixel, y + ordinate, color);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int scale = (int)scaleFactor;
+
+                for (var ordinate = 0; ordinate < height; ordinate++)
+                {
+                    for (var abscissa = 0; abscissa < width; abscissa++)
+                    {
+                        var b = bitmap[(ordinate * width) + abscissa];
+
+                        if (b == 0) continue; //save a loop if a byte is empty
+
+                        for (var pixel = 0; pixel < 8; pixel++)
+                        {
+                            if (((b >> pixel) & 1) == 1)
                             {
                                 Fill(x: x + (8 * abscissa * scale) + (pixel * scale),
                                     y: y + (ordinate * scale),
@@ -2013,12 +2046,7 @@ namespace Meadow.Foundation.Graphics
                                     height: scale,
                                     color: color);
                             }
-                            else
-                            {   //1x
-                                DrawPixel(x + (8 * abscissa) + pixel, y + ordinate, color);
-                            }
                         }
-                        mask <<= 1;
                     }
                 }
             }
