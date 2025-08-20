@@ -208,18 +208,6 @@ namespace Meadow.Foundation.Graphics
             }
         }
 
-        private void DrawPixelUnchecked(int x, int y, Color color)
-        {
-            if (display is IRotatableDisplay)
-            {
-                PixelBuffer.SetPixel(x, y, color);
-            }
-            else
-            {
-                PixelBuffer.SetPixel(GetXForRotation(x, y), GetYForRotation(x, y), color);
-            }
-        }
-
         /// <summary>
         /// Draw a single pixel 
         /// </summary>
