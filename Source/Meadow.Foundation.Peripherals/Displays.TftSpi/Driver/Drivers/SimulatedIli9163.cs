@@ -16,11 +16,11 @@ public class SimulatedIli9163 : SimulatedDisplayBase
     /// Create a new simulated Ili9163 displayRenderer.
     /// </summary>
     /// <param name="displayRenderer"></param>
-    /// <param name="rotationType"></param>
+    /// <param name="rotate"></param>
     /// <param name="colorMode"></param>
     public SimulatedIli9163(IResizablePixelDisplay displayRenderer,
-        RotationType rotationType = RotationType._270Degrees,
+        bool rotate = true,
         ColorMode colorMode = ColorMode.Format12bppRgb444)
-        : base(displayRenderer, 240, 320, rotationType, colorMode)
+        : base(displayRenderer, 240, 320, rotate, colorMode)
     { }
 }

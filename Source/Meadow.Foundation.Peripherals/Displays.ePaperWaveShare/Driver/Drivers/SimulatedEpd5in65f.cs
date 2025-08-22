@@ -8,12 +8,16 @@ namespace Meadow.Foundation.Displays;
 /// </summary>
 public class SimulatedEpd5in65f : SimulatedDisplayBase
 {
+    /// <inheritdoc/>
+    public override ColorMode SupportedColorModes => ColorMode.Format4bppIndexed;
+
     /// <summary>
     /// Create a new instance of the simulated Epd5in65f displayRenderer
     /// </summary>
     /// <param name="displayRenderer"></param>
-    public SimulatedEpd5in65f(IResizablePixelDisplay displayRenderer)
-        : base(displayRenderer, 600, 448, RotationType.Normal, ColorMode.Format4bppIndexed)
+    /// <param name="rotate"></param>rotate
+    public SimulatedEpd5in65f(IResizablePixelDisplay displayRenderer, bool rotate = true)
+        : base(displayRenderer, 600, 448, false, ColorMode.Format4bppIndexed)
     {
         SupportedColorModes = ColorMode.Format4bppIndexed;
 

@@ -8,8 +8,10 @@ namespace Meadow.Foundation.Displays;
 /// </summary>
 public class SimulatedDisplayBase : IPixelDisplay
 {
-    /// <inheritdoc/>
-    public RotationType Rotation { get; }
+    /// <summary>
+    /// Is the display rotated (swapped width and height)
+    /// </summary>
+    public bool IsRotated { get; }
 
     /// <inheritdoc/>
     public ColorMode ColorMode { get; }
@@ -49,28 +51,29 @@ public class SimulatedDisplayBase : IPixelDisplay
     /// <param name="displayRenderer"></param>
     /// <param name="width"></param>
     /// <param name="height"></param>
-    /// <param name="rotationType"></param>
+    /// <param name="rotate"></param>
     /// <param name="colorMode"></param>
     protected SimulatedDisplayBase(
         IResizablePixelDisplay displayRenderer,
         int width, int height,
-        RotationType rotationType,
+        bool rotate,
         ColorMode colorMode)
     {
-        Width = width;
-        Height = height;
-        Rotation = rotationType;
+        IsRotated = rotate;
         ColorMode = colorMode;
 
+        Width = IsRotated ? height : width;
+        Height = IsRotated ? width : height;
+
         this.displayRenderer = displayRenderer;
-        displayRenderer.Resize(width, height, displayRenderer.DisplayScale);
+        displayRenderer.Resize(Width, Height, displayRenderer.DisplayScale);
 
         if ((SupportedColorModes & colorMode) != 0)
         {
             Resolver.Log.Warn($"Color mode {colorMode} is not supported by the physical display.");
         }
 
-        CreateBuffer(width, height, colorMode);
+        CreateBuffer(Width, Height, colorMode);
     }
 
     void CreateBuffer(int width, int height, ColorMode colorMode)
