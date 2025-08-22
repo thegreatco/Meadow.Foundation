@@ -5,12 +5,14 @@ namespace Meadow.Foundation.Displays;
 
 /// <summary>
 /// A virtual displayRenderer instance of the Epd5in65 epaper displayRenderer.
-///
-/// TODO: Move to epapers project when finished.
 /// </summary>
-public class Epd5in65fVirtual : SimulatedDisplayBase
+public class SimulatedEpd5in65f : SimulatedDisplayBase
 {
-    public Epd5in65fVirtual(IResizablePixelDisplay displayRenderer)
+    /// <summary>
+    /// Create a new instance of the simulated Epd5in65f displayRenderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedEpd5in65f(IResizablePixelDisplay displayRenderer)
         : base(displayRenderer, 600, 448, RotationType.Normal, ColorMode.Format4bppIndexed)
     {
         SupportedColorModes = ColorMode.Format4bppIndexed;
