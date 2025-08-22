@@ -3,24 +3,24 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Gc9a01 displayRenderer
+/// Represents a simulated Ili9488 displayRenderer
 /// </summary>
-public class SimulatedGc9a01 : SimulatedDisplayBase
+public class SimulatedIli9488 : SimulatedDisplayBase
 {
     /// <summary>
     /// The color modes supported by the display
     /// </summary>
-    public override ColorMode SupportedColorModes => ColorMode.Format16bppRgb565;
+    public override ColorMode SupportedColorModes => ColorMode.Format24bppRgb888;
 
     /// <summary>
-    /// Create a new simulated Gc9a01 displayRenderer.
+    /// Create a new simulated Ili9488 displayRenderer.
     /// </summary>
     /// <param name="displayRenderer"></param>
-    /// <param name="rotate"></param>
+    /// <param name="rotate"></param>rotate
     /// <param name="colorMode"></param>
-    public SimulatedGc9a01(IResizablePixelDisplay displayRenderer,
+    public SimulatedIli9488(IResizablePixelDisplay displayRenderer,
         bool rotate = true,
-        ColorMode colorMode = ColorMode.Format16bppRgb565)
+        ColorMode colorMode = ColorMode.Format24bppRgb888)
         : base(displayRenderer, 320, 480, rotate, colorMode)
     { }
 }

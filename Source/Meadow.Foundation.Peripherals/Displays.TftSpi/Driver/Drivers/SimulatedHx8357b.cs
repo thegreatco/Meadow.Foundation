@@ -16,11 +16,11 @@ public class SimulatedHx8357b : SimulatedDisplayBase
     /// Create a new simulated Hx8357b displayRenderer.
     /// </summary>
     /// <param name="displayRenderer"></param>
-    /// <param name="rotationType"></param>
+    /// <param name="rotate"></param>
     /// <param name="colorMode"></param>
     public SimulatedHx8357b(IResizablePixelDisplay displayRenderer,
-        RotationType rotationType = RotationType._270Degrees,
+        bool rotate = true,
         ColorMode colorMode = ColorMode.Format16bppRgb565)
-        : base(displayRenderer, 240, 240, rotationType, colorMode)
+        : base(displayRenderer, 240, 240, rotate, colorMode)
     { }
 }

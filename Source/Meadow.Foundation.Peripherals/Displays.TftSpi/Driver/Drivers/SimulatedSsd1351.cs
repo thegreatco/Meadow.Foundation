@@ -3,9 +3,9 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Hx8357d displayRenderer
+/// Represents a simulated Ssd1351 displayRenderer
 /// </summary>
-public class SimulatedHx8357d : SimulatedDisplayBase
+public class SimulatedSsd1351 : SimulatedDisplayBase
 {
     /// <summary>
     /// The color modes supported by the display
@@ -13,14 +13,14 @@ public class SimulatedHx8357d : SimulatedDisplayBase
     public override ColorMode SupportedColorModes => ColorMode.Format16bppRgb565;
 
     /// <summary>
-    /// Create a new simulated Hx8357d displayRenderer.
+    /// Create a new simulated Ssd1351 displayRenderer.
     /// </summary>
     /// <param name="displayRenderer"></param>
-    /// <param name="rotate"></param>
+    /// <param name="rotate"></param>rotate
     /// <param name="colorMode"></param>
-    public SimulatedHx8357d(IResizablePixelDisplay displayRenderer,
+    public SimulatedSsd1351(IResizablePixelDisplay displayRenderer,
         bool rotate = true,
         ColorMode colorMode = ColorMode.Format16bppRgb565)
-        : base(displayRenderer, 240, 240, rotate, colorMode)
+        : base(displayRenderer, 128, 160, rotate, colorMode)
     { }
 }

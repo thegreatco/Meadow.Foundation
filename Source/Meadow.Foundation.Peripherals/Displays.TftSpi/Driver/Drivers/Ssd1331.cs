@@ -4,7 +4,7 @@ using Meadow.Peripherals.Displays;
 namespace Meadow.Foundation.Displays
 {
     /// <summary>
-    /// Represents a Ssd1331 S6D02A1 TFT color display
+    /// Represents a Ssd1331 TFT color display
     /// </summary>
     public class Ssd1331 : TftSpiBase
     {

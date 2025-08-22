@@ -1,6 +1,7 @@
 ﻿using Meadow;
 using Meadow.Foundation.Displays;
 using Meadow.Foundation.Graphics;
+using Meadow.Peripherals.Displays;
 
 namespace SilkDisplay_Sample;
 
@@ -23,12 +24,12 @@ public class Program
     {
         display = new SilkDisplay(displayScale: 2f);
 
-        var virtualDisplay = new SimulatedIli9341(colorMode: Meadow.Peripherals.Displays.ColorMode.Format8bppRgb332, displayRenderer: display);
+        var virtualDisplay = new SimulatedIli9341(colorMode: ColorMode.Format8bppRgb332, rotate: true, displayRenderer: display);
 
         graphics = new MicroGraphics(virtualDisplay)
         {
             CurrentFont = new Font16x24(),
-            Stroke = 1
+            Stroke = 1,
         };
     }
 

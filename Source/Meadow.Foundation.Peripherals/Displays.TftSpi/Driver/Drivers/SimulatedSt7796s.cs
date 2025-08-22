@@ -3,24 +3,24 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Ili9341 displayRenderer
+/// Represents a simulated St7796s displayRenderer
 /// </summary>
-public class SimulatedIli9341 : SimulatedDisplayBase
+public class SimulatedSt7796s : SimulatedDisplayBase
 {
     /// <summary>
     /// The color modes supported by the display
     /// </summary>
-    public override ColorMode SupportedColorModes => ColorMode.Format16bppRgb565 | ColorMode.Format12bppRgb444 | ColorMode.Format18bppRgb666;
+    public override ColorMode SupportedColorModes => ColorMode.Format16bppRgb565 | ColorMode.Format12bppRgb444;
 
     /// <summary>
-    /// Create a new simulated Ili9341 displayRenderer.
+    /// Create a new simulated StSt7796s displayRenderer.
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>rotate
     /// <param name="colorMode"></param>
-    public SimulatedIli9341(IResizablePixelDisplay displayRenderer,
+    public SimulatedSt7796s(IResizablePixelDisplay displayRenderer,
         bool rotate = true,
         ColorMode colorMode = ColorMode.Format12bppRgb444)
-        : base(displayRenderer, 240, 320, rotate, colorMode)
+        : base(displayRenderer, 320, 480, rotate, colorMode)
     { }
 }
