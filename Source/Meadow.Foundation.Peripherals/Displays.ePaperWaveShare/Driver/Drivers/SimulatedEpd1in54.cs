@@ -3,7 +3,7 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// A virtual display renderer instance of the Epd5in65 epaper display
+/// A virtual display renderer instance of the Epd1in54 epaper display
 /// </summary>
 public class SimulatedEpd1in54 : SimulatedSsd1608
 {

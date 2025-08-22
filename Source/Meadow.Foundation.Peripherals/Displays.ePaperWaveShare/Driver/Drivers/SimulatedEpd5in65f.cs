@@ -4,7 +4,7 @@ using Meadow.Peripherals.Displays;
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// A virtual display renderer instance of the Epd5in65 epaper display
+/// A virtual display renderer instance of the Epd5in65f epaper display
 /// </summary>
 public class SimulatedEpd5in65f : SimulatedDisplayBase
 {
