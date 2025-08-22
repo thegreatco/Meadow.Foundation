@@ -19,7 +19,7 @@ namespace Meadow.Foundation.Displays
         /// <param name="width">Width of display in pixels</param>
         /// <param name="height">Height of display in pixels</param>
         public Il0373(ISpiBus spiBus, IPin chipSelectPin, IPin dcPin, IPin resetPin, IPin busyPin,
-            int width, int height) :
+            int width = 104, int height = 212) :
             base(spiBus, chipSelectPin, dcPin, resetPin, busyPin, width, height)
         { }
 

@@ -81,6 +81,7 @@ public class SimulatedDisplayBase : IPixelDisplay
         pixelBuffer = colorMode switch
         {
             ColorMode.Format1bpp => new Buffer1bpp(width, height),
+            ColorMode.Format2bppIndexed => new BufferIndexed2(width, height),
             ColorMode.Format4bppGray => new BufferGray4(width, height),
             ColorMode.Format4bppIndexed => new BufferIndexed4(width, height),
             ColorMode.Format8bppGray => new BufferGray8(width, height),

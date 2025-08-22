@@ -4,15 +4,21 @@ using Meadow.Peripherals.Displays;
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// A virtual displayRenderer instance of the Epd5in65 epaper displayRenderer.
+/// A virtual display renderer instance of the Epd5in65f epaper display
 /// </summary>
 public class SimulatedEpd5in65f : SimulatedDisplayBase
 {
     /// <inheritdoc/>
     public override ColorMode SupportedColorModes => ColorMode.Format4bppIndexed;
 
+    /// <inheritdoc/>
+    protected override Color EnabledColor => Color.Black;
+
+    /// <inheritdoc/>
+    protected override Color DisabledColor => Color.White;
+
     /// <summary>
-    /// Create a new instance of the simulated Epd5in65f displayRenderer
+    /// Create a new instance of the simulated Epd5in65f display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>rotate
