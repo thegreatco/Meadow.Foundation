@@ -3,7 +3,7 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Il3897 displayRenderer
+/// Represents a simulated Il3897 display renderer
 /// </summary>
 public class SimulatedIl3897 : SimulatedDisplayBase
 {
@@ -19,7 +19,7 @@ public class SimulatedIl3897 : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated Il3897 displayRenderer.
+    /// Create a new simulated Il3897 display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>

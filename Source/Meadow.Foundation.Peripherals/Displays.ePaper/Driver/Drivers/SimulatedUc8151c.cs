@@ -4,7 +4,7 @@ using Meadow.Peripherals.Displays;
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Uc8151c displayRenderer
+/// Represents a simulated Uc8151c display renderer
 /// </summary>
 public class SimulatedUc8151c : SimulatedDisplayBase
 {
@@ -20,7 +20,7 @@ public class SimulatedUc8151c : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated SSUc8151cD1681 displayRenderer.
+    /// Create a new simulated SSUc8151cD1681 displayR renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>

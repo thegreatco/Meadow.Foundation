@@ -3,7 +3,7 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Il91874V03 displayRenderer
+/// Represents a simulated Il91874V03 display renderer
 /// </summary>
 public class SimulatedIl91874V03 : SimulatedDisplayBase
 {
@@ -19,7 +19,7 @@ public class SimulatedIl91874V03 : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated Il91874V03 displayRenderer.
+    /// Create a new simulated Il91874V03 display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>

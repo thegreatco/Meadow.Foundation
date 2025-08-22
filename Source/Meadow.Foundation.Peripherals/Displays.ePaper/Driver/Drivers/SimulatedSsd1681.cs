@@ -4,7 +4,7 @@ using Meadow.Peripherals.Displays;
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Ssd1681 displayRenderer
+/// Represents a simulated Ssd1681 display renderer
 /// </summary>
 public class SimulatedSsd1681 : SimulatedDisplayBase
 {
@@ -20,7 +20,7 @@ public class SimulatedSsd1681 : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated Ssd1681 displayRenderer.
+    /// Create a new simulated Ssd1681 display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>

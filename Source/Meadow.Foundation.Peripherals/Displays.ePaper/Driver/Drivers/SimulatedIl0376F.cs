@@ -4,7 +4,7 @@ using Meadow.Peripherals.Displays;
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Il0376F displayRenderer
+/// Represents a simulated Il0376F display renderer
 /// </summary>
 public class SimulatedIl0376F : SimulatedDisplayBase
 {
@@ -20,7 +20,7 @@ public class SimulatedIl0376F : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated Il0376F displayRenderer.
+    /// Create a new simulated Il0376F display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>

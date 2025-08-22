@@ -3,7 +3,7 @@
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Represents a simulated Ssd1608 displayRenderer
+/// Represents a simulated Ssd1608 display renderer
 /// </summary>
 public class SimulatedSsd1608 : SimulatedDisplayBase
 {
@@ -19,7 +19,7 @@ public class SimulatedSsd1608 : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated Ssd1608 displayRenderer.
+    /// Create a new simulated Ssd1608 display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>
