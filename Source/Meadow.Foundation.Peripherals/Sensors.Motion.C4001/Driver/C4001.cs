@@ -1,0 +1,92 @@
+﻿using Meadow.Units;
+
+namespace Meadow.Foundation.Sensors.Motion;
+
+/// <summary>
+/// Create a new C4001 object
+/// </summary>
+public partial class C4001
+{
+    /// <summary>
+    /// The type of communication used by the sensor (I2C or Serial).
+    /// </summary>
+    private readonly CommunicationType communication;
+
+    /// <summary>
+    /// Buffer to hold private sensor data.
+    /// </summary>
+    private PrivateData _buffer = new PrivateData();
+
+    /// <summary>
+    /// Represents the current flash number or count.
+    /// </summary>
+    private int _flashNumber = 0;
+
+    /// <summary>
+    /// Set the Sensor sampling mode
+    /// </summary>
+    public bool SetSensorMode(SensorMode mode)
+    {
+        return SetSensorModeI2c(mode);
+    }
+
+    /// <summary>
+    /// Get the current status of the sensor
+    /// </summary>
+    /// <returns>The current status of the sensor.</returns>
+    public SensorStatus GetStatus()
+    {
+        return GetStatusI2c();
+    }
+
+    /// <summary>
+    /// Get the target number
+    /// </summary>
+    public byte GetTargetNumber()
+    {
+        return GetTargetNumberI2c();
+    }
+
+    /// <summary>
+    /// Gets the target speed from the sensor's buffer.
+    /// </summary>
+    /// <returns>The target speed as a float.</returns>
+    public Speed GetTargetSpeed()
+    {
+        return new Speed(_buffer.Speed, Speed.UnitType.MetersPerSecond);
+    }
+
+    /// <summary>
+    /// Gets the target range from the sensor's buffer.
+    /// </summary>
+    /// <returns>The target range as a float.</returns>
+    public Length GetTargetRange()
+    {
+        return new Length(_buffer.Range, Length.UnitType.Meters);
+    }
+
+    /// <summary>
+    /// Gets the target energy from the sensor's buffer.
+    /// </summary>
+    /// <returns>The target energy as an unsigned integer.</returns>
+    public uint GetTargetEnergy()
+    {
+        return _buffer.Energy;
+    }
+
+    /// <summary>
+    /// Determines if motion is currently detected by the sensor.
+    /// </summary>
+    /// <returns><c>true</c> if motion is detected, otherwise <c>false</c>.</returns>
+    public bool IsMotionDetected()
+    {
+        if (communication == CommunicationType.I2C)
+        {
+            return IsMotionDetectedI2c();
+        }
+        else
+        {
+            return IsMotionDetectedSerial();
+        }
+    }
+}

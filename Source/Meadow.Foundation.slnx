@@ -1610,6 +1610,16 @@
   <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Motion/Bno055/Samples/">
     <Project Path="Meadow.Foundation.Peripherals/Sensors.Motion.Bno055/Samples/Bno055_Sample/Bno055_Sample.csproj" />
   </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Motion/C4001/">
+    <Project Path="Meadow.Foundation.Peripherals/Sensors.Motion.C4001/Driver/Sensors.Motion.C4001.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
+  <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Motion/C4001/Samples/">
+    <Project Path="Meadow.Foundation.Peripherals/Sensors.Motion.C4001/Samples/C4001_Sample/C4001_Sample.csproj">
+      <Deploy />
+    </Project>
+  </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/Sensors/Motion/Hcsens0040/">
     <Project Path="Meadow.Foundation.Peripherals/Sensors.Motion.Hcsens0040/Driver/Sensors.Motion.Hcsens0040.csproj" />
   </Folder>
