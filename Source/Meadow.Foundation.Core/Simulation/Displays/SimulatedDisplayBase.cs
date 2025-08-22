@@ -3,15 +3,23 @@ using Meadow.Peripherals.Displays;
 
 namespace Meadow.Foundation.Displays;
 
-public class VirtualDisplayBase : IPixelDisplay
+/// <summary>
+/// Simulated displayRenderer base class, provides a virtual displayRenderer that renders to a real displayRenderer
+/// </summary>
+public class SimulatedDisplayBase : IPixelDisplay
 {
+    /// <inheritdoc/>
     public RotationType Rotation { get; }
+
     /// <inheritdoc/>
     public ColorMode ColorMode { get; }
+
     /// <inheritdoc/>
     public ColorMode SupportedColorModes { get; protected set; }
+
     /// <inheritdoc/>
     public int Width { get; }
+
     /// <inheritdoc/>
     public int Height { get; }
 
@@ -38,11 +46,12 @@ public class VirtualDisplayBase : IPixelDisplay
     /// <summary>
     /// The base constructor for a virtual displayRenderer
     /// </summary>
+    /// <param name="displayRenderer"></param>
     /// <param name="width"></param>
     /// <param name="height"></param>
     /// <param name="rotationType"></param>
     /// <param name="colorMode"></param>
-    protected VirtualDisplayBase(
+    protected SimulatedDisplayBase(
         IResizablePixelDisplay displayRenderer,
         int width, int height,
         RotationType rotationType,

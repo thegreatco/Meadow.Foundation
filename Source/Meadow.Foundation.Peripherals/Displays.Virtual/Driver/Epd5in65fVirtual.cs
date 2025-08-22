@@ -8,7 +8,7 @@ namespace Meadow.Foundation.Displays;
 ///
 /// TODO: Move to epapers project when finished.
 /// </summary>
-public class Epd5in65fVirtual : VirtualDisplayBase
+public class Epd5in65fVirtual : SimulatedDisplayBase
 {
     public Epd5in65fVirtual(IResizablePixelDisplay displayRenderer)
         : base(displayRenderer, 600, 448, RotationType.Normal, ColorMode.Format4bppIndexed)

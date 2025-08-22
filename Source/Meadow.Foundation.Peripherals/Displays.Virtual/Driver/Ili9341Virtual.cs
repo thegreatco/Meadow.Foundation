@@ -8,7 +8,7 @@ namespace Meadow.Foundation.Displays;
 /// TODO: Move this to the TFT Displays project after we're happy with implementation. Only in here right now for
 /// convenience as a WiP.
 /// </summary>
-public class Ili9341Virtual : VirtualDisplayBase
+public class Ili9341Virtual : SimulatedDisplayBase
 {
     public Ili9341Virtual(IResizablePixelDisplay displayRenderer,
         RotationType rotationType = RotationType._270Degrees,
