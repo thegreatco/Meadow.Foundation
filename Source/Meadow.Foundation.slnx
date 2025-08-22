@@ -311,6 +311,7 @@
   <Folder Name="/Meadow.Foundation.Peripherals/Displays/Silk/Samples/">
     <Project Path="Meadow.Foundation.Peripherals/Displays.Silk/Samples/Silk_Image_Sample/Silk_Image_Sample.csproj" />
     <Project Path="Meadow.Foundation.Peripherals/Displays.Silk/Samples/Silk_Sample/Silk_Sample.csproj" />
+    <Project Path="Meadow.Foundation.Peripherals/Displays.Silk/Samples/Silk_Simulator_Sample/Silk_Simulator_Sample.csproj" />
   </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/Displays/Ssd130x/">
     <Project Path="Meadow.Foundation.Peripherals/Displays.Ssd130x/Driver/Displays.Ssd130x.csproj" />

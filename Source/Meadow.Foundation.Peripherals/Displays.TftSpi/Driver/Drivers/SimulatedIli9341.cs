@@ -1,0 +1,26 @@
+﻿using Meadow.Peripherals.Displays;
+
+namespace Meadow.Foundation.Displays;
+
+/// <summary>
+/// Represents a simulated Ili9341 displayRenderer
+/// </summary>
+public class SimulatedIli9341 : SimulatedDisplayBase
+{
+    /// <summary>
+    /// The color modes supported by the display
+    /// </summary>
+    public override ColorMode SupportedColorModes => ColorMode.Format16bppRgb565 | ColorMode.Format12bppRgb444 | ColorMode.Format18bppRgb666;
+
+    /// <summary>
+    /// Create a new simulated Ili9341 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    /// <param name="rotationType"></param>
+    /// <param name="colorMode"></param>
+    public SimulatedIli9341(IResizablePixelDisplay displayRenderer,
+        RotationType rotationType = RotationType._270Degrees,
+        ColorMode colorMode = ColorMode.Format12bppRgb444)
+        : base(displayRenderer, 240, 320, rotationType, colorMode)
+    { }
+}
