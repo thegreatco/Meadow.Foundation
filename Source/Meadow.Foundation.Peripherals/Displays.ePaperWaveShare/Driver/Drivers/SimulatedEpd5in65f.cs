@@ -11,6 +11,12 @@ public class SimulatedEpd5in65f : SimulatedDisplayBase
     /// <inheritdoc/>
     public override ColorMode SupportedColorModes => ColorMode.Format4bppIndexed;
 
+    /// <inheritdoc/>
+    protected override Color EnabledColor => Color.Black;
+
+    /// <inheritdoc/>
+    protected override Color DisabledColor => Color.White;
+
     /// <summary>
     /// Create a new instance of the simulated Epd5in65f displayRenderer
     /// </summary>
