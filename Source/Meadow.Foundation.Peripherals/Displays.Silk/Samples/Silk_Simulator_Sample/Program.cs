@@ -21,9 +21,12 @@ public class Program
 
     public static void Initialize()
     {
-        display = new SilkDisplay(640, 480, displayScale: 2f);
+        display = new SilkDisplay(displayScale: 2f);
 
-        graphics = new MicroGraphics(display)
+        //var virtualDisplay = new Ili9341Virtual(colorMode: Meadow.Peripherals.Displays.ColorMode.Format8bppRgb332, displayRenderer: display);
+        var virtualDisplay = new Epd5in65fVirtual(displayRenderer: display);
+
+        graphics = new MicroGraphics(virtualDisplay)
         {
             CurrentFont = new Font16x24(),
             Stroke = 1
@@ -56,6 +59,7 @@ public class Program
                 graphics.DrawRectangle(20, 185, 80, 40, Color.Yellow, false);
 
                 graphics.DrawCircle(x, y, circleRadius, Color.Blue, false);
+
                 graphics.Show();
 
                 x += xDirection ? circleSpeed : -circleSpeed;

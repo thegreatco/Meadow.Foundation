@@ -53,6 +53,9 @@ public class SilkDisplay : IResizablePixelDisplay, ITouchScreen
     public int Height => pixelBuffer.Height;
 
     /// <inheritdoc/>
+    public float DisplayScale => displayScale;
+
+    /// <inheritdoc/>
     public ColorMode SupportedColorModes => ColorMode.Format24bppRgb888 | ColorMode.Format16bppRgb565 | ColorMode.Format32bppRgba8888;
 
     /// <inheritdoc/>
