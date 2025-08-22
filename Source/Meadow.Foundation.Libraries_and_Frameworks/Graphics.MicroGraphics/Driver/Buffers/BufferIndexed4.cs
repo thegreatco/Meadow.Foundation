@@ -180,18 +180,18 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// <returns>The 4-bit color index</returns>
         public byte GetColorIndexForPixel(int x, int y)
         {
-            int index = y * Width / 2 + x / 2;
-            byte color;
+            int byteIndex = y * Width / 2 + x / 2;
+            byte colorIndex;
 
             if ((x % 2) == 0)
-            {   //even pixel - shift to the significant nibble
-                color = (byte)((Buffer[index] & 0x0f) >> 4);
+            {
+                colorIndex = (byte)((Buffer[byteIndex] & 0xF0) >> 4);
             }
             else
-            {   //odd pixel
-                color = (byte)((Buffer[index] & 0xf0));
+            {
+                colorIndex = (byte)(Buffer[byteIndex] & 0x0F);
             }
-            return color;
+            return colorIndex;
         }
 
         int GetIndexForColor(Color color)
