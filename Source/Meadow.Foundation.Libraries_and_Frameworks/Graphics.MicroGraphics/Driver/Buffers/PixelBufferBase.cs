@@ -36,6 +36,7 @@ namespace Meadow.Foundation.Graphics.Buffers
                 {
                     ColorMode.Format1bpp => 1,
                     ColorMode.Format2bpp => 2,
+                    ColorMode.Format2bppGray => 2,
                     ColorMode.Format2bppIndexed => 2,
                     ColorMode.Format4bppGray => 4,
                     ColorMode.Format4bppIndexed => 4,
@@ -76,7 +77,7 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// </summary>
         public PixelBufferBase()
         {
-            Buffer = new byte[0];
+            Buffer = [];
         }
 
         /// <summary>
@@ -532,11 +533,11 @@ namespace Meadow.Foundation.Graphics.Buffers
                 return 0;
             }
 
-            var rDeltaSquared = MathF.Pow(MathF.Abs(color1.R - color2.R), 2);
-            var gDeltaSquared = MathF.Pow(MathF.Abs(color1.G - color2.G), 2);
-            var bDeltaSquared = MathF.Pow(MathF.Abs(color1.B - color2.B), 2);
+            int rDelta = color1.R - color2.R;
+            int gDelta = color1.G - color2.G;
+            int bDelta = color1.B - color2.B;
 
-            return MathF.Sqrt(rDeltaSquared + gDeltaSquared + bDeltaSquared);
+            return MathF.Sqrt(rDelta * rDelta + gDelta * gDelta + bDelta * bDelta);
         }
 
         /// <summary>
@@ -551,7 +552,7 @@ namespace Meadow.Foundation.Graphics.Buffers
                 {
                     if (disposing)
                     {
-                        Buffer = new byte[0];
+                        Buffer = [];
                     }
                 }
             }

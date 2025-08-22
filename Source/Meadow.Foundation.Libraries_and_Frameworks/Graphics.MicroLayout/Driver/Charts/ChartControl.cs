@@ -25,12 +25,12 @@ public abstract class ChartControl : ThemedControl
     /// <summary>
     /// The default width of the control margin
     /// </summary>
-    protected const int DefaultMargin = 5;
+    protected const int DefaultMargin = 2;
 
     /// <summary>
     /// The default width of the control's axis lines
     /// </summary>
-    protected const int DefaultAxisStroke = 4;
+    protected const int DefaultAxisStroke = 2;
 
     /// <summary>
     /// The IFont used to for displaying axis labels
@@ -92,8 +92,7 @@ public abstract class ChartControl : ThemedControl
     /// <param name="height">The control's height</param>
     public ChartControl(int left, int top, int width, int height)
         : base(left, top, width, height)
-    {
-    }
+    { }
 
     /// <summary>
     /// Get either the specified or default font for the axes

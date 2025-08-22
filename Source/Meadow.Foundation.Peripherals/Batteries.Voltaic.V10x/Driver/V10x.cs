@@ -10,13 +10,13 @@ namespace Meadow.Foundation.Batteries.Voltaic;
 /// </summary>
 public class V10x : ModbusPolledDevice
 {
-    private double _rawBatteryVoltage;
-    private double _rawInputVoltage;
-    private double _rawInputCurrent;
-    private double _rawLoadVoltage;
-    private double _rawLoadCurrent;
-    private double _rawEnvironmentTemp;
-    private double _rawControllerTemp;
+    private readonly double _rawBatteryVoltage;
+    private readonly double _rawInputVoltage;
+    private readonly double _rawInputCurrent;
+    private readonly double _rawLoadVoltage;
+    private readonly double _rawLoadCurrent;
+    private readonly double _rawEnvironmentTemp;
+    private readonly double _rawControllerTemp;
 
     private const ushort BatteryOutputSwitchRegister = 0;
 
@@ -65,6 +65,12 @@ public class V10x : ModbusPolledDevice
     /// </summary>
     public Temperature ControllerTemp => new Temperature(_rawControllerTemp, Temperature.UnitType.Celsius);
 
+    /// <summary>
+    /// Creates a new V10x instance.
+    /// </summary>
+    /// <param name="client">The modbus client</param>
+    /// <param name="modbusAddress">The modbuss address</param>
+    /// <param name="refreshPeriod">The refresh period</param>
     public V10x(
         ModbusClientBase client,
         byte modbusAddress = DefaultModbusAddress,
@@ -131,6 +137,8 @@ public class V10x : ModbusPolledDevice
 
     private object ConvertRegisterToRawValue(ushort[] registers)
     {
+        Resolver.Log.Warn($"converting {registers[0]}");
+
         // value is one register in 1/100 of a unit
         return registers[0] / 100d;
     }
@@ -143,7 +151,7 @@ public class V10x : ModbusPolledDevice
     /// </remarks>
     public async Task<byte> ReadModbusAddress()
     {
-        var registers = await base.ReadHoldingRegisters(9020, 1);
+        var registers = await base.ReadHoldingRegisters(0x9020, 1);
         return (byte)registers[0];
     }
 
@@ -155,7 +163,7 @@ public class V10x : ModbusPolledDevice
     /// </remarks>
     public async Task WriteModbusAddress(byte address)
     {
-        await base.WriteHoldingRegister(9020, address);
+        await base.WriteHoldingRegister(0x9020, address);
         base.BusAddress = address;
     }
 }

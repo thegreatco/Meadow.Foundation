@@ -396,11 +396,11 @@ namespace Meadow.Foundation.ICs.IOExpanders
 
             if (direction == PortDirectionType.Input)
             {
-                if (BitHelpers.GetBitValue(ioDir, (byte)pin.Key)) { return; }
+                if (BitHelpers.GetBitValue(ioDir, bitIndex)) { return; }
             }
             else
             {
-                if (!BitHelpers.GetBitValue(ioDir, (byte)pin.Key)) { return; }
+                if (!BitHelpers.GetBitValue(ioDir, bitIndex)) { return; }
             }
 
             ref var ioDirLatch = ref GetIoDirLatch(portBank);
@@ -642,6 +642,12 @@ namespace Meadow.Foundation.ICs.IOExpanders
                 return PortBank.B;
             }
             return PortBank.A;
+        }
+
+        /// <inheritdoc/>
+        public IDigitalSignalAnalyzer CreateDigitalSignalAnalyzer(IPin pin, bool captureDutyCycle)
+        {
+            return new SoftDigitalSignalAnalyzer(pin, captureDutyCycle: captureDutyCycle);
         }
     }
 }

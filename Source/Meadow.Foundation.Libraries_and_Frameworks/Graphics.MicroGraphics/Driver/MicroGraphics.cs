@@ -571,16 +571,6 @@ namespace Meadow.Foundation.Graphics
         public void DrawVerticalLine(int x, int y, int length)
         {
             DrawVerticalLine(x, y, length, PenColor);
-
-            if (Stroke > 1)
-            {
-                int xOffset = Stroke >> 1;
-
-                for (int i = 0; i < Stroke; i++)
-                {
-                    DrawVerticalLine(x - xOffset + i, y, length);
-                }
-            }
         }
 
         /// <summary>
@@ -960,13 +950,13 @@ namespace Meadow.Foundation.Graphics
         /// <summary>
         /// Draws a circle quadrant (quarter circle)
         /// </summary>
-        /// <param name="centerX"></param>
-        /// <param name="centerY"></param>
-        /// <param name="radius"></param>
-        /// <param name="quadrant"></param>
-        /// <param name="enabled"></param>
-        /// <param name="filled"></param>
-        /// <param name="centerBetweenPixels"></param>
+        /// <param name="centerX">Abscissa of the center point of the circle</param>
+        /// <param name="centerY">Ordinate of the center point of the circle</param>
+        /// <param name="radius">Radius of the circle</param>
+        /// <param name="quadrant">The quadrant to draw</param>
+        /// <param name="enabled">Is enabled (on or off)</param>
+        /// <param name="filled">Draw a filled quadrant?</param>
+        /// <param name="centerBetweenPixels">If true, the center of the circle is between the assigned pixel and the next pixel, false it's directly on the center pixel</param>
         public void DrawCircleQuadrant(int centerX, int centerY, int radius, int quadrant, bool enabled = true, bool filled = false, bool centerBetweenPixels = false)
         {
             DrawCircleQuadrant(centerX, centerY, radius, quadrant, enabled ? EnabledColor : DisabledColor, filled, centerBetweenPixels);
@@ -975,12 +965,12 @@ namespace Meadow.Foundation.Graphics
         /// <summary>
         /// Draws a circle quadrant (quarter circle)
         /// </summary>
-        /// <param name="centerX"></param>
-        /// <param name="centerY"></param>
-        /// <param name="radius"></param>
-        /// <param name="quadrant"></param>
-        /// <param name="filled"></param>
-        /// <param name="centerBetweenPixels"></param>
+        /// <param name="centerX">Abscissa of the center point of the circle</param>
+        /// <param name="centerY">Ordinate of the center point of the circle</param>
+        /// <param name="radius">Radius of the circle</param>
+        /// <param name="quadrant">The quadrant to draw</param>
+        /// <param name="filled">Draw a filled quadrant?</param>
+        /// <param name="centerBetweenPixels">If true, the center of the circle is between the assigned pixel and the next pixel, false it's directly on the center pixel</param>
         public void DrawCircleQuadrant(int centerX, int centerY, int radius, int quadrant, bool filled = false, bool centerBetweenPixels = false)
         {
             DrawCircleQuadrant(centerX, centerY, radius, quadrant, PenColor, filled, centerBetweenPixels);
@@ -989,13 +979,13 @@ namespace Meadow.Foundation.Graphics
         /// <summary>
         /// Draws a circle quadrant (quarter circle)
         /// </summary>
-        /// <param name="centerX"></param>
-        /// <param name="centerY"></param>
-        /// <param name="radius"></param>
-        /// <param name="quadrant"></param>
-        /// <param name="color"></param>
-        /// <param name="filled"></param>
-        /// <param name="centerBetweenPixels"></param>
+        /// <param name="centerX">Abscissa of the center point of the circle</param>
+        /// <param name="centerY">Ordinate of the center point of the circle</param>
+        /// <param name="radius">Radius of the circle</param>
+        /// <param name="quadrant">The quadrant to draw</param>
+        /// <param name="color">Color of the quadrant</param>
+        /// <param name="filled">Draw a filled quadrant?</param>
+        /// <param name="centerBetweenPixels">If true, the center of the circle is between the assigned pixel and the next pixel, false it's directly on the center pixel</param>
         public void DrawCircleQuadrant(int centerX, int centerY, int radius, int quadrant, Color color, bool filled = false, bool centerBetweenPixels = false)
         {
             if (quadrant < 0 || quadrant > 3) { throw new ArgumentOutOfRangeException("DrawCircleQuadrant: quadrant must be between 0 & 3 inclusive"); }
@@ -1192,6 +1182,17 @@ namespace Meadow.Foundation.Graphics
         /// <summary>
         /// Draw a rectangle
         /// </summary>
+        /// <param name="rectangle">Rectangle to draw</param>
+        /// <param name="filled">Fill the rectangle (true) or draw the outline (false, default)</param>
+        public void DrawRectangle(Rect rectangle, bool filled = false)
+        {
+            DrawRectangle(rectangle.Left, rectangle.Top,
+                rectangle.Width, rectangle.Height, PenColor, filled);
+        }
+
+        /// <summary>
+        /// Draw a rectangle
+        /// </summary>
         /// <param name="x">Abscissa of the top left corner</param>
         /// <param name="y">Ordinate of the top left corner</param>
         /// <param name="width">Width of the rectangle</param>
@@ -1200,6 +1201,18 @@ namespace Meadow.Foundation.Graphics
         public void DrawRectangle(int x, int y, int width, int height, bool filled = false)
         {
             DrawRectangle(x, y, width, height, PenColor, filled);
+        }
+
+        /// <summary>
+        /// Draw a rectangle
+        /// </summary>
+        /// <param name="rectangle">Rectangle to draw</param>
+        /// <param name="color">The color of the rectangle</param>
+        /// <param name="filled">Fill the rectangle (true) or draw the outline (false, default)</param>
+        public void DrawRectangle(Rect rectangle, Color color, bool filled = false)
+        {
+            DrawRectangle(rectangle.Left, rectangle.Top,
+                rectangle.Width, rectangle.Height, color, filled);
         }
 
         /// <summary>
@@ -1371,7 +1384,7 @@ namespace Meadow.Foundation.Graphics
         /// <param name="text">The string to measure</param>
         /// <param name="font">The font used to calculate the text size</param>
         /// <param name="scaleFactor">Scale factor used to calculate the size</param>
-        public Size MeasureText(string text, IFont font, ScaleFactor scaleFactor = ScaleFactor.X1)
+        public static Size MeasureText(string text, IFont font, ScaleFactor scaleFactor = ScaleFactor.X1)
         {
             return new Size(text.Length * (int)scaleFactor * font.Width, (int)scaleFactor * font.Height);
         }
@@ -1397,10 +1410,12 @@ namespace Meadow.Foundation.Graphics
 
             var fontToDraw = (font ?? CurrentFont) ?? throw new Exception("CurrentFont must be set before calling DrawText.");
 
+            var textSize = MeasureText(text, fontToDraw, scaleFactor);
+
             byte[] bitMap = GetBytesForTextBitmap(text, fontToDraw);
 
-            x = GetXForAlignment(x, MeasureText(text, fontToDraw, scaleFactor).Width, alignmentH);
-            y = GetYForAlignment(y, MeasureText(text, fontToDraw, scaleFactor).Height, alignmentV);
+            x = GetXForAlignment(x, textSize.Width, alignmentH);
+            y = GetYForAlignment(y, textSize.Height, alignmentV);
 
             DrawBitmap(x, y, bitMap.Length / fontToDraw.Height * 8, fontToDraw.Height, bitMap, color, scaleFactor);
         }
@@ -1878,8 +1893,23 @@ namespace Meadow.Foundation.Graphics
                 isUpdating = true;
             }
 
-            display?.Show(left, top, right, bottom);
+            if (display is IRotatableDisplay)
+            {
+                display?.Show(left, top, right, bottom);
+            }
+            else
+            {
+                int l = GetXForRotation(left, top);
+                int t = GetYForRotation(left, top);
 
+                int r = GetXForRotation(right, bottom);
+                int b = GetYForRotation(right, bottom);
+
+                if (l > r) { Swap(ref l, ref r); }
+                if (t > b) { Swap(ref t, ref b); }
+
+                display?.Show(l, t, r, b);
+            }
             isUpdating = false;
         }
 
@@ -1938,7 +1968,7 @@ namespace Meadow.Foundation.Graphics
         /// <param name="color">Color to set display</param>
         public virtual void Clear(Color color, bool updateDisplay = false)
         {
-            DrawRectangle(0, 0, Width, Height, color, true);
+            PixelBuffer.Fill(color);
 
             if (updateDisplay) { Show(); }
         }
@@ -1962,20 +1992,41 @@ namespace Meadow.Foundation.Graphics
                 throw new ArgumentException("Width and height do not match the bitmap size.");
             }
 
-            int scale = (int)scaleFactor;
-
-            for (var ordinate = 0; ordinate < height; ordinate++)
+            if (scaleFactor == ScaleFactor.X1) //split into two paths for performance
             {
-                for (var abscissa = 0; abscissa < width; abscissa++)
+                for (var ordinate = 0; ordinate < height; ordinate++)
                 {
-                    var b = bitmap[(ordinate * width) + abscissa];
-                    byte mask = 0x01;
-
-                    for (var pixel = 0; pixel < 8; pixel++)
+                    for (var abscissa = 0; abscissa < width; abscissa++)
                     {
-                        if ((b & mask) > 0)
+                        var b = bitmap[(ordinate * width) + abscissa];
+
+                        if (b == 0) continue; //save a loop if a byte is empty
+
+                        for (var pixel = 0; pixel < 8; pixel++)
                         {
-                            if (scaleFactor != ScaleFactor.X1)
+                            if (((b >> pixel) & 1) == 1)
+                            {
+                                DrawPixel(x + (8 * abscissa) + pixel, y + ordinate, color);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int scale = (int)scaleFactor;
+
+                for (var ordinate = 0; ordinate < height; ordinate++)
+                {
+                    for (var abscissa = 0; abscissa < width; abscissa++)
+                    {
+                        var b = bitmap[(ordinate * width) + abscissa];
+
+                        if (b == 0) continue; //save a loop if a byte is empty
+
+                        for (var pixel = 0; pixel < 8; pixel++)
+                        {
+                            if (((b >> pixel) & 1) == 1)
                             {
                                 Fill(x: x + (8 * abscissa * scale) + (pixel * scale),
                                     y: y + (ordinate * scale),
@@ -1983,12 +2034,7 @@ namespace Meadow.Foundation.Graphics
                                     height: scale,
                                     color: color);
                             }
-                            else
-                            {   //1x
-                                DrawPixel(x + (8 * abscissa) + pixel, y + ordinate, color);
-                            }
                         }
-                        mask <<= 1;
                     }
                 }
             }

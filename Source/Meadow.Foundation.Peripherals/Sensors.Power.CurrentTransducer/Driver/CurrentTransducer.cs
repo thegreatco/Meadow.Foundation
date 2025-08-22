@@ -10,12 +10,12 @@ namespace Meadow.Foundation.Sensors.Power;
 /// <summary>
 /// Represents a general Current Transducer (CT) sensor
 /// </summary>
-public partial class CurrentTransducer : SamplingSensorBase<Current>, ICurrentSensor
+public partial class CurrentTransducer : SamplingSensorBase<Current>, ISamplingCurrentSensor
 {
     /// <summary>
     /// The analog input port connected to the transducer
     /// </summary>
-    protected IAnalogInputPort AnalogPort { get; private set; } = default!;
+    protected IObservableAnalogInputPort AnalogPort { get; private set; } = default!;
 
     /// <summary>
     /// The maximum voltage the CT outputs
@@ -55,7 +55,7 @@ public partial class CurrentTransducer : SamplingSensorBase<Current>, ICurrentSe
     /// <param name="maxCurrent">The sensed current at the maximum output voltage</param>
     /// <param name="minVoltage">The minimum voltage the CT outputs</param>
     /// <param name="minCurrent">The sensed current at the minimum output voltage</param>
-    public CurrentTransducer(IAnalogInputPort analogPort, Voltage maxVoltage, Current maxCurrent, Voltage? minVoltage = null, Current? minCurrent = null)
+    public CurrentTransducer(IObservableAnalogInputPort analogPort, Voltage maxVoltage, Current maxCurrent, Voltage? minVoltage = null, Current? minCurrent = null)
     {
         Initialize(analogPort, maxVoltage, maxCurrent, minVoltage, minCurrent);
     }
@@ -76,7 +76,7 @@ public partial class CurrentTransducer : SamplingSensorBase<Current>, ICurrentSe
     /// <param name="maxCurrent">The sensed current at the maximum output voltage</param>
     /// <param name="minVoltage">The minimum voltage the CT outputs</param>
     /// <param name="minCurrent">The sensed current at the minimum output voltage</param>
-    protected virtual void Initialize(IAnalogInputPort analogPort, Voltage maxVoltage, Current maxCurrent, Voltage? minVoltage = null, Current? minCurrent = null)
+    protected virtual void Initialize(IObservableAnalogInputPort analogPort, Voltage maxVoltage, Current maxCurrent, Voltage? minVoltage = null, Current? minCurrent = null)
     {
         AnalogPort = analogPort;
         MaxVoltage = maxVoltage;
@@ -86,7 +86,7 @@ public partial class CurrentTransducer : SamplingSensorBase<Current>, ICurrentSe
 
         AnalogPort.Subscribe
         (
-            IAnalogInputPort.CreateObserver(
+            IObservableAnalogInputPort.CreateObserver(
                 result =>
                 {
                     ChangeResult<Current> changeResult = new()
@@ -113,6 +113,12 @@ public partial class CurrentTransducer : SamplingSensorBase<Current>, ICurrentSe
             (MaxCurrent.Amps - MinCurrent.Amps) /
             (MaxVoltage.Volts - MinVoltage.Volts)
             * voltage.Volts);
+    }
+
+    ///<inheritdoc/>
+    public async ValueTask<Current> ReadCurrent()
+    {
+        return await ReadSensor();
     }
 
     ///<inheritdoc/>
