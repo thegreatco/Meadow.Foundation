@@ -23,8 +23,7 @@ public class Program
     {
         display = new SilkDisplay(displayScale: 2f);
 
-        //var virtualDisplay = new Ili9341Virtual(colorMode: Meadow.Peripherals.Displays.ColorMode.Format8bppRgb332, displayRenderer: display);
-        var virtualDisplay = new Epd5in65fVirtual(displayRenderer: display);
+        var virtualDisplay = new SimulatedIli9341(colorMode: Meadow.Peripherals.Displays.ColorMode.Format8bppRgb332, displayRenderer: display);
 
         graphics = new MicroGraphics(virtualDisplay)
         {

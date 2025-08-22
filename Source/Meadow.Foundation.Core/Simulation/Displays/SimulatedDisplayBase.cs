@@ -15,7 +15,7 @@ public class SimulatedDisplayBase : IPixelDisplay
     public ColorMode ColorMode { get; }
 
     /// <inheritdoc/>
-    public ColorMode SupportedColorModes { get; protected set; }
+    public virtual ColorMode SupportedColorModes { get; protected set; }
 
     /// <inheritdoc/>
     public int Width { get; }
@@ -64,6 +64,11 @@ public class SimulatedDisplayBase : IPixelDisplay
 
         this.displayRenderer = displayRenderer;
         displayRenderer.Resize(width, height, displayRenderer.DisplayScale);
+
+        if ((SupportedColorModes & colorMode) != 0)
+        {
+            Resolver.Log.Warn($"Color mode {colorMode} is not supported by the physical display.");
+        }
 
         CreateBuffer(width, height, colorMode);
     }

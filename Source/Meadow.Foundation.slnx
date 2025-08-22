@@ -398,11 +398,6 @@
       <Deploy />
     </Project>
   </Folder>
-  <Folder Name="/Meadow.Foundation.Peripherals/Displays/Virtual/">
-    <Project Path="Meadow.Foundation.Peripherals/Displays.Virtual/Driver/Displays.Virtual.csproj">
-      <Deploy />
-    </Project>
-  </Folder>
   <Folder Name="/Meadow.Foundation.Peripherals/Displays/WinForms/">
     <Project Path="Meadow.Foundation.Peripherals/Displays.WinForms/Driver/Displays.WinForms.csproj" />
   </Folder>
