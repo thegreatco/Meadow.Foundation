@@ -74,8 +74,6 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// <param name="color">The fill color</param>
         public override void Fill(Color color)
         {
-            Console.WriteLine("Fill");
-
             byte[] value = { (byte)(color.R & 0xFC), (byte)(color.G & 0xFC), (byte)(color.B & 0xFC) };
             int arrayMidPoint = Buffer.Length / 2;
             int copyLength;
