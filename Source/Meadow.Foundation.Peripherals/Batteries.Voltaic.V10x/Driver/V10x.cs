@@ -8,7 +8,7 @@ namespace Meadow.Foundation.Batteries.Voltaic;
 /// <summary>
 /// Represents a Voltaic Systems V10x solar charge controller and battery
 /// </summary>
-public class V10x : ModbusPolledDevice
+public class V10x : ModbusPolledDevice, IV10x
 {
     private readonly double _rawBatteryVoltage;
     private readonly double _rawInputVoltage;
