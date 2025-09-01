@@ -149,13 +149,16 @@ public class DataGrid : ThemedControl
     /// <param name="values">An array of values to populate the new row. The number of values must not exceed the number of columns.</param>
     public void AddRow(params object[] values)
     {
-        object[] rowValues = new object[Columns.Length];
-        for (int i = 0; i < Columns.Length; i++)
+        lock (_rows)
         {
-            rowValues[i] = i < values.Length ? values[i] : string.Empty;
-        }
+            object[] rowValues = new object[Columns.Length];
+            for (int i = 0; i < Columns.Length; i++)
+            {
+                rowValues[i] = i < values.Length ? values[i] : string.Empty;
+            }
 
-        _rows.Add(rowValues);
+            _rows.Add(rowValues);
+        }
 
         // TODO: clear and draw just the added row area
         this.Invalidate();
@@ -172,11 +175,14 @@ public class DataGrid : ThemedControl
     /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="index"/> is less than 0 or greater than the current number of rows.</exception>
     public void InsertRow(int index, params object[] values)
     {
-        if (index < 0 || index > _rows.Count)
+        lock (_rows)
         {
-            throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+            if (index < 0 || index > _rows.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+            }
+            _rows.Insert(index, values[..Columns.Length]);
         }
-        _rows.Insert(index, values[..Columns.Length]);
 
         // TODO: clear and redraw the inserted row and everything after it
         this.Invalidate();
@@ -192,12 +198,14 @@ public class DataGrid : ThemedControl
     /// collection.</exception>
     public void RemoveRow(int index)
     {
-        if (index < 0 || index >= _rows.Count)
+        lock (_rows)
         {
-            throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+            if (index < 0 || index >= _rows.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is out of range.");
+            }
+            _rows.RemoveAt(index);
         }
-        _rows.RemoveAt(index);
-
         // TODO: clear and redraw the removed row and everything after it
 
         this.Invalidate();
@@ -215,18 +223,21 @@ public class DataGrid : ThemedControl
     /// <paramref name="columnIndex"/> is less than 0 or greater than or equal to the number of columns.</exception>
     public void UpdateCell(int rowIndex, int columnIndex, object value)
     {
-        if (rowIndex < 0 || rowIndex >= _rows.Count || columnIndex < 0 || columnIndex >= Columns.Length)
+        lock (_rows)
         {
-            throw new ArgumentOutOfRangeException("Row or column index is out of range.");
-        }
+            if (rowIndex < 0 || rowIndex >= _rows.Count || columnIndex < 0 || columnIndex >= Columns.Length)
+            {
+                throw new ArgumentOutOfRangeException("Row or column index is out of range.");
+            }
 
-        if (_rows[rowIndex][columnIndex] != value)
-        {
-            _rows[rowIndex][columnIndex] = value;
+            if (_rows[rowIndex][columnIndex] != value)
+            {
+                _rows[rowIndex][columnIndex] = value;
 
-            // TODO: clear and draw just the cell area
+                // TODO: clear and draw just the cell area
 
-            this.Invalidate();
+                this.Invalidate();
+            }
         }
     }
 
@@ -255,28 +266,30 @@ public class DataGrid : ThemedControl
             Color rowBackgroundColor;
             Color rowTextColor;
 
-            foreach (var row in _rows)
+            lock (_rows)
             {
-                if (++r % 2 == 0)
+                foreach (var row in _rows)
                 {
-                    rowBackgroundColor = EvenRowBackgroundColor ?? BackgroundColor;
-                    rowTextColor = EvenRowTextColor ?? TextColor;
-                }
-                else
-                {
-                    rowBackgroundColor = BackgroundColor;
-                    rowTextColor = TextColor;
-                }
+                    if (++r % 2 == 0)
+                    {
+                        rowBackgroundColor = EvenRowBackgroundColor ?? BackgroundColor;
+                        rowTextColor = EvenRowTextColor ?? TextColor;
+                    }
+                    else
+                    {
+                        rowBackgroundColor = BackgroundColor;
+                        rowTextColor = TextColor;
+                    }
 
-                DrawRow(graphics,
-                        rowBackgroundColor,
-                        rowTextColor,
-                        x,
-                        y,
-                        row);
-                y += RowHeight;
+                    DrawRow(graphics,
+                            rowBackgroundColor,
+                            rowTextColor,
+                            x,
+                            y,
+                            row);
+                    y += RowHeight;
+                }
             }
-
             graphics.Show();
         }
     }
