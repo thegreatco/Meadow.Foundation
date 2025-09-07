@@ -184,6 +184,13 @@ public class SimulatedDisplayBase : IPixelDisplay
     public void WriteBuffer(int x, int y, IPixelBuffer displayBuffer)
     {
         pixelBufferSimulated.WriteBuffer(x, y, displayBuffer);
-        pixelBufferDisplay.WriteBuffer(x, y, displayBuffer); //ToDo .. .this is wrong, need to convert colors
+
+        for (int i = x; i < x + displayBuffer.Width; i++)
+        {
+            for (int j = y; j < y + displayBuffer.Height; j++)
+            {
+                pixelBufferDisplay.SetPixel(i, j, pixelBufferSimulated.GetPixel(i, j));
+            }
+        }
     }
 }
