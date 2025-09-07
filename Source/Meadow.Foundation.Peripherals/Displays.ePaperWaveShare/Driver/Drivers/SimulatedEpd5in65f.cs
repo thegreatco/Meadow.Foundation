@@ -27,7 +27,7 @@ public class SimulatedEpd5in65f : SimulatedDisplayBase
     {
         SupportedColorModes = ColorMode.Format4bppIndexed;
 
-        if (pixelBuffer is BufferIndexed4 buffer)
+        if (pixelBufferSimulated is BufferIndexed4 buffer)
         {
             buffer.IndexedColors[0] = Color.Black;
             buffer.IndexedColors[1] = Color.White;

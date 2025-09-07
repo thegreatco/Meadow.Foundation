@@ -28,7 +28,7 @@ public class SimulatedUc8151c : SimulatedDisplayBase
         bool rotate = true)
         : base(displayRenderer, 152, 152, rotate, ColorMode.Format2bppIndexed)
     {
-        if (pixelBuffer is BufferIndexed2 buffer)
+        if (pixelBufferSimulated is BufferIndexed2 buffer)
         {
             buffer.IndexedColors[0] = Color.Black;
             buffer.IndexedColors[1] = Color.White;
