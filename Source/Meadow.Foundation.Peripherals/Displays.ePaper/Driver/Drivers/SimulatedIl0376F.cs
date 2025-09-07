@@ -28,7 +28,7 @@ public class SimulatedIl0376F : SimulatedDisplayBase
         bool rotate = true)
         : base(displayRenderer, 200, 200, rotate, ColorMode.Format2bppIndexed)
     {
-        if (pixelBuffer is BufferIndexed2 buffer)
+        if (pixelBufferSimulated is BufferIndexed2 buffer)
         {
             buffer.IndexedColors[0] = Color.Black;
             buffer.IndexedColors[1] = Color.White;

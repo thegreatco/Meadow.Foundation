@@ -1,5 +1,6 @@
 ﻿using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Peripherals.Displays;
+using System;
 
 namespace Meadow.Foundation.Displays;
 
@@ -38,7 +39,12 @@ public class SimulatedDisplayBase : IPixelDisplay
     /// <summary>
     /// The pixel buffer for the displayRenderer
     /// </summary>  
-    protected IPixelBuffer pixelBuffer = default!;
+    protected IPixelBuffer pixelBufferDisplay = default!;
+
+    /// <summary>
+    /// The bit-per-pixel accurate simulated display buffer
+    /// </summary>  
+    protected IPixelBuffer pixelBufferSimulated = default!;
 
     /// <summary>
     /// The real displayRenderer that renders that virtual displayRenderer is rendered on
@@ -68,17 +74,33 @@ public class SimulatedDisplayBase : IPixelDisplay
         this.displayRenderer = displayRenderer;
         displayRenderer.Resize(Width, Height, displayRenderer.DisplayScale);
 
-        if ((SupportedColorModes & colorMode) != 0)
+        if (!SupportedColorModes.HasFlag(colorMode))
         {
             Resolver.Log.Warn($"Color mode {colorMode} is not supported by the physical display.");
         }
 
-        CreateBuffer(Width, Height, colorMode);
+        pixelBufferSimulated = CreateBuffer(Width, Height, colorMode);
+
+        var realBufType = displayRenderer.PixelBuffer?.GetType();
+        if (realBufType is null)
+        {
+            throw new InvalidOperationException("displayRenderer.PixelBuffer is null; cannot mirror buffer type.");
+        }
+
+        var ctor = realBufType.GetConstructor([typeof(int), typeof(int)]);
+        if (ctor is null)
+        {
+            pixelBufferDisplay = CreateBuffer(Width, Height, ColorMode.Format24bppRgb888);
+        }
+        else
+        {
+            pixelBufferDisplay = (IPixelBuffer)ctor.Invoke(new object[] { Width, Height });
+        }
     }
 
-    void CreateBuffer(int width, int height, ColorMode colorMode)
+    IPixelBuffer CreateBuffer(int width, int height, ColorMode colorMode)
     {
-        pixelBuffer = colorMode switch
+        return colorMode switch
         {
             ColorMode.Format1bpp => new Buffer1bpp(width, height),
             ColorMode.Format2bppIndexed => new BufferIndexed2(width, height),
@@ -95,12 +117,13 @@ public class SimulatedDisplayBase : IPixelDisplay
     }
 
     /// <inheritdoc/>
-    public IPixelBuffer PixelBuffer => pixelBuffer;
+    public IPixelBuffer PixelBuffer => pixelBufferDisplay;
 
     /// <inheritdoc/>
     public void Clear(bool updateDisplay = false)
     {
-        pixelBuffer.Clear();
+        pixelBufferDisplay.Clear();
+        pixelBufferSimulated.Clear();
 
         if (updateDisplay)
         {
@@ -111,37 +134,42 @@ public class SimulatedDisplayBase : IPixelDisplay
     /// <inheritdoc/>
     public void DrawPixel(int x, int y, Color color)
     {
-        pixelBuffer.SetPixel(x, y, color);
+        pixelBufferSimulated.SetPixel(x, y, color);
+        pixelBufferDisplay.SetPixel(x, y, pixelBufferSimulated.GetPixel(x, y));
     }
 
     /// <inheritdoc/>
     public void DrawPixel(int x, int y, bool enabled)
     {
-        pixelBuffer.SetPixel(x, y, enabled ? EnabledColor : DisabledColor);
+        pixelBufferSimulated.SetPixel(x, y, enabled ? EnabledColor : DisabledColor);
+        pixelBufferDisplay.SetPixel(x, y, enabled ? EnabledColor : DisabledColor);
     }
 
     /// <inheritdoc/>
     public void Fill(Color fillColor, bool updateDisplay = false)
     {
-        pixelBuffer.Fill(fillColor);
+        pixelBufferSimulated.Fill(fillColor);
+        pixelBufferDisplay.Fill(pixelBufferSimulated.GetPixel(0, 0));
     }
 
     /// <inheritdoc/>
     public void Fill(int x, int y, int width, int height, Color fillColor)
     {
-        pixelBuffer.Fill(x, y, width, height, fillColor);
+        pixelBufferSimulated.Fill(x, y, width, height, fillColor);
+        pixelBufferDisplay.Fill(x, y, width, height, pixelBufferSimulated.GetPixel(x, y));
     }
 
     /// <inheritdoc/>
     public void InvertPixel(int x, int y)
     {
-        pixelBuffer.InvertPixel(x, y);
+        pixelBufferSimulated.InvertPixel(x, y);
+        pixelBufferDisplay.SetPixel(x, y, pixelBufferSimulated.GetPixel(x, y));
     }
 
     /// <inheritdoc/>
     public void Show()
     {
-        displayRenderer.WriteBuffer(0, 0, pixelBuffer);
+        displayRenderer.WriteBuffer(0, 0, pixelBufferDisplay);
         displayRenderer.Show();
     }
 
@@ -155,6 +183,14 @@ public class SimulatedDisplayBase : IPixelDisplay
     /// <inheritdoc/>
     public void WriteBuffer(int x, int y, IPixelBuffer displayBuffer)
     {
-        pixelBuffer.WriteBuffer(x, y, displayBuffer);
+        pixelBufferSimulated.WriteBuffer(x, y, displayBuffer);
+
+        for (int i = x; i < x + displayBuffer.Width; i++)
+        {
+            for (int j = y; j < y + displayBuffer.Height; j++)
+            {
+                pixelBufferDisplay.SetPixel(i, j, pixelBufferSimulated.GetPixel(i, j));
+            }
+        }
     }
 }
