@@ -74,7 +74,7 @@ public class SimulatedDisplayBase : IPixelDisplay
         this.displayRenderer = displayRenderer;
         displayRenderer.Resize(Width, Height, displayRenderer.DisplayScale);
 
-        if ((SupportedColorModes & colorMode) != 0)
+        if (!SupportedColorModes.HasFlag(colorMode))
         {
             Resolver.Log.Warn($"Color mode {colorMode} is not supported by the physical display.");
         }
