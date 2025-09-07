@@ -44,6 +44,10 @@ public class Program
             bool xDirection = true;
             bool yDirection = true;
 
+            double frames = 0;
+
+            var timer = System.Diagnostics.Stopwatch.StartNew();
+
             while (true)
             {
                 graphics.Clear();
@@ -60,6 +64,15 @@ public class Program
 
                 graphics.DrawCircle(x, y, circleRadius, Color.Blue, false);
 
+
+                frames++;
+
+                if (frames > 10)
+                {
+                    var fps = frames * 1000.0 / timer.ElapsedMilliseconds;
+                    graphics.DrawText(0, 0, $"FPS: {fps:N2}", Color.Yellow);
+                }
+
                 graphics.Show();
 
                 x += xDirection ? circleSpeed : -circleSpeed;
@@ -70,6 +83,8 @@ public class Program
 
                 if (y > display!.Height - circleRadius) { yDirection = false; }
                 else if (y < circleRadius) { yDirection = true; }
+
+
             }
         });
 
