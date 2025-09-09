@@ -1,0 +1,228 @@
+﻿using Meadow;
+using Meadow.Foundation.Graphics.Buffers;
+using Meadow.Peripherals.Displays;
+using System;
+
+namespace Graphics.MicroGraphics.Dither
+{
+    /// <summary>
+    /// Provides methods for converting pixel buffers to 4bpp indexed buffers with optional dithering.
+    /// </summary>
+    public static class PixelBufferDither
+    {
+        /// <summary>
+        /// Convert any IPixelBuffer to a new BufferIndexed4 using a provided palette and dithering.
+        /// </summary>
+        public static BufferIndexed4 ToIndexed4(
+            IPixelBuffer sourceBuffer,
+            Color[] palette,
+            DitherMode mode,
+            bool serpentine = true)
+        {
+            if (sourceBuffer is null)
+            {
+                throw new ArgumentNullException(nameof(sourceBuffer));
+            }
+            if (palette is null || palette.Length == 0)
+            {
+                throw new ArgumentException("Palette must contain at least 2 colors.", nameof(palette));
+            }
+            if (palette.Length > 16)
+            {
+                throw new ArgumentException("Palette cannot exceed 16 entries for 4bpp buffers.", nameof(palette));
+            }
+
+            var ditheredBuffer = new BufferIndexed4(sourceBuffer.Width, sourceBuffer.Height);
+
+            int slots = Math.Min(ditheredBuffer.IndexedColors.Length, palette.Length);
+
+            for (int i = 0; i < slots; i++)
+            {
+                ditheredBuffer.IndexedColors[i] = palette[i];
+            }
+
+            switch (mode)
+            {
+                case DitherMode.Ordered4x4:
+                    ConvertOrdered4x4(sourceBuffer, ditheredBuffer);
+                    break;
+                case DitherMode.FloydSteinberg:
+                    ConvertFloydSteinberg(sourceBuffer, ditheredBuffer, serpentine);
+                    break;
+            }
+
+            return ditheredBuffer;
+        }
+
+        static int GetColorDistance(in Color color1, in Color color2)
+        {
+            if (color1 == color2)
+            {
+                return 0;
+            }
+
+            int rDelta = color1.R - color2.R;
+            int gDelta = color1.G - color2.G;
+            int bDelta = color1.B - color2.B;
+
+            return (rDelta * rDelta) + (gDelta * gDelta) + (bDelta * bDelta);
+        }
+
+        static byte NearestIndex(in Color c, Color[] palette, int paletteCount)
+        {
+            int best = 0, bestD = int.MaxValue;
+            for (int i = 0; i < paletteCount; i++)
+            {
+                int d = GetColorDistance(c, palette[i]);
+                if (d < bestD) { bestD = d; best = i; if (bestD == 0) break; }
+            }
+            return (byte)best;
+        }
+
+        static byte ClampByte(int v) => (byte)Math.Clamp(v, 0, 255);
+
+        static readonly byte[,] BAYER4 = new byte[,]
+        {
+            {   0,128, 32,160 },
+            { 192, 64,224, 96 },
+            {  48,176, 16,144 },
+            { 240,112,208, 80 }
+        };
+
+        static void ConvertOrdered4x4(IPixelBuffer sourceBuffer, BufferIndexed4 destinationBuffer)
+        {
+            var palette = destinationBuffer.IndexedColors;
+            int paletteLength = palette.Length;
+
+            for (int y = 0; y < destinationBuffer.Height; y++)
+            {
+                int yMatrixIndex = y & 3;
+                for (int x = 0; x < destinationBuffer.Width; x++)
+                {
+                    var sourceColor = sourceBuffer.GetPixel(x, y);
+                    int threshold = BAYER4[yMatrixIndex, x & 3] - 128; // center around 0
+
+                    var n = new Color(
+                        ClampByte(sourceColor.R + threshold),
+                        ClampByte(sourceColor.G + threshold),
+                        ClampByte(sourceColor.B + threshold));
+
+                    byte paletteIndex = NearestIndex(n, palette, paletteLength);
+                    destinationBuffer.SetPixel(x, y, paletteIndex);
+                }
+            }
+        }
+
+        static void ConvertFloydSteinberg(IPixelBuffer sourceBuffer, BufferIndexed4 destinationBuffer, bool serpentine)
+        {
+            int width = destinationBuffer.Width;
+            int height = destinationBuffer.Height;
+            var palette = destinationBuffer.IndexedColors;
+            int paletteCount = palette.Length;
+
+            var rowErrorR = new int[width + 2];
+            var rowErrorG = new int[width + 2];
+            var rowErrorB = new int[width + 2];
+            var nextRowErrorR = new int[width + 2];
+            var nextRowErrorG = new int[width + 2];
+            var nextRowErrorB = new int[width + 2];
+
+            for (int y = 0; y < height; y++)
+            {
+                if (!serpentine || (y & 1) == 0)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        DitherPixelAndDiffuseError(x, y);
+                    }
+                }
+                else
+                {
+                    for (int x = width - 1; x >= 0; x--)
+                    {
+                        DitherPixelAndDiffuseErrorReversed(x, y);
+                    }
+                }
+
+                // next row becomes current accumulators on the next iteration
+                (rowErrorR, nextRowErrorR) = (nextRowErrorR, rowErrorR); Array.Clear(nextRowErrorR, 0, nextRowErrorR.Length);
+                (rowErrorG, nextRowErrorG) = (nextRowErrorG, rowErrorG); Array.Clear(nextRowErrorG, 0, nextRowErrorG.Length);
+                (rowErrorB, nextRowErrorB) = (nextRowErrorB, rowErrorB); Array.Clear(nextRowErrorB, 0, nextRowErrorB.Length);
+            }
+
+            void DitherPixelAndDiffuseError(int x, int y)
+            {
+                int errorArrayIndex = x + 1; // 1-based center index for neighbor math
+                var sourceColor = sourceBuffer.GetPixel(x, y);
+
+                int r = ClampByte(sourceColor.R + ((rowErrorR[errorArrayIndex]) >> 8));
+                int g = ClampByte(sourceColor.G + ((rowErrorG[errorArrayIndex]) >> 8));
+                int b = ClampByte(sourceColor.B + ((rowErrorB[errorArrayIndex]) >> 8));
+
+                var adjustedColor = new Color((byte)r, (byte)g, (byte)b);
+                byte paletteIndex = NearestIndex(adjustedColor, palette, paletteCount);
+                var quantizedColor = palette[paletteIndex];
+
+                destinationBuffer.SetPixel(x, y, paletteIndex);
+
+                int errorR = (r - quantizedColor.R) << 8;
+                int errorG = (g - quantizedColor.G) << 8;
+                int errorB = (b - quantizedColor.B) << 8;
+
+                // FS distribution (L->R):
+                // Right: 7/16 (current row)
+                rowErrorR[errorArrayIndex + 1] += (7 * errorR) >> 4;
+                rowErrorG[errorArrayIndex + 1] += (7 * errorG) >> 4;
+                rowErrorB[errorArrayIndex + 1] += (7 * errorB) >> 4;
+
+                // Next row: DL 3/16, D 5/16, DR 1/16
+                nextRowErrorR[errorArrayIndex - 1] += (3 * errorR) >> 4;
+                nextRowErrorG[errorArrayIndex - 1] += (3 * errorG) >> 4;
+                nextRowErrorB[errorArrayIndex - 1] += (3 * errorB) >> 4;
+                nextRowErrorR[errorArrayIndex + 0] += (5 * errorR) >> 4;
+                nextRowErrorG[errorArrayIndex + 0] += (5 * errorG) >> 4;
+                nextRowErrorB[errorArrayIndex + 0] += (5 * errorB) >> 4;
+                nextRowErrorR[errorArrayIndex + 1] += (1 * errorR) >> 4;
+                nextRowErrorG[errorArrayIndex + 1] += (1 * errorG) >> 4;
+                nextRowErrorB[errorArrayIndex + 1] += (1 * errorB) >> 4;
+            }
+
+            void DitherPixelAndDiffuseErrorReversed(int x, int y)
+            {
+                int errorArrayIndex = x + 1;
+                var s = sourceBuffer.GetPixel(x, y);
+
+                int r = ClampByte(s.R + ((rowErrorR[errorArrayIndex]) >> 8));
+                int g = ClampByte(s.G + ((rowErrorG[errorArrayIndex]) >> 8));
+                int b = ClampByte(s.B + ((rowErrorB[errorArrayIndex]) >> 8));
+
+                var adjustedColor = new Color((byte)r, (byte)g, (byte)b);
+                byte paletteIndex = NearestIndex(adjustedColor, palette, paletteCount);
+                var quantizedColor = palette[paletteIndex];
+
+                destinationBuffer.SetPixel(x, y, paletteIndex);
+
+                int er = (r - quantizedColor.R) << 8;
+                int eg = (g - quantizedColor.G) << 8;
+                int eb = (b - quantizedColor.B) << 8;
+
+                // Mirrored FS kernel (R->L):
+                // "Right" in scan order = image x-1 → errorArrayIndex-1
+                rowErrorR[errorArrayIndex - 1] += (7 * er) >> 4;
+                rowErrorG[errorArrayIndex - 1] += (7 * eg) >> 4;
+                rowErrorB[errorArrayIndex - 1] += (7 * eb) >> 4;
+
+                // Next row: DR 3/16, D 5/16, DL 1/16 (mirror)
+                nextRowErrorR[errorArrayIndex + 1] += (3 * er) >> 4;
+                nextRowErrorG[errorArrayIndex + 1] += (3 * eg) >> 4;
+                nextRowErrorB[errorArrayIndex + 1] += (3 * eb) >> 4;
+                nextRowErrorR[errorArrayIndex + 0] += (5 * er) >> 4;
+                nextRowErrorG[errorArrayIndex + 0] += (5 * eg) >> 4;
+                nextRowErrorB[errorArrayIndex + 0] += (5 * eb) >> 4;
+                nextRowErrorR[errorArrayIndex - 1] += (1 * er) >> 4;
+                nextRowErrorG[errorArrayIndex - 1] += (1 * eg) >> 4;
+                nextRowErrorB[errorArrayIndex - 1] += (1 * eb) >> 4;
+            }
+        }
+    }
+}
