@@ -52,34 +52,20 @@ namespace Graphics.MicroGraphics.Dither
                 {
                     var sourceColor = sourceBuffer.GetPixel(x, y);
 
-                    // Normalize the dither threshold to the 8-bit range
                     int threshold = BAYER4_12bpp[yMatrixIndex, x & 3] * 16;
 
-                    // Get the lower 4 bits (quantization error)
                     int rRemainder = sourceColor.R & 0x0F;
                     int gRemainder = sourceColor.G & 0x0F;
                     int bRemainder = sourceColor.B & 0x0F;
 
-                    // Calculate the 4-bit quantized color
                     int r4 = sourceColor.R >> 4;
                     int g4 = sourceColor.G >> 4;
                     int b4 = sourceColor.B >> 4;
 
-                    // Apply dithering by adding 1 if the remainder is greater than the threshold
-                    if (rRemainder > threshold)
-                    {
-                        r4++;
-                    }
-                    if (gRemainder > threshold)
-                    {
-                        g4++;
-                    }
-                    if (bRemainder > threshold)
-                    {
-                        b4++;
-                    }
+                    if (rRemainder > threshold) r4++;
+                    if (gRemainder > threshold) g4++;
+                    if (bRemainder > threshold) b4++;
 
-                    // Convert the dithered 4-bit values back to 8-bit for the destination buffer
                     byte finalR = (byte)(Math.Min(r4, 15) << 4);
                     byte finalG = (byte)(Math.Min(g4, 15) << 4);
                     byte finalB = (byte)(Math.Min(b4, 15) << 4);
@@ -105,7 +91,6 @@ namespace Graphics.MicroGraphics.Dither
             {
                 if (!serpentine || (y & 1) == 0)
                 {
-                    // Left to right
                     for (int x = 0; x < width; x++)
                     {
                         DitherPixelAndDiffuseError(x, y, 1);
@@ -113,19 +98,16 @@ namespace Graphics.MicroGraphics.Dither
                 }
                 else
                 {
-                    // Right to left
                     for (int x = width - 1; x >= 0; x--)
                     {
                         DitherPixelAndDiffuseError(x, y, -1);
                     }
                 }
 
-                // Swap the row accumulators
                 (currentRowErrorR, nextRowErrorR) = (nextRowErrorR, currentRowErrorR);
                 (currentRowErrorG, nextRowErrorG) = (nextRowErrorG, currentRowErrorG);
                 (currentRowErrorB, nextRowErrorB) = (nextRowErrorB, currentRowErrorB);
 
-                // Clear the new `nextRowError` arrays for the next scanline's diffusion
                 Array.Clear(nextRowErrorR, 0, nextRowErrorR.Length);
                 Array.Clear(nextRowErrorG, 0, nextRowErrorG.Length);
                 Array.Clear(nextRowErrorB, 0, nextRowErrorB.Length);
@@ -136,64 +118,56 @@ namespace Graphics.MicroGraphics.Dither
                 int errorArrayIndex = x + 1;
                 var sourceColor = sourceBuffer.GetPixel(x, y);
 
-                // Add the accumulated error from previous pixels
+                // Add the accumulated fixed-point error from previous pixels
                 int adjustedR = ClampByte(sourceColor.R + (currentRowErrorR[errorArrayIndex] >> 8));
                 int adjustedG = ClampByte(sourceColor.G + (currentRowErrorG[errorArrayIndex] >> 8));
                 int adjustedB = ClampByte(sourceColor.B + (currentRowErrorB[errorArrayIndex] >> 8));
 
-                // Quantize to the 4-bit palette
-                byte quantizedR = (byte)((adjustedR & 0xF0) | (adjustedR >> 4));
-                byte quantizedG = (byte)((adjustedG & 0xF0) | (adjustedG >> 4));
-                byte quantizedB = (byte)((adjustedB & 0xF0) | (adjustedB >> 4));
+                byte quantizedR = (byte)((adjustedR >> 4) << 4);
+                byte quantizedG = (byte)((adjustedG >> 4) << 4);
+                byte quantizedB = (byte)((adjustedB >> 4) << 4);
 
                 destinationBuffer.SetPixel(x, y, new Color(quantizedR, quantizedG, quantizedB));
-                var finalQuantizedColor = destinationBuffer.GetPixel(x, y);
 
-                // Calculate the quantization error and scale it to fixed-point (Q8.8)
-                int errorR = (adjustedR - finalQuantizedColor.R);
-                int errorG = (adjustedG - finalQuantizedColor.G);
-                int errorB = (adjustedB - finalQuantizedColor.B);
+                int errorR = (adjustedR - quantizedR);
+                int errorG = (adjustedG - quantizedG);
+                int errorB = (adjustedB - quantizedB);
 
-                // Distribute the error using Floyd-Steinberg coefficients
-                // Note: The coefficients (7, 3, 5, 1) sum to 16.
-                // We use multiplication by 7, 3, 5, 1 and then division by 16 (>> 4)
                 if (direction > 0)
                 {
-                    // Forward pass
-                    currentRowErrorR[errorArrayIndex + 1] += (7 * errorR);
-                    currentRowErrorG[errorArrayIndex + 1] += (7 * errorG);
-                    currentRowErrorB[errorArrayIndex + 1] += (7 * errorB);
+                    currentRowErrorR[errorArrayIndex + 1] += (7 * errorR) >> 4;
+                    currentRowErrorG[errorArrayIndex + 1] += (7 * errorG) >> 4;
+                    currentRowErrorB[errorArrayIndex + 1] += (7 * errorB) >> 4;
 
-                    nextRowErrorR[errorArrayIndex - 1] += (3 * errorR);
-                    nextRowErrorG[errorArrayIndex - 1] += (3 * errorG);
-                    nextRowErrorB[errorArrayIndex - 1] += (3 * errorB);
+                    nextRowErrorR[errorArrayIndex - 1] += (3 * errorR) >> 4;
+                    nextRowErrorG[errorArrayIndex - 1] += (3 * errorG) >> 4;
+                    nextRowErrorB[errorArrayIndex - 1] += (3 * errorB) >> 4;
 
-                    nextRowErrorR[errorArrayIndex] += (5 * errorR);
-                    nextRowErrorG[errorArrayIndex] += (5 * errorG);
-                    nextRowErrorB[errorArrayIndex] += (5 * errorB);
+                    nextRowErrorR[errorArrayIndex] += (5 * errorR) >> 4;
+                    nextRowErrorG[errorArrayIndex] += (5 * errorG) >> 4;
+                    nextRowErrorB[errorArrayIndex] += (5 * errorB) >> 4;
 
-                    nextRowErrorR[errorArrayIndex + 1] += (1 * errorR);
-                    nextRowErrorG[errorArrayIndex + 1] += (1 * errorG);
-                    nextRowErrorB[errorArrayIndex + 1] += (1 * errorB);
+                    nextRowErrorR[errorArrayIndex + 1] += (1 * errorR) >> 4;
+                    nextRowErrorG[errorArrayIndex + 1] += (1 * errorG) >> 4;
+                    nextRowErrorB[errorArrayIndex + 1] += (1 * errorB) >> 4;
                 }
                 else
                 {
-                    // Reverse pass
-                    currentRowErrorR[errorArrayIndex - 1] += (7 * errorR);
-                    currentRowErrorG[errorArrayIndex - 1] += (7 * errorG);
-                    currentRowErrorB[errorArrayIndex - 1] += (7 * errorB);
+                    currentRowErrorR[errorArrayIndex - 1] += (7 * errorR) >> 4;
+                    currentRowErrorG[errorArrayIndex - 1] += (7 * errorG) >> 4;
+                    currentRowErrorB[errorArrayIndex - 1] += (7 * errorB) >> 4;
 
-                    nextRowErrorR[errorArrayIndex + 1] += (3 * errorR);
-                    nextRowErrorG[errorArrayIndex + 1] += (3 * errorG);
-                    nextRowErrorB[errorArrayIndex + 1] += (3 * errorB);
+                    nextRowErrorR[errorArrayIndex + 1] += (3 * errorR) >> 4;
+                    nextRowErrorG[errorArrayIndex + 1] += (3 * errorG) >> 4;
+                    nextRowErrorB[errorArrayIndex + 1] += (3 * errorB) >> 4;
 
-                    nextRowErrorR[errorArrayIndex] += (5 * errorR);
-                    nextRowErrorG[errorArrayIndex] += (5 * errorG);
-                    nextRowErrorB[errorArrayIndex] += (5 * errorB);
+                    nextRowErrorR[errorArrayIndex] += (5 * errorR) >> 4;
+                    nextRowErrorG[errorArrayIndex] += (5 * errorG) >> 4;
+                    nextRowErrorB[errorArrayIndex] += (5 * errorB) >> 4;
 
-                    nextRowErrorR[errorArrayIndex - 1] += (1 * errorR);
-                    nextRowErrorG[errorArrayIndex - 1] += (1 * errorG);
-                    nextRowErrorB[errorArrayIndex - 1] += (1 * errorB);
+                    nextRowErrorR[errorArrayIndex - 1] += (1 * errorR) >> 4;
+                    nextRowErrorG[errorArrayIndex - 1] += (1 * errorG) >> 4;
+                    nextRowErrorB[errorArrayIndex - 1] += (1 * errorB) >> 4;
                 }
             }
         }

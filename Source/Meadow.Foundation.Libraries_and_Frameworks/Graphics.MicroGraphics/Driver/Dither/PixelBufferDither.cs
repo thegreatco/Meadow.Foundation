@@ -8,6 +8,14 @@ namespace Graphics.MicroGraphics.Dither
     /// </summary>
     public static partial class PixelBufferDither
     {
+        static readonly byte[,] BAYER4 = new byte[,]
+        {
+            {   0,128, 32,160 },
+            { 192, 64,224, 96 },
+            {  48,176, 16,144 },
+            { 240,112,208, 80 }
+        };
+
         static int GetColorDistance(in Color color1, in Color color2)
         {
             if (color1 == color2)
@@ -34,13 +42,5 @@ namespace Graphics.MicroGraphics.Dither
         }
 
         static byte ClampByte(int v) => (byte)Math.Clamp(v, 0, 255);
-
-        static readonly byte[,] BAYER4 = new byte[,]
-        {
-            {   0,128, 32,160 },
-            { 192, 64,224, 96 },
-            {  48,176, 16,144 },
-            { 240,112,208, 80 }
-        };
     }
 }

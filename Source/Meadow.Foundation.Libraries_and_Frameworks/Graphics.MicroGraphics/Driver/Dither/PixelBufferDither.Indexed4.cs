@@ -62,7 +62,7 @@ namespace Graphics.MicroGraphics.Dither
                 for (int x = 0; x < destinationBuffer.Width; x++)
                 {
                     var sourceColor = sourceBuffer.GetPixel(x, y);
-                    int threshold = BAYER4[yMatrixIndex, x & 3] - 128; // center around 0
+                    int threshold = BAYER4[yMatrixIndex, x & 3] - 128;
 
                     var n = new Color(
                         ClampByte(sourceColor.R + threshold),
@@ -106,7 +106,6 @@ namespace Graphics.MicroGraphics.Dither
                     }
                 }
 
-                // next row becomes current accumulators on the next iteration
                 (rowErrorR, nextRowErrorR) = (nextRowErrorR, rowErrorR);
                 Array.Clear(nextRowErrorR, 0, nextRowErrorR.Length);
                 (rowErrorG, nextRowErrorG) = (nextRowErrorG, rowErrorG);
@@ -117,7 +116,7 @@ namespace Graphics.MicroGraphics.Dither
 
             void DitherPixelAndDiffuseError_4bpp(int x, int y)
             {
-                int errorArrayIndex = x + 1; // 1-based center index for neighbor math
+                int errorArrayIndex = x + 1;
                 var sourceColor = sourceBuffer.GetPixel(x, y);
 
                 int r = ClampByte(sourceColor.R + ((rowErrorR[errorArrayIndex]) >> 8));
@@ -134,13 +133,10 @@ namespace Graphics.MicroGraphics.Dither
                 int errorG = (g - quantizedColor.G) << 8;
                 int errorB = (b - quantizedColor.B) << 8;
 
-                // FS distribution (L->R):
-                // Right: 7/16 (current row)
                 rowErrorR[errorArrayIndex + 1] += (7 * errorR) >> 4;
                 rowErrorG[errorArrayIndex + 1] += (7 * errorG) >> 4;
                 rowErrorB[errorArrayIndex + 1] += (7 * errorB) >> 4;
 
-                // Next row: DL 3/16, D 5/16, DR 1/16
                 nextRowErrorR[errorArrayIndex - 1] += (3 * errorR) >> 4;
                 nextRowErrorG[errorArrayIndex - 1] += (3 * errorG) >> 4;
                 nextRowErrorB[errorArrayIndex - 1] += (3 * errorB) >> 4;
@@ -171,13 +167,10 @@ namespace Graphics.MicroGraphics.Dither
                 int eg = (g - quantizedColor.G) << 8;
                 int eb = (b - quantizedColor.B) << 8;
 
-                // Mirrored FS kernel (R->L):
-                // "Right" in scan order = image x-1 → errorArrayIndex-1
                 rowErrorR[errorArrayIndex - 1] += (7 * er) >> 4;
                 rowErrorG[errorArrayIndex - 1] += (7 * eg) >> 4;
                 rowErrorB[errorArrayIndex - 1] += (7 * eb) >> 4;
 
-                // Next row: DR 3/16, D 5/16, DL 1/16 (mirror)
                 nextRowErrorR[errorArrayIndex + 1] += (3 * er) >> 4;
                 nextRowErrorG[errorArrayIndex + 1] += (3 * eg) >> 4;
                 nextRowErrorB[errorArrayIndex + 1] += (3 * eb) >> 4;

@@ -40,20 +40,6 @@ namespace Graphics.MicroGraphics.Dither
             return ditheredBuffer;
         }
 
-        static void Convert1bpp(IPixelBuffer sourceBuffer, Buffer1bpp destinationBuffer, Color[] palette)
-        {
-            int paletteCount = palette.Length;
-            for (int y = 0; y < destinationBuffer.Height; y++)
-            {
-                for (int x = 0; x < destinationBuffer.Width; x++)
-                {
-                    var sourceColor = sourceBuffer.GetPixel(x, y);
-                    byte paletteIndex = NearestIndex(sourceColor, palette, paletteCount);
-                    destinationBuffer.SetPixel(x, y, (bool)(paletteIndex > 0));
-                }
-            }
-        }
-
         static void ConvertOrdered4x4_1bpp(IPixelBuffer sourceBuffer, Buffer1bpp destinationBuffer, Color[] palette)
         {
             int paletteCount = palette.Length;
