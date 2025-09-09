@@ -202,13 +202,13 @@ namespace Meadow.Foundation.Graphics.Buffers
             }
 
             int closestIndex = -1;
-            float shortestDistance = float.MaxValue;
+            int shortestDistance = int.MaxValue;
 
             for (int i = 0; i < IndexedColors.Length; i++)
             {
                 if (IndexedColors[i] != null)
                 {
-                    float distance = GetColorDistance(color, IndexedColors[i]);
+                    int distance = GetColorDistanceSquared(color, IndexedColors[i]);
                     if (distance < shortestDistance)
                     {
                         shortestDistance = distance;
