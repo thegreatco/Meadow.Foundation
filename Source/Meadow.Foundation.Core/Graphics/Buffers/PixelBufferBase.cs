@@ -526,7 +526,7 @@ namespace Meadow.Foundation.Graphics.Buffers
         /// <param name="color1"></param>
         /// <param name="color2"></param>
         /// <returns>The distance as a float</returns>
-        public float GetColorDistance(Color color1, Color color2)
+        public int GetColorDistanceSquared(Color color1, Color color2)
         {
             if (color1 == color2)
             {
@@ -537,7 +537,7 @@ namespace Meadow.Foundation.Graphics.Buffers
             int gDelta = color1.G - color2.G;
             int bDelta = color1.B - color2.B;
 
-            return MathF.Sqrt(rDelta * rDelta + gDelta * gDelta + bDelta * bDelta);
+            return rDelta * rDelta + gDelta * gDelta + bDelta * bDelta;
         }
 
         /// <summary>
