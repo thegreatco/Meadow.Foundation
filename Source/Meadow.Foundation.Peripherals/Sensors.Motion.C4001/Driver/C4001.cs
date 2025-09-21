@@ -1,11 +1,12 @@
-﻿using Meadow.Units;
+﻿using Meadow.Peripherals.Sensors;
+using Meadow.Units;
 
 namespace Meadow.Foundation.Sensors.Motion;
 
 /// <summary>
 /// Create a new C4001 object
 /// </summary>
-public partial class C4001
+public partial class C4001 : ISensor
 {
     /// <summary>
     /// The type of communication used by the sensor (I2C or Serial).
@@ -15,12 +16,12 @@ public partial class C4001
     /// <summary>
     /// Buffer to hold private sensor data.
     /// </summary>
-    private PrivateData _buffer = new PrivateData();
+    private SensorMotionData motionData = new();
 
     /// <summary>
-    /// Represents the current flash number or count.
+    /// The debounce counter.
     /// </summary>
-    private int _flashNumber = 0;
+    private int motionTimeoutCount = 0;
 
     /// <summary>
     /// Set the Sensor sampling mode
@@ -53,7 +54,7 @@ public partial class C4001
     /// <returns>The target speed as a float.</returns>
     public Speed GetTargetSpeed()
     {
-        return new Speed(_buffer.Speed, Speed.UnitType.MetersPerSecond);
+        return new Speed(motionData.Speed, Speed.UnitType.MetersPerSecond);
     }
 
     /// <summary>
@@ -62,7 +63,7 @@ public partial class C4001
     /// <returns>The target range as a float.</returns>
     public Length GetTargetRange()
     {
-        return new Length(_buffer.Range, Length.UnitType.Meters);
+        return new Length(motionData.Range, Length.UnitType.Meters);
     }
 
     /// <summary>
@@ -71,7 +72,7 @@ public partial class C4001
     /// <returns>The target energy as an unsigned integer.</returns>
     public uint GetTargetEnergy()
     {
-        return _buffer.Energy;
+        return motionData.Energy;
     }
 
     /// <summary>

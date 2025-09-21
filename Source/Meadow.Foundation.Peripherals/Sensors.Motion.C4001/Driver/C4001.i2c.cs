@@ -215,24 +215,24 @@ public partial class C4001 : II2cPeripheral
 
         if (temp[0] == 1)
         {
-            _flashNumber = 0;
-            _buffer.Number = 1;
-            _buffer.Range = BitConverter.ToInt16(temp, 1) / 100.0f;
-            _buffer.Speed = BitConverter.ToInt16(temp, 3) / 100.0f;
-            _buffer.Energy = (uint)BitConverter.ToInt16(temp, 5);
+            motionTimeoutCount = 0;
+            motionData.Number = 1;
+            motionData.Range = BitConverter.ToInt16(temp, 1) / 100.0f;
+            motionData.Speed = BitConverter.ToInt16(temp, 3) / 100.0f;
+            motionData.Energy = (uint)BitConverter.ToInt16(temp, 5);
         }
         else
         {
-            if (++_flashNumber > 10)
+            if (++motionTimeoutCount > 10)
             {
-                _buffer.Number = 0;
-                _buffer.Range = 0;
-                _buffer.Speed = 0;
-                _buffer.Energy = 0;
+                motionData.Number = 0;
+                motionData.Range = 0;
+                motionData.Speed = 0;
+                motionData.Energy = 0;
             }
         }
 
-        return _buffer.Number;
+        return motionData.Number;
     }
 
     internal bool SetDetectThresholdI2c(ushort min, ushort max, ushort threshold)

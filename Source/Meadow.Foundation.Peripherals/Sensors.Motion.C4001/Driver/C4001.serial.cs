@@ -27,7 +27,7 @@ public partial class C4001
 
     internal SensorStatus GetStatusSerial()
     {
-        SensorStatus status = new SensorStatus();
+        SensorStatus status = new();
 
         //TODO
 
