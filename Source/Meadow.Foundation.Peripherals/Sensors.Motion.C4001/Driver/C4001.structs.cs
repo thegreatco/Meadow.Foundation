@@ -21,7 +21,7 @@ public partial class C4001
         public byte InitStatus;
     }
 
-    internal struct PrivateData
+    internal struct SensorMotionData
     {
         public byte Number;
         public float Speed;
@@ -48,6 +48,6 @@ public partial class C4001
     {
         public byte Exist;
         public SensorStatus Status;
-        public PrivateData Target;
+        public SensorMotionData Target;
     }
 }
