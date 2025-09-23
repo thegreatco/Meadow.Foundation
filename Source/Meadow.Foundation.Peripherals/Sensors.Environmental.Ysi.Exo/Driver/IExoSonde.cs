@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Meadow.Units;
+using System;
 using System.Threading.Tasks;
-using static Meadow.Foundation.Sensors.Environmental.Ysi.Exo;
 
 namespace Meadow.Foundation.Sensors.Environmental.Ysi;
 
@@ -33,7 +33,7 @@ public interface IExoSonde
     /// <summary>
     /// Gets the current sensor data from the EXO device for all configured parameters.
     /// </summary>
-    Task<(ParameterCode ParameterCode, object Value)[]> GetCurrentData();
+    Task<(ParameterCode ParameterCode, IUnit Value)[]> GetCurrentData();
     /// <summary>
     /// Gets the status of all parameters from the EXO device.
     /// </summary>

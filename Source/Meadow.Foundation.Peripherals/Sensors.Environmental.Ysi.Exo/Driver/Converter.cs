@@ -5,7 +5,7 @@ namespace Meadow.Foundation.Sensors.Environmental.Ysi;
 
 internal static class Converter
 {
-    public static (ParameterCode, object) Convert(ParameterCode code, float value)
+    public static (ParameterCode, IUnit) Convert(ParameterCode code, float value)
     {
         switch (code)
         {
@@ -77,7 +77,8 @@ internal static class Converter
                 int year = dateInt % 100;
 
                 int fullYear = year < 100 ? 2000 + year : year;
-                return (code, new DateTime(fullYear, month, day));
+                var dt = new DateTime(fullYear, month, day);
+                return (code, TimePeriod.FromFileTime(dt.ToFileTime()));
             case ParameterCode.DateDDMMYY:
                 int dateInt2 = (int)value;
 
@@ -86,7 +87,8 @@ internal static class Converter
                 int year2 = dateInt2 % 100;
 
                 int fullYear2 = year2 < 100 ? 2000 + year2 : year2;
-                return (code, new DateTime(fullYear2, month2, day2));
+                var dt2 = new DateTime(fullYear2, month2, day2);
+                return (code, TimePeriod.FromFileTime(dt2.ToFileTime()));
             case ParameterCode.DateYYMMDD:
                 int dateInt3 = (int)value;
 
@@ -95,17 +97,18 @@ internal static class Converter
                 int day3 = dateInt3 % 100;
 
                 int fullYear3 = year3 < 100 ? 2000 + year3 : year3;
-                return (code, new DateTime(fullYear3, month3, day3));
+                var dt3 = new DateTime(fullYear3, month3, day3);
+                return (code, TimePeriod.FromFileTime(dt3.ToFileTime()));
             case ParameterCode.TimeHHMMSS:
                 int timeInt = (int)value;
 
                 int hour = timeInt / 10000;
                 int minute = (timeInt % 10000) / 100;
                 int sec = timeInt % 100;
-
-                return (code, new DateTime(1980, 1, 1, hour, minute, sec));
+                var ts = new TimeSpan(0, hour, minute, sec);
+                return (code, new TimePeriod(ts.TotalSeconds));
             default:
-                return (code, value);
+                return (code, new Scalar(value));
         }
     }
 }
