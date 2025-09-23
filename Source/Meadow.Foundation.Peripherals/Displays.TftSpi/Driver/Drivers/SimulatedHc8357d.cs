@@ -23,4 +23,12 @@ public class SimulatedHx8357d : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format16bppRgb565)
         : base(displayRenderer, 240, 240, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated Hx8357d displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedHx8357d(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 240, 240, true, ColorMode.Format16bppRgb565)
+    { }
 }

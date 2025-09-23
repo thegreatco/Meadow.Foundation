@@ -27,4 +27,12 @@ public class SimulatedIl3897 : SimulatedDisplayBase
         bool rotate = true)
         : base(displayRenderer, 122, 250, rotate, ColorMode.Format1bpp)
     { }
+
+    /// <summary>
+    /// Create a new simulated Il3897 display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedIl3897(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

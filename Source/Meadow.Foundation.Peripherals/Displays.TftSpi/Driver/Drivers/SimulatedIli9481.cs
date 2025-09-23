@@ -23,4 +23,12 @@ public class SimulatedIli9481 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format12bppRgb444)
         : base(displayRenderer, 320, 480, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated Ili9481 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedIli9481(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 320, 480, true, ColorMode.Format12bppRgb444)
+    { }
 }

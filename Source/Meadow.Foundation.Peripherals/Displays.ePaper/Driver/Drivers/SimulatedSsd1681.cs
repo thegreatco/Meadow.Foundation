@@ -35,4 +35,12 @@ public class SimulatedSsd1681 : SimulatedDisplayBase
             buffer.IndexedColors[2] = Color.Red;
         }
     }
+
+    /// <summary>
+    /// Create a new simulated Ssd1681 display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedSsd1681(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

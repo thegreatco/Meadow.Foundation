@@ -23,4 +23,12 @@ public class SimulatedRm68140 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format12bppRgb444)
         : base(displayRenderer, 320, 480, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated Rm68140 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedRm68140(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 320, 480, true, ColorMode.Format12bppRgb444)
+    { }
 }
