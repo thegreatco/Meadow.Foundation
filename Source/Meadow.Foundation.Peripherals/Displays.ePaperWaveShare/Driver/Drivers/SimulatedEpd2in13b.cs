@@ -15,4 +15,12 @@ public class SimulatedEpd2in13b : SimulatedIl0373
     public SimulatedEpd2in13b(IResizablePixelDisplay displayRenderer, bool rotate = true)
         : base(displayRenderer, rotate)
     { }
+
+    /// <summary>
+    /// Create a new instance of the simulated Epd2in13b display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedEpd2in13b(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }
