@@ -1,4 +1,5 @@
 ﻿using Meadow.Modbus;
+using Meadow.Units;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -116,9 +117,9 @@ public partial class Exo : IExoSonde
     /// Gets the current sensor data from the EXO device for all configured parameters.
     /// </summary>
     /// <returns>A task representing the asynchronous operation that returns an array of tuples containing parameter codes and their corresponding values.</returns>
-    public async Task<(ParameterCode ParameterCode, object Value)[]> GetCurrentData()
+    public async Task<(ParameterCode ParameterCode, IUnit Value)[]> GetCurrentData()
     {
-        var list = new List<(ParameterCode ParameterCodes, object Value)>();
+        var list = new List<(ParameterCode ParameterCodes, IUnit Value)>();
 
         var codes = await GetParametersToRead();
 
