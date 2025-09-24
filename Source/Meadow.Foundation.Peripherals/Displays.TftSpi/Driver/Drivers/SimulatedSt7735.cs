@@ -23,4 +23,12 @@ public class SimulatedSt7735 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format12bppRgb444)
         : base(displayRenderer, 128, 160, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated St7735 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedSt7735(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 128, 160, true, ColorMode.Format12bppRgb444)
+    { }
 }

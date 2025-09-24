@@ -27,4 +27,12 @@ public class SimulatedIl91874V03 : SimulatedDisplayBase
         bool rotate = true)
         : base(displayRenderer, 176, 264, rotate, ColorMode.Format1bpp)
     { }
+
+    /// <summary>
+    /// Create a new simulated Il91874V03 display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedIl91874V03(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

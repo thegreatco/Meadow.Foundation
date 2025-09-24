@@ -35,4 +35,12 @@ public class SimulatedIl0376F : SimulatedDisplayBase
             buffer.IndexedColors[2] = Color.Red;
         }
     }
+
+    /// <summary>
+    /// Create a new simulated Il0376F display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedIl0376F(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

@@ -23,4 +23,12 @@ public class SimulatedIli9225 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format12bppRgb444)
         : base(displayRenderer, 176, 220, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated Ili9225 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedIli9225(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 176, 220, true, ColorMode.Format12bppRgb444)
+    { }
 }

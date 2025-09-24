@@ -23,4 +23,12 @@ public class SimulatedS6D02A1 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format12bppRgb444)
         : base(displayRenderer, 128, 160, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated S6D02A1 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedS6D02A1(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 128, 160, true, ColorMode.Format12bppRgb444)
+    { }
 }

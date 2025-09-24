@@ -38,4 +38,12 @@ public class SimulatedEpd5in65f : SimulatedDisplayBase
             buffer.IndexedColors[6] = Color.Orange;
         }
     }
+
+    /// <summary>
+    /// Create a new instance of the simulated Epd5in65f display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedEpd5in65f(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

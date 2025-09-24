@@ -23,4 +23,12 @@ public class SimulatedGc9a01 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format16bppRgb565)
         : base(displayRenderer, 320, 480, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated Gc9a01 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedGc9a01(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 320, 480, true, ColorMode.Format16bppRgb565)
+    { }
 }

@@ -13,7 +13,7 @@ public class SimulatedSt7796s : SimulatedDisplayBase
     public override ColorMode SupportedColorModes => ColorMode.Format16bppRgb565 | ColorMode.Format12bppRgb444;
 
     /// <summary>
-    /// Create a new simulated StSt7796s displayRenderer.
+    /// Create a new simulated St7796s displayRenderer.
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>rotate
@@ -22,5 +22,13 @@ public class SimulatedSt7796s : SimulatedDisplayBase
         bool rotate = true,
         ColorMode colorMode = ColorMode.Format12bppRgb444)
         : base(displayRenderer, 320, 480, rotate, colorMode)
+    { }
+
+    /// <summary>
+    /// Create a new simulated St7796s displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedSt7796s(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 320, 480, true, ColorMode.Format12bppRgb444)
     { }
 }

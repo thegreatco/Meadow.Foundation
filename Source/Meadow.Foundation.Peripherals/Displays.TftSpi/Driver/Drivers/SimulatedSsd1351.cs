@@ -23,4 +23,12 @@ public class SimulatedSsd1351 : SimulatedDisplayBase
         ColorMode colorMode = ColorMode.Format16bppRgb565)
         : base(displayRenderer, 128, 160, rotate, colorMode)
     { }
+
+    /// <summary>
+    /// Create a new simulated Ssd1351 displayRenderer.
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedSsd1351(IResizablePixelDisplay displayRenderer)
+        : base(displayRenderer, 128, 160, true, ColorMode.Format16bppRgb565)
+    { }
 }

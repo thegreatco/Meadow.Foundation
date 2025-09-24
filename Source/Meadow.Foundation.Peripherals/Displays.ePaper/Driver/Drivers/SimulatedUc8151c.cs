@@ -20,7 +20,7 @@ public class SimulatedUc8151c : SimulatedDisplayBase
     protected override Color DisabledColor => Color.White;
 
     /// <summary>
-    /// Create a new simulated SSUc8151cD1681 displayR renderer
+    /// Create a new simulated SSUc8151c display renderer
     /// </summary>
     /// <param name="displayRenderer"></param>
     /// <param name="rotate"></param>
@@ -35,4 +35,12 @@ public class SimulatedUc8151c : SimulatedDisplayBase
             buffer.IndexedColors[2] = Color.Red;
         }
     }
+
+    /// <summary>
+    /// Create a new simulated SSUc8151c display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedUc8151c(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

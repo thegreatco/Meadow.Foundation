@@ -7,7 +7,7 @@ namespace Meadow.Foundation.Displays;
 /// <summary>
 /// Simulated displayRenderer base class, provides a virtual displayRenderer that renders to a real displayRenderer
 /// </summary>
-public class SimulatedDisplayBase : IPixelDisplay
+public class SimulatedDisplayBase : IVirtualPixelDisplay
 {
     /// <summary>
     /// Is the display rotated (swapped width and height)
@@ -19,6 +19,9 @@ public class SimulatedDisplayBase : IPixelDisplay
 
     /// <inheritdoc/>
     public virtual ColorMode SupportedColorModes { get; protected set; }
+
+    /// <inheritdoc/>
+    public virtual IPixelDisplay Renderer => displayRenderer;
 
     /// <inheritdoc/>
     public int Width { get; }

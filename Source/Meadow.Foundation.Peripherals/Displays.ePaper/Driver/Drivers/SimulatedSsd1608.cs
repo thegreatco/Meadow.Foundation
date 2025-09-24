@@ -27,4 +27,12 @@ public class SimulatedSsd1608 : SimulatedDisplayBase
         bool rotate = true)
         : base(displayRenderer, 200, 200, rotate, ColorMode.Format1bpp)
     { }
+
+    /// <summary>
+    /// Create a new simulated Ssd1608 display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedSsd1608(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

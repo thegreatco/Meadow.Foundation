@@ -15,4 +15,12 @@ public class SimulatedEpd1in54 : SimulatedSsd1608
     public SimulatedEpd1in54(IResizablePixelDisplay displayRenderer, bool rotate = true)
         : base(displayRenderer, rotate)
     { }
+
+    /// <summary>
+    /// Create a new instance of the simulated Epd1in54 display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedEpd1in54(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }

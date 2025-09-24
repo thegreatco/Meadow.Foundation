@@ -36,4 +36,12 @@ public class SimulatedEpd2in15g : SimulatedDisplayBase
             buffer.IndexedColors[3] = Color.Red;
         }
     }
+
+    /// <summary>
+    /// Create a new instance of the simulated Epd2in15g display renderer
+    /// </summary>
+    /// <param name="displayRenderer"></param>
+    public SimulatedEpd2in15g(IResizablePixelDisplay displayRenderer)
+        : this(displayRenderer, true)
+    { }
 }
