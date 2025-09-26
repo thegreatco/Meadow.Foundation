@@ -16,7 +16,7 @@ public partial class C4001 : II2cPeripheral
     /// </summary>
     /// <param name="i2cBus">The I2C bus</param>
     /// <param name="address"> The I2C address of the device</param>
-    public C4001(II2cBus i2cBus, byte address)
+    public C4001(II2cBus i2cBus, byte address = (byte)Addresses.Default)
     {
         I2cComms = new I2cCommunications(i2cBus, address);
 
