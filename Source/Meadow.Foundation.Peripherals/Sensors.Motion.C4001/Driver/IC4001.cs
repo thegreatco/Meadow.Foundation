@@ -1,6 +1,5 @@
 ﻿using Meadow.Peripherals.Sensors;
 using Meadow.Units;
-using System;
 using static Meadow.Foundation.Sensors.Motion.C4001;
 
 namespace Meadow.Foundation.Sensors.Motion;
@@ -53,13 +52,4 @@ public interface IC4001 : ISensor
     /// </summary>
     /// <returns><c>true</c> if motion is detected; otherwise, <c>false</c>.</returns>
     bool IsMotionDetected();
-
-    /// <summary>
-    /// Occurs when the motion detection state changes.
-    /// </summary>
-    /// <remarks>
-    /// The event provides a <c>bool</c> value: <c>true</c> when motion begins,
-    /// <c>false</c> when motion stops.
-    /// </remarks>
-    event EventHandler<bool>? MotionChanged;
 }

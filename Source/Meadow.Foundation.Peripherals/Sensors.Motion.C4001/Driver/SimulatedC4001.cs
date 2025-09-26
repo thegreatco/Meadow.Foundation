@@ -23,9 +23,6 @@ public class SimulatedC4001 : IC4001, IDisposable
     private readonly Random random = new();
 
     /// <inheritdoc/>
-    public event EventHandler<bool>? MotionChanged;
-
-    /// <inheritdoc/>
     public bool SetSensorMode(SensorMode mode)
     {
         return true;
@@ -95,12 +92,16 @@ public class SimulatedC4001 : IC4001, IDisposable
                 range = new Length(range.Centimeters + random.Next(80) - 40, Length.UnitType.Centimeters);
                 energy = (uint)rand * 1000;
 
-                if (range.Meters < 12)
-                {
-                    MotionChanged?.Invoke(this, true);
-                }
-
                 await Task.Delay((int)(1000 / options.UpdateHz));
+
+                if (range.Meters < options.MaxRangeMeters)
+                {
+                    motion = true;
+                }
+                else
+                {
+                    motion = false;
+                }
             }
 
         }, ct);
