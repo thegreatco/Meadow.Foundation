@@ -1,12 +1,11 @@
-﻿using Meadow.Peripherals.Sensors;
-using Meadow.Units;
+﻿using Meadow.Units;
 
 namespace Meadow.Foundation.Sensors.Motion;
 
 /// <summary>
 /// Create a new C4001 object
 /// </summary>
-public partial class C4001 : ISensor
+public partial class C4001 : IC4001
 {
     /// <summary>
     /// The type of communication used by the sensor (I2C or Serial).
