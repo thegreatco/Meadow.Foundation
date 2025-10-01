@@ -1,8 +1,8 @@
-# Meadow.Foundation.Sensors.Motion.Hcsens0040
+# Meadow.Foundation.Sensors.Motion.C4001
 
-**HCSENS0040 digital microwave motion sensor**
+**C4001 I2C mmWave presence sensor 12m**
 
-The **Hcsens0040** library is included in the **Meadow.Foundation.Sensors.Motion.Hcsens0040** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
+The **C4001** library is included in the **Meadow.Foundation.Sensors.Motion.C4001** nuget package and is designed for the [Wilderness Labs](www.wildernesslabs.co) Meadow .NET IoT platform.
 
 This driver is part of the [Meadow.Foundation](https://developer.wildernesslabs.co/Meadow/Meadow.Foundation/) peripherals library, an open-source repository of drivers and libraries that streamline and simplify adding hardware to your C# .NET Meadow IoT applications.
 
@@ -14,25 +14,54 @@ To view all Wilderness Labs open-source projects, including samples, visit [gith
 
 You can install the library from within Visual studio using the the NuGet Package Manager or from the command line using the .NET CLI:
 
-`dotnet add package Meadow.Foundation.Sensors.Motion.Hcsens0040`
+`dotnet add package Meadow.Foundation.Sensors.Motion.C4001`
 ## Usage
 
 ```csharp
-private Hcsens0040 sensor;
+private C4001 sensor;
 
 public override Task Initialize()
 {
     Resolver.Log.Info("Initialize...");
 
-    sensor = new Hcsens0040(Device.CreateDigitalInterruptPort(Device.Pins.D05, Meadow.Hardware.InterruptMode.EdgeBoth));
-    sensor.OnMotionDetected += Sensor_OnMotionDetected;
+    sensor = new C4001(Device.CreateI2cBus(), (byte)C4001.Addresses.Default);
+
+    sensor.SetSensorMode(C4001.SensorMode.ExitMode);
 
     return Task.CompletedTask;
 }
 
-private void Sensor_OnMotionDetected(object sender)
+public override async Task Run()
 {
-    Resolver.Log.Info($"Motion detected {DateTime.Now}");
+    while (true)
+    {
+        try
+        {
+            byte targetNumber = sensor.GetTargetNumber();
+            Resolver.Log.Info($"Target Number: {targetNumber}");
+
+            var status = sensor.GetStatus();
+            Resolver.Log.Info($"C4001 Status: WorkStatus={status.WorkStatus}, WorkMode={status.WorkMode}, InitStatus={status.InitStatus}");
+
+            var targetSpeed = sensor.GetTargetSpeed();
+            Resolver.Log.Info($"Target Speed: {targetSpeed.MetersPerSecond:N2} m/s");
+
+            var targetRange = sensor.GetTargetRange();
+            Resolver.Log.Info($"Target Range: {targetRange.Meters:N2} m");
+
+            uint targetEnergy = sensor.GetTargetEnergy();
+            Resolver.Log.Info($"Target Energy: {targetEnergy}");
+
+            bool motionDetected = sensor.IsMotionDetected();
+            Resolver.Log.Info($"Motion Detected: {motionDetected}");
+        }
+        catch (Exception ex)
+        {
+            Resolver.Log.Error($"Error: {ex.Message}");
+        }
+
+        await Task.Delay(2000);
+    }
 }
 
 ```
