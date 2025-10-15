@@ -199,8 +199,29 @@ public static partial class MicroJson
         foreach (DictionaryEntry entry in hashtable)
         {
             object key = Convert.ChangeType(entry.Key, keyType);
-            object value = Convert.ChangeType(entry.Value, valueType);
-            dictionary.Add(key, value);
+            object? value;
+
+            // Handle nested Hashtables recursively
+            if (entry.Value is Hashtable nestedHashtable && valueType == typeof(object))
+            {
+                // If target type is object, recursively convert nested Hashtable to Dictionary<string, object>
+                value = DeserializeHashtableToDictionary(nestedHashtable, typeof(Dictionary<string, object>));
+            }
+            else if (entry.Value != null && valueType.IsAssignableFrom(entry.Value.GetType()))
+            {
+                // Value is already the correct type
+                value = entry.Value;
+            }
+            else
+            {
+                // Try to convert using IConvertible
+                value = Convert.ChangeType(entry.Value, valueType);
+            }
+
+            if (value != null)
+            {
+                dictionary.Add(key, value);
+            }
         }
 
         return dictionary;
