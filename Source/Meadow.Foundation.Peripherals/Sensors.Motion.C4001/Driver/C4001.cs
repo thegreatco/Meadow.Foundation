@@ -62,7 +62,7 @@ public partial class C4001 : IC4001
     /// <returns>The target range as a float.</returns>
     public Length GetTargetRange()
     {
-        return new Length(motionData.Range, Length.UnitType.Meters);
+        return GetTargetRangeI2c();
     }
 
     /// <summary>
@@ -71,7 +71,7 @@ public partial class C4001 : IC4001
     /// <returns>The target energy as an unsigned integer.</returns>
     public uint GetTargetEnergy()
     {
-        return motionData.Energy;
+        return GetTargetEnergyI2c();
     }
 
     /// <summary>
@@ -87,6 +87,45 @@ public partial class C4001 : IC4001
         else
         {
             return IsMotionDetectedSerial();
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SetDetectionRange(ushort min, ushort max, ushort trig)
+    {
+        if (communication == CommunicationType.I2C)
+        {
+            SetDetectionRangeI2c(min, max, trig);
+        }
+        else
+        {
+            SetDetectionRangeSerial(max);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SetTrigSensitivity(byte sensitivity)
+    {
+        if (communication == CommunicationType.I2C)
+        {
+            SetTrigSensitivityI2c(sensitivity);
+        }
+        else
+        {
+            SetTrigSensitivitySerial(sensitivity);
+        }
+    }
+
+    /// <inheritdoc/>
+    public void SetKeepSensitivity(byte sensitivity)
+    {
+        if (communication == CommunicationType.I2C)
+        {
+            SetKeepSensitivityI2c(sensitivity);
+        }
+        else
+        {
+            SetKeepSensitivitySerial(sensitivity);
         }
     }
 }

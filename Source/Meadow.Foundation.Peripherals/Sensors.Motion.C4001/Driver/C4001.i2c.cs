@@ -1,4 +1,5 @@
 ﻿using Meadow.Hardware;
+using Meadow.Units;
 using System;
 using System.Threading;
 
@@ -85,9 +86,15 @@ public partial class C4001 : II2cPeripheral
 
     internal bool SetSensorModeI2c(SensorMode mode)
     {
-        SetSensorI2c(SensorCommand.ChangeMode);
         var status = GetStatusI2c();
 
+        if (status.WorkMode == (byte)mode)
+        {
+            return true;
+        }
+
+        SetSensorI2c(SensorCommand.ChangeMode);
+        status = GetStatusI2c();
         return status.WorkMode == (byte)mode;
     }
 
@@ -208,7 +215,7 @@ public partial class C4001 : II2cPeripheral
         return (ushort)(buffer[0] | (buffer[1] << 8));
     }
 
-    internal byte GetTargetNumberI2c()
+    private void UpdateMotionDataI2c()
     {
         byte[] temp = new byte[7];
         I2cComms!.ReadRegister((byte)Registers.RESULT_OBJ_MUN, temp);
@@ -231,8 +238,24 @@ public partial class C4001 : II2cPeripheral
                 motionData.Energy = 0;
             }
         }
+    }
 
+    internal byte GetTargetNumberI2c()
+    {
+        UpdateMotionDataI2c();
         return motionData.Number;
+    }
+
+    internal Length GetTargetRangeI2c()
+    {
+        UpdateMotionDataI2c();
+        return new Length(motionData.Range, Length.UnitType.Meters);
+    }
+
+    public uint GetTargetEnergyI2c()
+    {
+        UpdateMotionDataI2c();
+        return motionData.Energy;
     }
 
     internal bool SetDetectThresholdI2c(ushort min, ushort max, ushort threshold)

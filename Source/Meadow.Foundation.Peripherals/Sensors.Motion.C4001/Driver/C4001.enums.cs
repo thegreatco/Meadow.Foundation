@@ -76,13 +76,13 @@ public partial class C4001
     public enum SensorMode : byte
     {
         /// <summary>
-        /// Exit mode
+        /// Existence (presence) mode — reports range and energy
         /// </summary>
-        ExitMode = 0x00,
+        Existence = 0x00,
         /// <summary>
-        /// Speed mode
+        /// Speed mode — Doppler velocity
         /// </summary>
-        SpeedMode = 0x01
+        Speed = 0x01
     }
 
     internal enum SwitchState : byte

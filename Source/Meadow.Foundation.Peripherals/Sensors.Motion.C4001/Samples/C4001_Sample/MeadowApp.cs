@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Sensors.Motion.C4001_Sample
 {
-    public class MeadowApp : App<F7FeatherV1>
+    public class MeadowApp : App<F7FeatherV2>
     {
         //<!=SNIP=>
 
@@ -18,7 +18,7 @@ namespace Sensors.Motion.C4001_Sample
 
             sensor = new C4001(Device.CreateI2cBus(), (byte)C4001.Addresses.Default);
 
-            sensor.SetSensorMode(C4001.SensorMode.ExitMode);
+            sensor.SetSensorMode(C4001.SensorMode.Existence);
 
             return Task.CompletedTask;
         }

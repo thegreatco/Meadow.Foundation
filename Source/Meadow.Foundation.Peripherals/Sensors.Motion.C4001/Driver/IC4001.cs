@@ -48,6 +48,21 @@ public interface IC4001 : ISensor
     uint GetTargetEnergy();
 
     /// <summary>
+    /// Sets the detection range for the sensor.
+    /// </summary>
+    void SetDetectionRange(ushort min, ushort max, ushort trig);
+
+    /// <summary>
+    /// Sets the trigger sensitivity for the sensor.
+    /// </summary>
+    void SetTrigSensitivity(byte sensitivity);
+
+    /// <summary>
+    /// Sets the keep sensitivity for the sensor, which determines the sensor's ability to maintain detection of a target once triggered.
+    /// </summary>
+    void SetKeepSensitivity(byte sensitivity);
+
+    /// <summary>
     /// Indicates whether motion is currently detected by the sensor.
     /// </summary>
     /// <returns><c>true</c> if motion is detected; otherwise, <c>false</c>.</returns>
