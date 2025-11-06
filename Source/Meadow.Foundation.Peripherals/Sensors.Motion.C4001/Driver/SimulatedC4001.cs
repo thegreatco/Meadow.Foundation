@@ -141,4 +141,22 @@ public class SimulatedC4001 : IC4001, IDisposable
 
     /// <inheritdoc/>
     public void Dispose() => StopSimulation();
+
+    /// <inheritdoc/>
+    public void SetDetectionRange(ushort min, ushort max, ushort trig)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public void SetTrigSensitivity(byte sensitivity)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc/>
+    public void SetKeepSensitivity(byte sensitivity)
+    {
+        throw new NotImplementedException();
+    }
 }
