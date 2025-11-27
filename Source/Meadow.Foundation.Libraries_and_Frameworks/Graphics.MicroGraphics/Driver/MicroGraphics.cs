@@ -156,6 +156,11 @@ namespace Meadow.Foundation.Graphics
         private readonly object _lock = new();
         private bool isUpdating = false;
         private bool isUpdateRequested = false;
+
+        /// <summary>
+        /// Cached ArrayPool buffer for text rendering to reduce GC pressure.
+        /// The buffer is rented from ArrayPool.Shared and returned when a larger buffer is needed.
+        /// </summary>
         private byte[]? _textBitmapBuffer;
 
         /// <summary>
@@ -2018,6 +2023,7 @@ namespace Meadow.Foundation.Graphics
         {
             width /= 8;
 
+            // Use > instead of != because ArrayPool may return buffers larger than requested
             if ((width * height) > bitmap.Length)
             {
                 throw new ArgumentException("Width and height do not match the bitmap size.");
