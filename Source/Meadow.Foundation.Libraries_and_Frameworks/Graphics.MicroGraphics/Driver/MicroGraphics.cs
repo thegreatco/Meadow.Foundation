@@ -19,6 +19,11 @@ namespace Meadow.Foundation.Graphics
         protected readonly IPixelDisplay? display;
 
         /// <summary>
+        /// Cached result of whether the display implements IRotatableDisplay
+        /// </summary>
+        private readonly bool _isRotatableDisplay;
+
+        /// <summary>
         /// PixelBuffer draw target
         /// </summary>
         protected IPixelBuffer PixelBuffer => display?.PixelBuffer ?? memoryBuffer;
@@ -119,9 +124,9 @@ namespace Meadow.Foundation.Graphics
         {
             get
             {
-                if (display is IRotatableDisplay)
+                if (_isRotatableDisplay)
                 {
-                    return display.Height;
+                    return display!.Height;
                 }
                 return Rotation == RotationType.Default || Rotation == RotationType._180Degrees ? PixelBuffer.Height : PixelBuffer.Width;
             }
@@ -134,9 +139,9 @@ namespace Meadow.Foundation.Graphics
         {
             get
             {
-                if (display is IRotatableDisplay)
+                if (_isRotatableDisplay)
                 {
-                    return display.Width;
+                    return display!.Width;
                 }
                 return Rotation == RotationType.Default || Rotation == RotationType._180Degrees ? PixelBuffer.Width : PixelBuffer.Height;
             }
@@ -168,6 +173,7 @@ namespace Meadow.Foundation.Graphics
         public MicroGraphics(IPixelDisplay display)
         {
             this.display = display;
+            _isRotatableDisplay = display is IRotatableDisplay;
         }
 
         /// <summary>
@@ -178,6 +184,7 @@ namespace Meadow.Foundation.Graphics
         public MicroGraphics(IPixelBuffer pixelBuffer, bool initializeBuffer)
         {
             memoryBuffer = pixelBuffer;
+            _isRotatableDisplay = false;
 
             if (initializeBuffer && pixelBuffer is PixelBufferBase buf)
             {
@@ -198,7 +205,7 @@ namespace Meadow.Foundation.Graphics
                 return;
             }
 
-            if (display is IRotatableDisplay)
+            if (_isRotatableDisplay)
             {
                 PixelBuffer.SetPixel(x, y, color);
             }
@@ -1487,7 +1494,7 @@ namespace Meadow.Foundation.Graphics
             }
 
             //fast and happy path
-            if ((display is IRotatableDisplay || Rotation == RotationType.Default) && isInBounds)
+            if ((_isRotatableDisplay || Rotation == RotationType.Default) && isInBounds)
             {
                 display!.WriteBuffer(x, y, buffer);
             }
@@ -1573,7 +1580,7 @@ namespace Meadow.Foundation.Graphics
                 return Color.Black;
             }
 
-            if (display is IRotatableDisplay)
+            if (_isRotatableDisplay)
             {
                 return PixelBuffer.GetPixel(x, y);
             }
@@ -1893,7 +1900,7 @@ namespace Meadow.Foundation.Graphics
                 isUpdating = true;
             }
 
-            if (display is IRotatableDisplay)
+            if (_isRotatableDisplay)
             {
                 display?.Show(left, top, right, bottom);
             }
@@ -2062,7 +2069,7 @@ namespace Meadow.Foundation.Graphics
         /// <returns></returns>
         protected int GetXForRotation(int x, int y)
         {
-            if (display is IRotatableDisplay) { return x; }
+            if (_isRotatableDisplay) { return x; }
 
             return Rotation switch
             {
@@ -2081,7 +2088,7 @@ namespace Meadow.Foundation.Graphics
         /// <returns></returns>
         protected int GetYForRotation(int x, int y)
         {
-            if (display is IRotatableDisplay) { return y; }
+            if (_isRotatableDisplay) { return y; }
 
             return Rotation switch
             {
@@ -2119,7 +2126,7 @@ namespace Meadow.Foundation.Graphics
                 if (y + height >= Height) height = Height - y;
             }
 
-            if (display is IRotatableDisplay)
+            if (_isRotatableDisplay)
             {
                 PixelBuffer.Fill(x, y, width, height, color);
                 return;
