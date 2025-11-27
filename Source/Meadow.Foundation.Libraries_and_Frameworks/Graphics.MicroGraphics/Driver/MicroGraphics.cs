@@ -2,6 +2,7 @@
 using Meadow.Peripherals.Displays;
 using Meadow.Units;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -160,6 +161,12 @@ namespace Meadow.Foundation.Graphics
         private readonly object _lock = new();
         private bool isUpdating = false;
         private bool isUpdateRequested = false;
+
+        /// <summary>
+        /// Cached ArrayPool buffer for text rendering to reduce GC pressure.
+        /// The buffer is rented from ArrayPool.Shared and returned when a larger buffer is needed.
+        /// </summary>
+        private byte[]? _textBitmapBuffer;
 
         /// <summary>
         /// Time of last display update when calling ShowBuffered
@@ -1424,7 +1431,7 @@ namespace Meadow.Foundation.Graphics
             x = GetXForAlignment(x, textSize.Width, alignmentH);
             y = GetYForAlignment(y, textSize.Height, alignmentV);
 
-            DrawBitmap(x, y, bitMap.Length / fontToDraw.Height * 8, fontToDraw.Height, bitMap, color, scaleFactor);
+            DrawBitmap(x, y, text.Length * fontToDraw.Width, fontToDraw.Height, bitMap, color, scaleFactor);
         }
 
         /// <summary>
@@ -1672,13 +1679,34 @@ namespace Meadow.Foundation.Graphics
             DrawText(x, y, text, PenColor, scaleFactor, alignmentH, alignmentV);
         }
 
+        /// <summary>
+        /// Gets or resizes the text bitmap buffer from the ArrayPool
+        /// </summary>
+        /// <param name="requiredSize">The minimum required buffer size</param>
+        /// <returns>A byte array of at least the required size</returns>
+        private byte[] GetOrResizeTextBuffer(int requiredSize)
+        {
+            if (_textBitmapBuffer == null || _textBitmapBuffer.Length < requiredSize)
+            {
+                if (_textBitmapBuffer != null)
+                {
+                    ArrayPool<byte>.Shared.Return(_textBitmapBuffer);
+                }
+                _textBitmapBuffer = ArrayPool<byte>.Shared.Rent(requiredSize);
+            }
+            return _textBitmapBuffer;
+        }
+
         private byte[] GetBytesForTextBitmap(string text, IFont font)
         {
             byte[] bitmap;
+            int requiredSize;
 
             if (font.Width == 8)
             {
-                bitmap = new byte[text.Length * font.Height];
+                requiredSize = text.Length * font.Height;
+                bitmap = GetOrResizeTextBuffer(requiredSize);
+                Array.Clear(bitmap, 0, requiredSize);
 
                 for (int i = 0; i < text.Length; i++)
                 {   //copy data for 1 character at a time going top to bottom
@@ -1691,7 +1719,9 @@ namespace Meadow.Foundation.Graphics
             else if (font.Width == 16)
             {
                 int len = text.Length * 2; // Each character takes up 2 bytes per row
-                bitmap = new byte[len * font.Height];
+                requiredSize = len * font.Height;
+                bitmap = GetOrResizeTextBuffer(requiredSize);
+                Array.Clear(bitmap, 0, requiredSize);
                 int bitmapIndex;
 
                 for (int i = 0; i < text.Length; i++)
@@ -1709,7 +1739,9 @@ namespace Meadow.Foundation.Graphics
             else if (font.Width == 12)
             {
                 var len = ((text.Length + (text.Length % 2)) * 3) >> 1;
-                bitmap = new byte[len * font.Height];
+                requiredSize = len * font.Height;
+                bitmap = GetOrResizeTextBuffer(requiredSize);
+                Array.Clear(bitmap, 0, requiredSize);
 
                 byte[] charMap1, charMap2;
                 int index = 0;
@@ -1741,7 +1773,9 @@ namespace Meadow.Foundation.Graphics
             else if (font.Width == 6)
             {
                 int len = (text.Length + 3) / 4 * 3; // Adjusted to handle padding in one line.
-                bitmap = new byte[len * font.Height];
+                requiredSize = len * font.Height;
+                bitmap = GetOrResizeTextBuffer(requiredSize);
+                Array.Clear(bitmap, 0, requiredSize);
 
                 byte[] charMap1, charMap2, charMap3, charMap4;
                 int index = 0;
@@ -1784,7 +1818,9 @@ namespace Meadow.Foundation.Graphics
             else if (font.Width == 4)
             {
                 var len = (text.Length + (text.Length % 2)) >> 1;
-                bitmap = new byte[len * font.Height];
+                requiredSize = len * font.Height;
+                bitmap = GetOrResizeTextBuffer(requiredSize);
+                Array.Clear(bitmap, 0, requiredSize);
                 byte[] charMap1, charMap2;
 
                 for (int i = 0; i < len; i++)
@@ -1994,7 +2030,8 @@ namespace Meadow.Foundation.Graphics
         {
             width /= 8;
 
-            if ((width * height) != bitmap.Length)
+            // Use > instead of != because ArrayPool may return buffers larger than requested
+            if ((width * height) > bitmap.Length)
             {
                 throw new ArgumentException("Width and height do not match the bitmap size.");
             }
