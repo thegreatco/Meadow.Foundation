@@ -3,6 +3,9 @@
 This driver is compatible with Windows, macOS, and Linux. However, for macOS and Linux, you must manually install the FTDI D2XX drivers.
 
 ## macOS
+
+*NOTE* - This may not be necessary, as MacOS includes a Virtual COM Port (MCP) driver since macOS 10.9 (Mavericks). If you are using an older version of macOS, you may need to install the FTDI D2XX drivers.
+
 1. Download the D2XX driver for macOS from the [FTDI Drivers page](https://ftdichip.com/drivers/d2xx-drivers/).
 2. Follow the installation instructions provided in the driver package.
 3. Ensure `libftd2xx.dylib` is in your library path (e.g., `/usr/local/lib` or `/usr/lib`).
