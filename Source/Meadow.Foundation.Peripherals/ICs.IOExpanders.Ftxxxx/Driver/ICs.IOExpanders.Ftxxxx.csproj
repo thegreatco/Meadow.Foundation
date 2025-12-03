@@ -8,7 +8,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<PackageIcon>icon.png</PackageIcon>
     <Authors>Wilderness Labs, Inc</Authors>
-		<TargetFramework>netstandard2.1</TargetFramework>
+		<TargetFrameworks>netstandard2.1;net8.0</TargetFrameworks>
 		<OutputType>Library</OutputType>
 		<AssemblyName>Ft2xxx</AssemblyName>
     <Company>Wilderness Labs, Inc</Company>

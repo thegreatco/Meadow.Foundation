@@ -1,3 +1,19 @@
+# Cross-Platform Setup
+
+This driver is compatible with Windows, macOS, and Linux. However, for macOS and Linux, you must manually install the FTDI D2XX drivers.
+
+## macOS
+1. Download the D2XX driver for macOS from the [FTDI Drivers page](https://ftdichip.com/drivers/d2xx-drivers/).
+2. Follow the installation instructions provided in the driver package.
+3. Ensure `libftd2xx.dylib` is in your library path (e.g., `/usr/local/lib` or `/usr/lib`).
+
+## Linux
+1. Download the D2XX driver for Linux from the [FTDI Drivers page](https://ftdichip.com/drivers/d2xx-drivers/).
+2. Extract the package and copy the library files to `/usr/local/lib` or `/usr/lib`.
+3. Create a symlink if necessary (e.g., `ln -s libftd2xx.so.1.4.8 libftd2xx.so`).
+4. You may need to add the user to the `dialout` or `plugdev` group to access the device without sudo.
+
+# Usage
 # Meadow.Foundation.ICs.IOExpanders.Ftxxxx
 
 **Ft2xxx family of USB IOExpanders for GPIO, I2C, SPI on Windows**
