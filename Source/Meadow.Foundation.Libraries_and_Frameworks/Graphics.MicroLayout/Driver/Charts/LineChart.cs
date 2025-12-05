@@ -49,7 +49,7 @@ public class LineChart : ChartControl
     /// <inheritdoc/>
     protected override void OnDraw(MicroGraphics graphics)
     {
-        graphics.DrawRectangle(Left, Top, Width, Height, BackgroundColor, true);
+        graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, BackgroundColor, true);
 
         ChartAreaTop = Top + DefaultMargin * 2;
         ChartAreaBottom = Bottom - DefaultMargin;

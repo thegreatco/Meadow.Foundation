@@ -99,6 +99,7 @@
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/ListBox_Sample/ListBox_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/MAX7219_Sample/MAX7219_Sample.csproj" />
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/TextArea_Sample/TextArea_Sample.csproj" />
+    <Project Path="Meadow.Foundation.Libraries_and_Frameworks/Graphics.MicroLayout/Samples/UserControl_Sample/UserControl_Sample.csproj" />
   </Folder>
   <Folder Name="/Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/">
     <Project Path="Meadow.Foundation.Libraries_and_Frameworks/MicroScheduler/Driver/Meadow.Foundation.MicroScheduler/Meadow.Foundation.MicroScheduler.csproj" />

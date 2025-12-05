@@ -88,7 +88,7 @@ public class VerticalBarChart : ChartControl
     /// <inheritdoc/>
     protected override void OnDraw(MicroGraphics graphics)
     {
-        graphics.DrawRectangle(Left, Top, Width, Height, BackgroundColor, true);
+        graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, BackgroundColor, true);
 
         var font = GetAxisFont();
 

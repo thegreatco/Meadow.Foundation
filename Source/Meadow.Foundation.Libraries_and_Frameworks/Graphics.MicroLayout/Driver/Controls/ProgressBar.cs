@@ -109,8 +109,8 @@ public class ProgressBar : ThemedControl
         if (ValueColor != Color.Transparent)
         {
             graphics.DrawRectangle(
-                Left + (Parent?.Left ?? 0),
-                Top + (Parent?.Top ?? 0),
+                ScreenLeft,
+                ScreenTop,
                 valueWidth,
                 Height,
                 ValueColor,
@@ -119,8 +119,8 @@ public class ProgressBar : ThemedControl
         if (BackgroundColor != Color.Transparent)
         {
             graphics.DrawRectangle(
-                Left + valueWidth + (Parent?.Left ?? 0),
-                Top + (Parent?.Top ?? 0),
+                ScreenLeft + valueWidth,
+                ScreenTop,
                 emptyWidth,
                 Height,
                 BackgroundColor,
@@ -129,8 +129,8 @@ public class ProgressBar : ThemedControl
         if (BorderColor != Color.Transparent)
         {
             graphics.DrawRectangle(
-                Left + (Parent?.Left ?? 0),
-                Top + (Parent?.Top ?? 0),
+                ScreenLeft,
+                ScreenTop,
                 Width,
                 Height,
                 BorderColor,
