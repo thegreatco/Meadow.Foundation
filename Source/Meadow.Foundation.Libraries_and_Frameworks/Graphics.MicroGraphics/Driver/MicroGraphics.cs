@@ -1431,7 +1431,16 @@ namespace Meadow.Foundation.Graphics
             x = GetXForAlignment(x, textSize.Width, alignmentH);
             y = GetYForAlignment(y, textSize.Height, alignmentV);
 
-            DrawBitmap(x, y, text.Length * fontToDraw.Width, fontToDraw.Height, bitMap, color, scaleFactor);
+            // Calculate the byte width to match the stride used in GetBytesForTextBitmap
+            int byteWidth = fontToDraw.Width switch
+            {
+                8 => text.Length,
+                16 => text.Length * 2,
+                12 => ((text.Length + (text.Length % 2)) * 3) >> 1,
+                _ => (text.Length * fontToDraw.Width + 7) / 8  // Round up for other widths
+            };
+
+            DrawBitmap(x, y, byteWidth * 8, fontToDraw.Height, bitMap, color, scaleFactor);
         }
 
         /// <summary>
