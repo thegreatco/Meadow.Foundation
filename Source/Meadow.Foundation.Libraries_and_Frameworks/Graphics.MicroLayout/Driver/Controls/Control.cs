@@ -71,7 +71,7 @@ public abstract class Control : IControl
     public int ScreenLeft => Left + (_parent?.ScreenLeft ?? 0);
 
     /// <inheritdoc />
-    public int ScreenTop => Top + Parent?.ScreenTop ?? 0;
+    public int ScreenTop => Top + (_parent?.ScreenTop ?? 0);
 
     /// <inheritdoc />
     public int ScreenRight => ScreenLeft + Width;

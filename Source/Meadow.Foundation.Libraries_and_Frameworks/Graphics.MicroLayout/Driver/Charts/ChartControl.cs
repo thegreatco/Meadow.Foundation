@@ -77,11 +77,11 @@ public abstract class ChartControl : ThemedControl
     /// <summary>
     /// Gets or sets the X offset withing the chart's parent
     /// </summary>
-    protected int ParentOffsetX => (Parent?.Left ?? 0);
+    protected int ParentOffsetX => (Parent?.ScreenLeft ?? 0);
     /// <summary>
     /// Gets or sets the Y offset withing the chart's parent
     /// </summary>
-    protected int ParentOffsetY => (Parent?.Top ?? 0);
+    protected int ParentOffsetY => (Parent?.ScreenTop ?? 0);
 
     /// <summary>
     /// Creates a DisplayLineChart instance
