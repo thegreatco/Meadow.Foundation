@@ -176,6 +176,18 @@ public abstract class Control : IControl
     public virtual void Invalidate()
     {
         IsInvalid = true;
+
+        // Walk up parent chain to notify DisplayScreen
+        var current = Parent;
+        while (current != null)
+        {
+            if (current is DisplayScreen screen)
+            {
+                screen.NotifyControlInvalidated();
+                break;
+            }
+            current = current.Parent;
+        }
     }
 
     /// <summary>

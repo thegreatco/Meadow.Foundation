@@ -80,7 +80,7 @@ public class Label : ClickableControl, ISelectable
     }
 
     /// <summary>
-    /// Gets or sets whether the control is currently selected.
+    /// Gets or sets whether the control is currently selected (focused).
     /// </summary>
     public bool IsSelected
     {
@@ -95,7 +95,7 @@ public class Label : ClickableControl, ISelectable
 
     /// <summary>
     /// Gets or sets the action to perform when rendering the control in selected state.
-    /// If null, the default selection rendering (color inversion) is used.
+    /// If null, the default selection rendering (underline when selected, inversion when activated) is used.
     /// </summary>
     public Action<MicroGraphics, ISelectable>? SelectionAction { get; set; }
 
@@ -157,27 +157,29 @@ public class Label : ClickableControl, ISelectable
     /// <param name="graphics">The <see cref="MicroGraphics"/> surface to draw the label display control on.</param>
     protected override void OnDraw(MicroGraphics graphics)
     {
-        // Determine colors based on selection state
-        Color textColor = TextColor;
-        Color backgroundColor = BackgroundColor;
-
-        if (IsSelected && IsSelectable)
+        if (!IsSelectable || (IsSelectable && !IsSelected))
         {
-            // If custom SelectionAction is provided, use it
-            if (SelectionAction != null)
-            {
-                SelectionAction.Invoke(graphics, this);
-                return;
-            }
-
-            // Default selection rendering: color inversion
-            textColor = BackgroundColor != Color.Transparent ? BackgroundColor : Color.White;
-            backgroundColor = TextColor;
+            // Not selected - normal rendering
+            DrawNormal(graphics);
+            return;
         }
 
-        if (backgroundColor != Color.Transparent)
+        // If custom SelectionAction is provided, use it
+        if (SelectionAction != null)
         {
-            graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, backgroundColor, true);
+            SelectionAction.Invoke(graphics, this);
+            return;
+        }
+
+        // Selected - underline
+        DrawSelected(graphics);
+    }
+
+    private void DrawNormal(MicroGraphics graphics)
+    {
+        if (BackgroundColor != Color.Transparent)
+        {
+            graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, BackgroundColor, true);
         }
 
         var xOffset = HorizontalAlignment switch
@@ -197,10 +199,19 @@ public class Label : ClickableControl, ISelectable
             ScreenLeft + xOffset,
             ScreenTop + yOffset,
             Text,
-            textColor,
+            TextColor,
             scaleFactor: _scaleFactor,
             alignmentH: HorizontalAlignment,
             alignmentV: VerticalAlignment,
             font: Font);
+    }
+
+    private void DrawSelected(MicroGraphics graphics)
+    {
+        // Draw normal, then add underline
+        DrawNormal(graphics);
+
+        // Draw underline at bottom of control
+        graphics.DrawLine(ScreenLeft, ScreenBottom - 1, ScreenRight, ScreenBottom - 1, TextColor);
     }
 }

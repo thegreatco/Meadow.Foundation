@@ -1,7 +1,7 @@
 ﻿using Meadow.Hardware;
 using Meadow.Peripherals.Displays;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Meadow.Foundation.Graphics.MicroLayout;
@@ -14,6 +14,8 @@ public class DisplayScreen : IControlContainer
     private readonly IPixelDisplay _display;
     private readonly MicroGraphics _graphics;
     private bool _updateInProgress = false;
+    private bool _anyControlInvalid = false;
+    private readonly List<IControl> _reusableControlList = new List<IControl>();
     private Color _backgroundColor;
 
     /// <summary>
@@ -174,10 +176,122 @@ public class DisplayScreen : IControlContainer
         IsInvalid = true;
     }
 
+    /// <summary>
+    /// Internal method called by controls to notify the screen that a control has been invalidated
+    /// </summary>
+    internal void NotifyControlInvalidated()
+    {
+        _anyControlInvalid = true;
+    }
+
     private void Refresh(IControl control)
     {
-        control.Invalidate();
+        // Just draw the control - don't invalidate it.
+        // The control should already be marked as invalid if it needs redrawing.
         control.Refresh(_graphics);
+    }
+
+    /// <summary>
+    /// Calculates the bounding rectangle that encompasses all invalid controls in a single pass
+    /// </summary>
+    private bool TryGetDirtyRegion(out int left, out int top, out int right, out int bottom)
+    {
+        left = int.MaxValue;
+        top = int.MaxValue;
+        right = int.MinValue;
+        bottom = int.MinValue;
+
+        bool foundInvalid = CollectDirtyBoundsRecursive(Controls, ref left, ref top, ref right, ref bottom);
+
+        // Add this debug logging:
+        if (foundInvalid)
+        {
+            Resolver.Log.Info($"Dirty region before clamp: ({left}, {top}, {right}, {bottom})", "MicroLayout");
+        }
+
+        if (!foundInvalid)
+        {
+            left = top = right = bottom = 0;
+            return false;
+        }
+
+        // Expand dirty region by 1 pixel in each direction to ensure edge decorations
+        // (like underlines) are included, especially important with rotation
+        left = Math.Max(0, left - 1);
+        top = Math.Max(0, top - 1);
+        right = Math.Min(Width, right + 1);
+        bottom = Math.Min(Height, bottom + 1);
+
+        return true;
+    }
+
+    /// <summary>
+    /// Recursively collects dirty bounds from invalid controls in a single pass
+    /// </summary>
+    private bool CollectDirtyBoundsRecursive(ControlsCollection controls, ref int left, ref int top, ref int right, ref int bottom)
+    {
+        bool foundInvalid = false;
+
+        foreach (var control in controls)
+        {
+            if (control.IsInvalid && control.IsVisible)
+            {
+                foundInvalid = true;
+
+                // Debug: Log which control is dirty
+                Resolver.Log.Info($"Dirty control: {control.GetType().Name} at ({control.ScreenLeft}, {control.ScreenTop}, {control.ScreenRight}, {control.ScreenBottom})", "MicroLayout");
+
+                // Update bounds in single pass
+                if (control.ScreenLeft < left) left = control.ScreenLeft;
+                if (control.ScreenTop < top) top = control.ScreenTop;
+                if (control.ScreenRight > right) right = control.ScreenRight;
+                if (control.ScreenBottom > bottom) bottom = control.ScreenBottom;
+            }
+
+            // Handle nested containers
+            if (control is IControlContainer container)
+            {
+                if (CollectDirtyBoundsRecursive(container.Controls, ref left, ref top, ref right, ref bottom))
+                {
+                    foundInvalid = true;
+                }
+            }
+        }
+
+        return foundInvalid;
+    }
+
+    /// <summary>
+    /// Checks if a control's bounds intersect with the given region
+    /// </summary>
+    private bool IntersectsRegion(IControl control, int left, int top, int right, int bottom)
+    {
+        return control.ScreenLeft < right && control.ScreenRight > left &&
+               control.ScreenTop < bottom && control.ScreenBottom > top;
+    }
+
+    /// <summary>
+    /// Collects all controls that intersect with the dirty region (for redrawing overlapping controls)
+    /// </summary>
+    private void CollectControlsInRegion(ControlsCollection controls, int left, int top, int right, int bottom, List<IControl> controlsToRedraw)
+    {
+        foreach (var control in controls)
+        {
+            if (!control.IsVisible) continue;
+
+            // Collect ALL controls that intersect the dirty region, not just invalid ones
+            // We need to redraw valid controls too because we clear the entire dirty region
+            if (IntersectsRegion(control, left, top, right, bottom))
+            {
+                controlsToRedraw.Add(control);
+            }
+
+            // Recursively check children
+            if (control is IControlContainer container)
+            {
+                CollectControlsInRegion(container.Controls, left, top, right, bottom, controlsToRedraw);
+            }
+        }
     }
 
     /// <summary>
@@ -201,29 +315,71 @@ public class DisplayScreen : IControlContainer
     {
         lock (Controls.SyncRoot)
         {
-            if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
+            if (!_updateInProgress && (IsInvalid || _anyControlInvalid))
             {
-                _graphics.Clear(BackgroundColor);
-
-                foreach (var control in Controls)
+                if (IsInvalid)
                 {
-                    if (control != null)
+                    // Full screen invalidation - clear and redraw everything
+                    _graphics.Clear(BackgroundColor);
+
+                    foreach (var control in Controls)
                     {
-                        // TODO: micrographics supports invalidating regions - we need to update to invalidate only regions here, too
-                        Refresh(control);
+                        if (control != null)
+                        {
+                            Refresh(control);
+                        }
+                    }
+
+                    try
+                    {
+                        _graphics.Show();
+                    }
+                    catch (Exception ex)
+                    {
+                        // it's possible to have a callee error (e.g. an I2C bus problem)
+                        // we'll report it and continue running
+                        Resolver.Log.Warn($"MicroGraphics.Show error while drawing screen: {ex.Message} : {ex.StackTrace}", "MicroLayout");
                     }
                 }
-                try
+                else if (TryGetDirtyRegion(out int left, out int top, out int right, out int bottom))
                 {
-                    _graphics.Show();
+                    // Partial screen invalidation - only update dirty region
+                    int width = right - left;
+                    int height = bottom - top;
+
+                    // Collect all controls that intersect with the dirty region (including overlapping ones)
+                    _reusableControlList.Clear();
+                    CollectControlsInRegion(Controls, left, top, right, bottom, _reusableControlList);
+
+                    // Debug: Log controls being redrawn
+                    Resolver.Log.Info($"Redrawing {_reusableControlList.Count} controls in dirty region ({left},{top},{right},{bottom})", "MicroLayout");
+                    foreach (var c in _reusableControlList)
+                    {
+                        Resolver.Log.Info($"  - {c.GetType().Name} at ({c.ScreenLeft},{c.ScreenTop},{c.ScreenRight},{c.ScreenBottom})", "MicroLayout");
+                    }
+
+                    // Redraw all controls in the dirty region
+                    foreach (var control in _reusableControlList)
+                    {
+                        Refresh(control);
+                    }
+
+                    try
+                    {
+                        // Update only the dirty region on the display
+                        _graphics.Show(left, top, right, bottom);
+                        Resolver.Log.Info($"MicroGraphics.Show({left}, {top}, {right}, {bottom})", "MicroLayout");
+                    }
+                    catch (Exception ex)
+                    {
+                        // it's possible to have a callee error (e.g. an I2C bus problem)
+                        // we'll report it and continue running
+                        Resolver.Log.Warn($"MicroGraphics.Show({left}, {top}, {right}, {bottom}) error while drawing screen: {ex.Message} : {ex.StackTrace}", "MicroLayout");
+                    }
                 }
-                catch (Exception ex)
-                {
-                    // it possible to have a callee error (e.g. an I2C bus problem)
-                    // we'll report it and continue running
-                    Resolver.Log.Warn($"MicroGraphics.Show error while drawing screen: {ex.Message}");
-                }
+
                 IsInvalid = false;
+                _anyControlInvalid = false;
             }
         }
     }
@@ -232,7 +388,7 @@ public class DisplayScreen : IControlContainer
     { // this loop is used by platforms where drawing can happen on any thread (e.g. meadow, or Linux with a SPI display)
         while (true)
         {
-            if (!_updateInProgress && (IsInvalid || Controls.Any(c => c.IsInvalid)))
+            if (!_updateInProgress && (IsInvalid || _anyControlInvalid))
             {
                 DrawLoopProc();
             }
