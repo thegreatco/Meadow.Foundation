@@ -22,6 +22,19 @@ public abstract class LayoutBase : ThemedControl, ILayout
             if (base.IsVisible == value) return;
 
             base.IsVisible = value;
+
+            // When becoming visible, invalidate all children since they need to be redrawn
+            if (value == true && Controls != null)
+            {
+                lock (Controls.SyncRoot)
+                {
+                    foreach (var control in Controls)
+                    {
+                        control.Invalidate();
+                    }
+                }
+            }
+
             Invalidate();
         }
     }
