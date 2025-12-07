@@ -215,12 +215,12 @@ public class DisplayScreen : IControlContainer
             return false;
         }
 
-        // Expand dirty region by 1 pixel in each direction to ensure edge decorations
-        // (like underlines) are included, especially important with rotation
-        left = Math.Max(0, left - 1);
-        top = Math.Max(0, top - 1);
-        right = Math.Min(Width, right + 1);
-        bottom = Math.Min(Height, bottom + 1);
+        // Expand dirty region by 2 pixels in each direction to ensure edge decorations
+        // (like underlines) are included, especially important with rotation and alignment
+        left = Math.Max(0, left - 2);
+        top = Math.Max(0, top - 2);
+        right = Math.Min(Width, right + 2);
+        bottom = Math.Min(Height, bottom + 2);
 
         return true;
     }

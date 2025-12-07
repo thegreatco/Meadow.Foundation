@@ -436,11 +436,11 @@ namespace Meadow.Foundation.Displays
 
             if (ColorMode == ColorMode.Format1bpp)
             {
-                Show1bpp(left, top, width, height);
+                Show1bpp(left, top, right, bottom);
             }
             else
             {
-                Show2bpp(left, top, width, height);
+                Show2bpp(left, top, right, bottom);
             }
         }
 
