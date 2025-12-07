@@ -101,12 +101,6 @@ public abstract class LayoutBase : ThemedControl, ILayout
     /// <inheritdoc/>
     public override void Invalidate()
     {
-        // Debug: Log when AbsoluteLayout is invalidated
-        if (this.GetType().Name == "AbsoluteLayout")
-        {
-            Meadow.Resolver.Log.Info($"AbsoluteLayout.Invalidate() called from:\n{new System.Diagnostics.StackTrace()}", "MicroLayout");
-        }
-
         // Only invalidate the layout itself, not all children.
         // Children will invalidate themselves when their own properties change.
         // If we need to invalidate children (e.g., due to layout bounds changing),

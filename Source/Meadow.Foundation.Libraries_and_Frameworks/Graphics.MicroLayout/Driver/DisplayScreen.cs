@@ -203,12 +203,6 @@ public class DisplayScreen : IControlContainer
 
         bool foundInvalid = CollectDirtyBoundsRecursive(Controls, ref left, ref top, ref right, ref bottom);
 
-        // Add this debug logging:
-        if (foundInvalid)
-        {
-            Resolver.Log.Info($"Dirty region before clamp: ({left}, {top}, {right}, {bottom})", "MicroLayout");
-        }
-
         if (!foundInvalid)
         {
             left = top = right = bottom = 0;
@@ -237,9 +231,6 @@ public class DisplayScreen : IControlContainer
             if (control.IsInvalid && control.IsVisible)
             {
                 foundInvalid = true;
-
-                // Debug: Log which control is dirty
-                Resolver.Log.Info($"Dirty control: {control.GetType().Name} at ({control.ScreenLeft}, {control.ScreenTop}, {control.ScreenRight}, {control.ScreenBottom})", "MicroLayout");
 
                 // Update bounds in single pass
                 if (control.ScreenLeft < left) left = control.ScreenLeft;
@@ -351,13 +342,6 @@ public class DisplayScreen : IControlContainer
                     _reusableControlList.Clear();
                     CollectControlsInRegion(Controls, left, top, right, bottom, _reusableControlList);
 
-                    // Debug: Log controls being redrawn
-                    Resolver.Log.Info($"Redrawing {_reusableControlList.Count} controls in dirty region ({left},{top},{right},{bottom})", "MicroLayout");
-                    foreach (var c in _reusableControlList)
-                    {
-                        Resolver.Log.Info($"  - {c.GetType().Name} at ({c.ScreenLeft},{c.ScreenTop},{c.ScreenRight},{c.ScreenBottom})", "MicroLayout");
-                    }
-
                     // Redraw all controls in the dirty region
                     foreach (var control in _reusableControlList)
                     {
@@ -368,7 +352,6 @@ public class DisplayScreen : IControlContainer
                     {
                         // Update only the dirty region on the display
                         _graphics.Show(left, top, right, bottom);
-                        Resolver.Log.Info($"MicroGraphics.Show({left}, {top}, {right}, {bottom})", "MicroLayout");
                     }
                     catch (Exception ex)
                     {
