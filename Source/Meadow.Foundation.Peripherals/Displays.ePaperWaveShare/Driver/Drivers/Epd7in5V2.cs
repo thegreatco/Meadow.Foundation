@@ -127,7 +127,7 @@ namespace Meadow.Foundation.Displays
             }
         }
 
-        void Initialize1bpp()
+        private void Initialize1bpp()
         {
             Reset();
 
@@ -167,7 +167,7 @@ namespace Meadow.Foundation.Displays
             SendData(0x22);
         }
 
-        void Initialize2bpp()
+        private void Initialize2bpp()
         {
             Reset();
 
@@ -354,7 +354,7 @@ namespace Meadow.Foundation.Displays
         /// <exception cref="NotSupportedException">Thrown if called more frequently than every 3 seconds</exception>
         public void Show()
         {
-            Initialize();
+            //            Initialize();
 
             if (Environment.TickCount - lastUpdatedTick < MinimumRefreshInterval.TotalMilliseconds)
             {
@@ -372,7 +372,7 @@ namespace Meadow.Foundation.Displays
             }
         }
 
-        void Show1bpp()
+        private void Show1bpp()
         {
             var buffer = imageBuffer.Buffer;
 
@@ -389,7 +389,7 @@ namespace Meadow.Foundation.Displays
             DisplayFrame();
         }
 
-        void Show2bpp()
+        private void Show2bpp()
         {
             var buffer = imageBuffer as Buffer2bppGreyEPaper;
 
@@ -436,15 +436,15 @@ namespace Meadow.Foundation.Displays
 
             if (ColorMode == ColorMode.Format1bpp)
             {
-                Show1bpp(left, top, width, height);
+                Show1bpp(left, top, right, bottom);
             }
             else
             {
-                Show2bpp(left, top, width, height);
+                Show2bpp(left, top, right, bottom);
             }
         }
 
-        void Show1bpp(int left, int top, int right, int bottom)
+        private void Show1bpp(int left, int top, int right, int bottom)
         {
             var buffer = imageBuffer.Buffer;
 
@@ -469,7 +469,7 @@ namespace Meadow.Foundation.Displays
             DisplayFrame();
         }
 
-        void Show2bpp(int left, int top, int right, int bottom)
+        private void Show2bpp(int left, int top, int right, int bottom)
         {
             var buffer = imageBuffer as Buffer2bppGreyEPaper;
 
@@ -518,19 +518,19 @@ namespace Meadow.Foundation.Displays
             SendData(0xA5);
         }
 
-        readonly byte PANEL_SETTING = 0x00;
-        readonly byte POWER_SETTING = 0x01;
-        readonly byte POWER_OFF = 0x02;
-        readonly byte POWER_ON = 0x04;
-        readonly byte BOOSTER_SOFT_START = 0x06;
-        readonly byte DEEP_SLEEP = 0x07;
-        readonly byte DATA_START_TRANSMISSION_1 = 0x10;
-        readonly byte DISPLAY_REFRESH = 0x12;
-        readonly byte DATA_START_TRANSMISSION_2 = 0x13;
-        readonly byte VCOM_AND_DATA_INTERVAL_SETTING = 0x50;
-        readonly byte TCON_SETTING = 0x60;
-        readonly byte RESOLUTION_SETTING = 0x61;
-        readonly byte PARTIAL_WINDOW = 0x90;
-        readonly byte PARTIAL_IN = 0x91;
+        private readonly byte PANEL_SETTING = 0x00;
+        private readonly byte POWER_SETTING = 0x01;
+        private readonly byte POWER_OFF = 0x02;
+        private readonly byte POWER_ON = 0x04;
+        private readonly byte BOOSTER_SOFT_START = 0x06;
+        private readonly byte DEEP_SLEEP = 0x07;
+        private readonly byte DATA_START_TRANSMISSION_1 = 0x10;
+        private readonly byte DISPLAY_REFRESH = 0x12;
+        private readonly byte DATA_START_TRANSMISSION_2 = 0x13;
+        private readonly byte VCOM_AND_DATA_INTERVAL_SETTING = 0x50;
+        private readonly byte TCON_SETTING = 0x60;
+        private readonly byte RESOLUTION_SETTING = 0x61;
+        private readonly byte PARTIAL_WINDOW = 0x90;
+        private readonly byte PARTIAL_IN = 0x91;
     }
 }
