@@ -108,6 +108,27 @@ public abstract class LayoutBase : ThemedControl, ILayout
         base.Invalidate();
     }
 
+    /// <summary>
+    /// Invalidates this layout and all its child controls, forcing a complete redraw.
+    /// Use this when child controls have complex overlapping layouts where the parent's
+    /// background needs to be redrawn before children to maintain proper z-order.
+    /// </summary>
+    public virtual void InvalidateWithChildren()
+    {
+        Invalidate();
+
+        if (Controls != null)
+        {
+            lock (Controls.SyncRoot)
+            {
+                foreach (var control in Controls)
+                {
+                    control.Invalidate();
+                }
+            }
+        }
+    }
+
     /// <inheritdoc/>
     protected override void OnDraw(MicroGraphics graphics)
     {
