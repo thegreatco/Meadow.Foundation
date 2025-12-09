@@ -1,4 +1,5 @@
-﻿using Meadow.Foundation.Graphics.Buffers;
+﻿using Meadow.Foundation.Displays;
+using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Hardware;
 using Meadow.Peripherals.Displays;
 using System;
@@ -6,30 +7,10 @@ using System;
 namespace Meadow.Foundation.Displays;
 
 /// <summary>
-/// Refresh mode for the display
-/// </summary>
-public enum RefreshMode
-{
-    /// <summary>
-    /// Full refresh - slowest but complete update (4 seconds)
-    /// </summary>
-    Full,
-    /// <summary>
-    /// Fast refresh - faster update with slight ghosting (1.5 seconds)
-    /// </summary>
-    Fast,
-    /// <summary>
-    /// Partial refresh - fastest update for small regions (0.4 seconds)
-    /// Note: Must perform full refresh periodically
-    /// </summary>
-    Partial
-}
-
-/// <summary>
 /// Represents an WaveShare Epd7in5 v2 ePaper display
 /// 800x480, 7.5inch e-Ink display, SPI interface
 /// </summary>
-public class Epd7in5V2 : EPaperBase, IPixelDisplay
+public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
 {
     /// <inheritdoc/>
     public ColorMode ColorMode { get; protected set; } = ColorMode.Format1bpp;
@@ -82,6 +63,19 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay
     /// This is advisory only - the application decides when to perform full refresh
     /// </summary>
     public bool IsFullRefreshRecommended => PartialRefreshCount >= MaxPartialRefreshes;
+
+    /// <summary>
+    /// Event raised when a fast refresh is recommended due to multiple partial refreshes
+    /// </summary>
+    public event EventHandler<RefreshRecommendedEventArgs>? FastRefreshRecommended;
+
+    /// <summary>
+    /// Event raised when a full refresh is recommended to clear accumulated ghosting
+    /// </summary>
+    public event EventHandler<RefreshRecommendedEventArgs>? FullRefreshRecommended;
+
+    private bool fastRefreshEventRaised = false;
+    private bool fullRefreshEventRaised = false;
 
     /// <summary>
     /// The minimum delay required by the hardware between screen redraws
@@ -490,10 +484,12 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay
             Show2bpp();
         }
 
-        // Reset counter after full refresh
+        // Reset counter and event flags after full refresh
         if (CurrentRefreshMode == RefreshMode.Full)
         {
             PartialRefreshCount = 0;
+            fastRefreshEventRaised = false;
+            fullRefreshEventRaised = false;
         }
     }
 
@@ -576,6 +572,34 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay
         }
 
         PartialRefreshCount++;
+
+        // Raise events based on thresholds
+        RaiseRefreshRecommendationEvents();
+    }
+
+    private void RaiseRefreshRecommendationEvents()
+    {
+        // Check for fast refresh recommendation (at 50% threshold)
+        if (!fastRefreshEventRaised && PartialRefreshCount >= MaxPartialRefreshes * 0.5)
+        {
+            FastRefreshRecommended?.Invoke(this, new RefreshRecommendedEventArgs(
+                RefreshMode.Fast,
+                PartialRefreshCount,
+                $"Performed {PartialRefreshCount} partial refreshes. Consider using fast refresh for better performance."
+            ));
+            fastRefreshEventRaised = true;
+        }
+
+        // Check for full refresh recommendation (at 100% threshold)
+        if (!fullRefreshEventRaised && PartialRefreshCount >= MaxPartialRefreshes)
+        {
+            FullRefreshRecommended?.Invoke(this, new RefreshRecommendedEventArgs(
+                RefreshMode.Full,
+                PartialRefreshCount,
+                $"Performed {PartialRefreshCount} partial refreshes. Full refresh recommended to clear ghosting."
+            ));
+            fullRefreshEventRaised = true;
+        }
     }
 
     private void Show1bppPartial(int left, int top, int right, int bottom)
@@ -683,6 +707,8 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay
     public void ResetPartialRefreshCount()
     {
         PartialRefreshCount = 0;
+        fastRefreshEventRaised = false;
+        fullRefreshEventRaised = false;
     }
 
     private readonly byte PANEL_SETTING = 0x00;
