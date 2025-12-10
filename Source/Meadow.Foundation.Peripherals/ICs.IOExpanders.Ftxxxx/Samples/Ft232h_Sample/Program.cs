@@ -11,25 +11,56 @@ using System.Diagnostics;
 
 Console.WriteLine("HELLO FROM THE WILDERNESS FT232H DRIVER!");
 
-var count = FtdiExpanderCollection.Devices.Count();
-var expander = FtdiExpanderCollection.Devices[0];
+FtdiExpander? expander = null;
 
-//await TestGpio(FtdiExpanderCollection.Devices);
-//await TestI2C(FtdiExpanderCollection.Devices[0]);
-//await TestSPI(FtdiExpanderCollection.Devices[0]);
-await TestSPIDisplay(FtdiExpanderCollection.Devices[0]);
-//await TestRfid(FtdiExpanderCollection.Devices[0]);
+// Make sure we clean up resources when the program is terminated
+Console.CancelKeyPress += (s, e) =>
+{
+    Console.WriteLine("\nCleaning up...");
+    expander?.Dispose();
+    e.Cancel = false; // Allow the process to terminate
+};
 
-//async Task TestRfid(FtdiExpander expander)
-//{
-//    var sensor = new Mfrc522(
-//        spiBus: expander.CreateSpiBus(),
-//        chipSelectPort: expander.Pins.C0.CreateDigitalOutputPort(true),
-//        resetPort: expander.Pins.C1.CreateDigitalOutputPort(false)
-//    );
+// Main logic.
+try 
+{
+    var count = FtdiExpanderCollection.Devices.Count;
+    Console.WriteLine($"Found {count} devices");
 
-//    var result = sensor.SelfTest();
-//}
+    if (count == 0)
+    {
+        Console.WriteLine("No devices found.");
+        return;
+    }
+
+    expander = FtdiExpanderCollection.Devices[0];
+
+    // These are various tests you can run to try different things:
+    await TestSPIDisplay(expander);
+    //await TestGpio(expander);
+    //await TestI2C(expander);
+    //await TestSPI(expander);
+    //await TestRfid(expander);
+}
+catch (Exception ex)
+{
+    if (ex.Message.Contains("FT_DEVICE_NOT_OPENED"))
+    {
+        Console.WriteLine("\n[!] CRITICAL ERROR: The device handle is stuck in an OPEN state.");
+        Console.WriteLine("    This usually happens if the application was terminated abruptly.");
+        Console.WriteLine("    ACTION REQUIRED: Unplug the USB device and plug it back in to reset the driver.\n");
+    }
+    else
+    {
+        Console.WriteLine($"An error occurred: {ex.Message}");
+        Console.WriteLine(ex.StackTrace);
+    }
+}
+finally
+{
+    Console.WriteLine("Cleaning up...");
+    expander?.Dispose();
+}
 
 async Task TestSPIDisplay(FtdiExpander expander)
 {
@@ -52,92 +83,105 @@ async Task TestSPIDisplay(FtdiExpander expander)
     microGraphics.DrawText(0, 0, "Loading Menu");
     microGraphics.Show();
 
+    Console.WriteLine("Display initialized. Entering loop...");
+
     while (true)
     {
-        Debug.WriteLine("Sleeping...");
+        Console.WriteLine("Sleeping...");
 
         await Task.Delay(1000);
     }
 }
 
-async Task TestSPI(FtdiExpander expander)
-{
-    var mcp = new Mcp3201(
-        expander.CreateSpiBus(),
-        expander.Pins.C1.CreateDigitalOutputPort());
+// async Task TestSPI(FtdiExpander expander)
+// {
+//     var mcp = new Mcp3201(
+//         expander.CreateSpiBus(),
+//         expander.Pins.C1.CreateDigitalOutputPort());
 
-    var inp = mcp.CreateAnalogInputPort();
+//     var inp = mcp.CreateAnalogInputPort();
 
-    while (true)
-    {
-        Debug.WriteLine("Reading...");
-        try
-        {
-            var t = await inp.Read();
-            Debug.WriteLine($"{t.Volts} V");
-        }
-        catch
-        {
-        }
+//     while (true)
+//     {
+//         Debug.WriteLine("Reading...");
+//         try
+//         {
+//             var t = await inp.Read();
+//             Debug.WriteLine($"{t.Volts} V");
+//         }
+//         catch
+//         {
+//         }
 
-        await Task.Delay(1000);
-    }
-}
+//         await Task.Delay(1000);
+//     }
+// }
 
-async Task TestI2C(FtdiExpander expander)
-{
-    var sensor = new Veml7700(expander.CreateI2cBus());
+// async Task TestI2C(FtdiExpander expander)
+// {
+//     var sensor = new Veml7700(expander.CreateI2cBus());
 
-    while (true)
-    {
-        Debug.WriteLine("Reading...");
-        try
-        {
-            var t = await sensor.Read();
-            Debug.WriteLine($"{t.Lux} lux");
-        }
-        catch
-        {
-        }
+//     while (true)
+//     {
+//         Debug.WriteLine("Reading...");
+//         try
+//         {
+//             var t = await sensor.Read();
+//             Debug.WriteLine($"{t.Lux} lux");
+//         }
+//         catch
+//         {
+//         }
 
-        await Task.Delay(1000);
-    }
-}
+//         await Task.Delay(1000);
+//     }
+// }
 
-async Task TestGpio(IEnumerable<FtdiExpander> expanders)
-{
+// async Task TestGpio(IEnumerable<FtdiExpander> expanders)
+// {
 
-    var outputs = new List<IDigitalOutputPort>();
+//     var outputs = new List<IDigitalOutputPort>();
 
-    foreach (var expander in expanders)
-    {
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C0));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C1));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C2));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C3));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C4));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C5));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C6));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C7));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D3));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D4));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D5));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D6));
-        outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D7));
-    }
+//     foreach (var expander in expanders)
+//     {
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C0));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C1));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C2));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C3));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C4));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C5));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C6));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.C7));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D3));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D4));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D5));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D6));
+//         outputs.Add(expander.CreateDigitalOutputPort(expander.Pins.D7));
+//     }
 
-    var s = false;
+//     var s = false;
 
-    while (true)
-    {
+//     while (true)
+//     {
 
-        for (var i = 0; i < outputs.Count; i++)
-        {
-            var setTo = (i % 2 == 0) ? s : !s;
-            outputs[i].State = setTo;
-        }
+//         for (var i = 0; i < outputs.Count; i++)
+//         {
+//             var setTo = (i % 2 == 0) ? s : !s;
+//             outputs[i].State = setTo;
+//         }
 
-        await Task.Delay(1000);
-        s = !s;
-    }
-}
+//         await Task.Delay(1000);
+//         s = !s;
+//     }
+// }
+
+//async Task TestRfid(FtdiExpander expander)
+//{
+//    var sensor = new Mfrc522(
+//        spiBus: expander.CreateSpiBus(),
+//        chipSelectPort: expander.Pins.C0.CreateDigitalOutputPort(true),
+//        resetPort: expander.Pins.C1.CreateDigitalOutputPort(false)
+//    );
+
+//    var result = sensor.SelfTest();
+//}

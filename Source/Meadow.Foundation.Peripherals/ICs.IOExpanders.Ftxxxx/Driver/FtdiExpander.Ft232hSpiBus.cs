@@ -215,6 +215,7 @@ public abstract partial class FtdiExpander
             }
         }
 
+        /// <inheritdoc/>
         public override void Write(IDigitalOutputPort? chipSelect, Span<byte> writeBuffer, ChipSelectMode csMode = ChipSelectMode.ActiveLow)
         {
             if (writeBuffer.Length == 0) return;
@@ -246,6 +247,7 @@ public abstract partial class FtdiExpander
             }
         }
 
+        /// <inheritdoc/>
         public override void Read(IDigitalOutputPort? chipSelect, Span<byte> readBuffer, ChipSelectMode csMode = ChipSelectMode.ActiveLow)
         {
             if (readBuffer.Length == 0) return;
@@ -301,7 +303,7 @@ public abstract partial class FtdiExpander
 
                     Native.CheckStatus(Native.Ftd2xx.FT_Read(
                         _expander.Handle,
-                        ref buffer[totalRead],
+                        in buffer[totalRead],
                         (uint)toRead,
                         ref read));
 
@@ -329,7 +331,7 @@ public abstract partial class FtdiExpander
             {
                 var clearBuffer = new byte[available];
                 uint read = 0;
-                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, ref clearBuffer[0], available, ref read));
+                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, in clearBuffer[0], available, ref read));
             }
         }
     }

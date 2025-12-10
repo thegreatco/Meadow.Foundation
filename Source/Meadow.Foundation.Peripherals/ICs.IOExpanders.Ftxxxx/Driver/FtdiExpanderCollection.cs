@@ -61,6 +61,8 @@ public class FtdiExpanderCollection : IEnumerable<FtdiExpander>
                 case FtDeviceType.Ft2232:
                 case FtDeviceType.Ft2232H:
                 case FtDeviceType.Ft4232H:
+                case FtDeviceType.Ft232BOrFt245B: // Accept mis-identified FT232H on macOS
+                case FtDeviceType.UnknownDevice:  // Accept UnknownDevice (seen when VID/PID not explicit)
                     // valid, add to list
                     break;
                 default:

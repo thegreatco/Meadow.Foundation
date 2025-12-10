@@ -270,7 +270,7 @@ public abstract partial class FtdiExpander
                     uint read = 0;
                     Native.CheckStatus(Native.Ftd2xx.FT_Read(
                         _expander.Handle,
-                        ref buffer[totalRead],
+                        in buffer[totalRead],
                         (uint)toRead,
                         ref read));
                     totalRead += (int)read;
@@ -293,7 +293,7 @@ public abstract partial class FtdiExpander
             {
                 Span<byte> clearBuffer = stackalloc byte[(int)available];
                 uint read = 0;
-                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, ref clearBuffer[0], available, ref read));
+                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, in clearBuffer[0], available, ref read));
             }
         }
     }

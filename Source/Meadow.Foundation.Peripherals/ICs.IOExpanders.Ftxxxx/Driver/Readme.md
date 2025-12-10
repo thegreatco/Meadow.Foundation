@@ -6,9 +6,26 @@ This driver is compatible with Windows, macOS, and Linux. However, for macOS and
 
 *NOTE* - This may not be necessary, as MacOS includes a Virtual COM Port (VCP) driver since macOS 10.9 (Mavericks). If you are using an older version of macOS, you may need to install the FTDI D2XX drivers.
 
-1. Download the D2XX driver for macOS from the [FTDI Drivers page](https://ftdichip.com/drivers/d2xx-drivers/).
+## macOS
+1. Download the **Universal** D2XX driver (v1.4.30 or later) from the [FTDI Drivers page](https://ftdichip.com/drivers/d2xx-drivers/).
 2. Follow the installation instructions provided in the driver package.
+    - If the package contains a `D2XXHelper`, install that first.
+    - Copy `libftd2xx.1.4.30.dylib` to `/usr/local/lib`.
+    - Create the symlink: `ln -sf /usr/local/lib/libftd2xx.1.4.30.dylib /usr/local/lib/libftd2xx.dylib`
 3. Ensure `libftd2xx.dylib` is in your library path (e.g., `/usr/local/lib` or `/usr/lib`).
+
+> [!NOTE]
+> **VCP vs D2XX**: This driver requires the **D2XX** drivers to access the FTDI chip's MPSSE mode for I2C and SPI. The built-in macOS Virtual COM Port (VCP) drivers *cannot* be used for this purpose.
+>
+> **Driver Conflicts & Apple Silicon**: On Apple Silicon Macs, installing the `D2xxHelper` (to disable the VCP driver) requires changing your system security policy.
+> 1. Shut down your Mac.
+> 2. Press and hold the **Power button** until you see "Loading startup options".
+> 3. Click **Options**, then **Continue**.
+> 4. In the menu bar, choose **Utilities > Startup Security Utility**.
+> 5. Select your startup disk and click **Security Policy...**.
+> 6. Select **Reduced Security** and ensure **"Allow user management of kernel extensions from identified developers"** is checked.
+> 7. Click **OK**, enter your password, and restart.
+> 8. Go to **System Settings > Privacy & Security** and allow the new extension.
 
 ## Linux
 1. Download the D2XX driver for Linux from the [FTDI Drivers page](https://ftdichip.com/drivers/d2xx-drivers/).
