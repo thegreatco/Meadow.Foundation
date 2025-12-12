@@ -1,5 +1,4 @@
-﻿using Meadow.Foundation.Displays;
-using Meadow.Foundation.Graphics.Buffers;
+﻿using Meadow.Foundation.Graphics.Buffers;
 using Meadow.Hardware;
 using Meadow.Peripherals.Displays;
 using System;
@@ -94,6 +93,7 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
     }
 
     private int lastUpdatedTick = -1;
+    private RefreshMode? lastInitializedMode = null;
 
     /// <summary>
     /// Create a new WaveShare Epd7in5 v2 800x480 pixel display object
@@ -285,6 +285,10 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
         SendCommand(PANEL_SETTING);
         SendData(0x1F);
 
+        SendCommand(VCOM_AND_DATA_INTERVAL_SETTING);
+        SendData(0x10);
+        SendData(0x07);
+
         SendCommand(POWER_ON);
         DelayMs(100);
         WaitUntilIdle();
@@ -465,14 +469,29 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
         }
         lastUpdatedTick = Environment.TickCount;
 
-        // Re-initialize if switching refresh modes
-        if (CurrentRefreshMode == RefreshMode.Fast)
+        // Re-initialize only if switching refresh modes
+
+        if (lastInitializedMode != CurrentRefreshMode)
         {
-            InitializeFast();
-        }
-        else if (CurrentRefreshMode == RefreshMode.Partial)
-        {
-            InitializePartial();
+            if (CurrentRefreshMode == RefreshMode.Fast)
+            {
+                InitializeFast();
+                lastInitializedMode = RefreshMode.Fast;
+            }
+            else if (CurrentRefreshMode == RefreshMode.Partial)
+            {
+                InitializePartial();
+                lastInitializedMode = RefreshMode.Partial;
+            }
+            else
+            {
+                // Full mode - initialize on first call or mode switch
+                if (lastInitializedMode != null)
+                {
+                    Initialize();
+                }
+                lastInitializedMode = RefreshMode.Full;
+            }
         }
 
         if (ColorMode == ColorMode.Format1bpp)
@@ -497,14 +516,25 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
     {
         var buffer = imageBuffer.Buffer;
 
-        SendCommand(DATA_START_TRANSMISSION_1);
-        dataCommandPort!.State = DataState;
-        spiComms?.Write(buffer);
-
-        SendCommand(DATA_START_TRANSMISSION_2);
-        for (int i = 0; i < buffer.Length; i++)
+        if (CurrentRefreshMode == RefreshMode.Partial)
         {
-            SendData(~buffer[i]);
+            // Hardware partial mode: send only DATA_START_TRANSMISSION_2 with non-inverted buffer
+            SendCommand(DATA_START_TRANSMISSION_2);
+            dataCommandPort!.State = DataState;
+            spiComms?.Write(buffer);
+        }
+        else
+        {
+            // Full/Fast mode: send both buffers
+            SendCommand(DATA_START_TRANSMISSION_1);
+            dataCommandPort!.State = DataState;
+            spiComms?.Write(buffer);
+
+            SendCommand(DATA_START_TRANSMISSION_2);
+            for (int i = 0; i < buffer.Length; i++)
+            {
+                SendData(~buffer[i]);
+            }
         }
 
         DisplayFrame();
@@ -514,16 +544,29 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
     {
         var buffer = imageBuffer as Buffer2bppGreyEPaper;
 
-        SendCommand(DATA_START_TRANSMISSION_1);
-        for (int i = 0; i < buffer!.DarkBuffer.Length; i++)
+        if (CurrentRefreshMode == RefreshMode.Partial)
         {
-            SendData(buffer.LightBuffer[i]);
+            // Hardware partial mode: send only DATA_START_TRANSMISSION_2
+            SendCommand(DATA_START_TRANSMISSION_2);
+            for (int i = 0; i < buffer!.DarkBuffer.Length; i++)
+            {
+                SendData(buffer.DarkBuffer[i]);
+            }
         }
-
-        SendCommand(DATA_START_TRANSMISSION_2);
-        for (int i = 0; i < buffer.DarkBuffer.Length; i++)
+        else
         {
-            SendData(buffer.DarkBuffer[i]);
+            // Full/Fast mode: send both buffers
+            SendCommand(DATA_START_TRANSMISSION_1);
+            for (int i = 0; i < buffer!.DarkBuffer.Length; i++)
+            {
+                SendData(buffer.LightBuffer[i]);
+            }
+
+            SendCommand(DATA_START_TRANSMISSION_2);
+            for (int i = 0; i < buffer.DarkBuffer.Length; i++)
+            {
+                SendData(buffer.DarkBuffer[i]);
+            }
         }
 
         DisplayFrame();
@@ -548,9 +591,17 @@ public class Epd7in5V2 : EPaperBase, IPixelDisplay, IRefreshableDisplay
         lastUpdatedTick = Environment.TickCount;
 
         // Initialize partial refresh if not already in that mode
-        if (CurrentRefreshMode != RefreshMode.Partial)
+        switch (CurrentRefreshMode)
         {
-            InitializePartial();
+            //case RefreshMode.Full:
+            //    Initialize();
+            //    break;
+            case RefreshMode.Fast:
+                InitializeFast();
+                break;
+            case RefreshMode.Partial:
+                InitializePartial();
+                break;
         }
 
         // Align to 8-pixel boundaries
