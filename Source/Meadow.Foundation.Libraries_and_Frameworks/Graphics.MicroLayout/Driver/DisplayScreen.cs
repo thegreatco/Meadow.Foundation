@@ -346,18 +346,26 @@ public class DisplayScreen : IControlContainer
                     // This prevents ghosting without erasing valid overlapping controls
                     foreach (var control in _reusableControlList)
                     {
-                        if (control.IsInvalid && control.IsVisible)
+                        if (control.IsVisible)
                         {
-                            // Clear this control's area if it doesn't have its own background
-                            // (controls with non-transparent backgrounds will draw their own)
-                            _graphics.DrawRectangle(control.ScreenLeft, control.ScreenTop,
-                                control.Width, control.Height, BackgroundColor, true);
+                            if (control.IsInvalid)
+                            {
+                                // Clear this control's area if it doesn't have its own background
+                                // (controls with non-transparent backgrounds will draw their own)
+                                _graphics.DrawRectangle(control.ScreenLeft, control.ScreenTop,
+                                    control.Width, control.Height, BackgroundColor, true);
+                            }
+                            else
+                            {
+                                // Mark all controls in the dirty region as invalid so they redraw
+                                // This ensures that valid controls that overlap with invalid controls get redrawn
+                                control.Invalidate();
+                            }
                         }
                     }
-
-                    // Redraw all controls in the dirty region
                     foreach (var control in _reusableControlList)
                     {
+                        // Redraw all controls in the dirty region
                         Refresh(control);
                     }
 
