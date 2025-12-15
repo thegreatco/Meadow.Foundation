@@ -36,9 +36,9 @@ try
     expander = FtdiExpanderCollection.Devices[0];
 
     // These are various tests you can run to try different things:
-    await TestSPIDisplay(expander);
+    //await TestSPIDisplay(expander);
     //await TestGpio(expander);
-    //await TestI2C(expander);
+    await TestI2C(expander);
     //await TestSPI(expander);
     //await TestRfid(expander);
 }
@@ -117,25 +117,26 @@ async Task TestSPIDisplay(FtdiExpander expander)
 //     }
 // }
 
-// async Task TestI2C(FtdiExpander expander)
-// {
-//     var sensor = new Veml7700(expander.CreateI2cBus());
+async Task TestI2C(FtdiExpander expander)
+{
+    Console.WriteLine("Initializing sensor...");
+    var sensor = new Veml7700(expander.CreateI2cBus());
 
-//     while (true)
-//     {
-//         Debug.WriteLine("Reading...");
-//         try
-//         {
-//             var t = await sensor.Read();
-//             Debug.WriteLine($"{t.Lux} lux");
-//         }
-//         catch
-//         {
-//         }
+    while (true)
+    {
+        Console.WriteLine("Reading...");
+        try
+        {
+            var t = await sensor.Read();
+            Console.WriteLine($"{t.Lux} lux");
+        }
+        catch
+        {
+        }
 
-//         await Task.Delay(1000);
-//     }
-// }
+        await Task.Delay(1000);
+    }
+}
 
 // async Task TestGpio(IEnumerable<FtdiExpander> expanders)
 // {
