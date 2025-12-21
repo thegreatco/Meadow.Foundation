@@ -117,11 +117,6 @@ public abstract class Control : IControl
             }
 
             BoundsChanged?.Invoke(this, EventArgs.Empty);
-
-            if (_parent != null && _parent is not DisplayScreen)
-            {
-                IsVisible = _parent.IsVisible;
-            }
             Invalidate();
         }
     }
