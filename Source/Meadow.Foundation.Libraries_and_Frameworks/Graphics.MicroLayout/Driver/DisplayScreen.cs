@@ -228,7 +228,9 @@ public class DisplayScreen : IControlContainer
 
         foreach (var control in controls)
         {
-            if (control.IsInvalid && control.IsVisible)
+            // Include invalid controls in dirty region regardless of visibility
+            // This ensures invisible controls get their area cleared
+            if (control.IsInvalid)
             {
                 foundInvalid = true;
 
@@ -239,8 +241,9 @@ public class DisplayScreen : IControlContainer
                 if (control.ScreenBottom > bottom) bottom = control.ScreenBottom;
             }
 
-            // Handle nested containers
-            if (control is IControlContainer container)
+            // Handle nested containers - only recurse if the container is visible
+            // This prevents children of invisible containers from being included
+            if (control is IControlContainer container && control.IsVisible)
             {
                 if (CollectDirtyBoundsRecursive(container.Controls, ref left, ref top, ref right, ref bottom))
                 {
@@ -268,7 +271,9 @@ public class DisplayScreen : IControlContainer
     {
         foreach (var control in controls)
         {
-            if (!control.IsVisible) continue;
+            // Include invisible controls only if they're invalid (need their area cleared)
+            // Skip invisible valid controls as they don't need processing
+            if (!control.IsVisible && !control.IsInvalid) continue;
 
             // Collect ALL controls that intersect the dirty region, not just invalid ones
             // We need to redraw valid controls too because we clear the entire dirty region
@@ -277,8 +282,8 @@ public class DisplayScreen : IControlContainer
                 controlsToRedraw.Add(control);
             }
 
-            // Recursively check children
-            if (control is IControlContainer container)
+            // Recursively check children - only if container is visible
+            if (control is IControlContainer container && control.IsVisible)
             {
                 CollectControlsInRegion(container.Controls, left, top, right, bottom, controlsToRedraw);
             }
@@ -346,21 +351,18 @@ public class DisplayScreen : IControlContainer
                     // This prevents ghosting without erasing valid overlapping controls
                     foreach (var control in _reusableControlList)
                     {
-                        if (control.IsVisible)
+                        if (control.IsInvalid)
                         {
-                            if (control.IsInvalid)
-                            {
-                                // Clear this control's area if it doesn't have its own background
-                                // (controls with non-transparent backgrounds will draw their own)
-                                _graphics.DrawRectangle(control.ScreenLeft, control.ScreenTop,
-                                    control.Width, control.Height, BackgroundColor, true);
-                            }
-                            else
-                            {
-                                // Mark all controls in the dirty region as invalid so they redraw
-                                // This ensures that valid controls that overlap with invalid controls get redrawn
-                                control.Invalidate();
-                            }
+                            // Clear this control's area (whether visible or invisible)
+                            // Invisible controls need their area cleared to remove old pixels
+                            _graphics.DrawRectangle(control.ScreenLeft, control.ScreenTop,
+                                control.Width, control.Height, BackgroundColor, true);
+                        }
+                        else if (control.IsVisible)
+                        {
+                            // Mark all visible valid controls in the dirty region as invalid so they redraw
+                            // This ensures that valid controls that overlap with invalid controls get redrawn
+                            control.Invalidate();
                         }
                     }
                     foreach (var control in _reusableControlList)
