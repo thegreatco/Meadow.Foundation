@@ -9,9 +9,9 @@ namespace Meadow.Foundation.ICs.IOExpanders;
 public abstract partial class FtdiExpander
 {
     /// <summary>
-    /// Represents an SPI bus using the FT232H
+    /// Represents an MPSSE-based SPI bus for FTDI chips with MPSSE support (FT232H, FT2232H, FT4232H).
     /// </summary>
-    public class Ft232hSpiBus : SpiBus
+    public class FtMpsseSpiBus : SpiBus
     {
         private readonly FtdiExpander _expander;
         private readonly SpiClockConfiguration _configuration;
@@ -28,7 +28,7 @@ public abstract partial class FtdiExpander
         /// <inheritdoc/>
         public override SpiClockConfiguration Configuration => _configuration;
 
-        internal Ft232hSpiBus(FtdiExpander expander, SpiClockConfiguration configuration)
+        internal FtMpsseSpiBus(FtdiExpander expander, SpiClockConfiguration configuration)
         {
             _configuration = configuration;
             _expander = expander;

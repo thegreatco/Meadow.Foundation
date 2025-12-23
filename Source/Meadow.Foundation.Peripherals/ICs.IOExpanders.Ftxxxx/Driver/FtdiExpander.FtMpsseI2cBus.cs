@@ -7,11 +7,11 @@ namespace Meadow.Foundation.ICs.IOExpanders;
 public abstract partial class FtdiExpander
 {
     /// <summary>
-    /// Represents an Ft232h expander I2C bus.
+    /// Represents an MPSSE-based I2C bus for FTDI chips with MPSSE support (FT232H, FT2232H, FT4232H).
     /// </summary>
-    public class Ft232hI2cBus : I2CBus
+    public class FtMpsseI2cBus : I2CBus
     {
-        internal Ft232hI2cBus(FtdiExpander expander, I2cBusSpeed busSpeed)
+        internal FtMpsseI2cBus(FtdiExpander expander, I2cBusSpeed busSpeed)
             : base(expander, busSpeed)
         {
         }
