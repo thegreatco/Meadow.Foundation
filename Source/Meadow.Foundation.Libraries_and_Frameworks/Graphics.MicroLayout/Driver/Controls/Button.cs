@@ -149,31 +149,28 @@ public class Button : ClickableControl
     {
         graphics.Stroke = ButtonDepth;
 
-        var parentOffsetX = Parent?.Left ?? 0;
-        var parentOffsetY = Parent?.Top ?? 0;
-
         if (Pressed)
         {
-            graphics.DrawRectangle(Left + parentOffsetX, Top + parentOffsetY, Width, Height, PressedColor, true);
+            graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, PressedColor, true);
 
-            graphics.DrawHorizontalLine(Left + parentOffsetX, Top + parentOffsetY, Width, ShadowColor);
-            graphics.DrawVerticalLine(Left + parentOffsetX, Top + parentOffsetY, Height, ShadowColor);
+            graphics.DrawHorizontalLine(ScreenLeft, ScreenTop, Width, ShadowColor);
+            graphics.DrawVerticalLine(ScreenLeft, ScreenTop, Height, ShadowColor);
 
-            graphics.DrawHorizontalLine(Left + parentOffsetX, Bottom + parentOffsetY - 1, Width, HighlightColor);
-            graphics.DrawVerticalLine(Right + parentOffsetX - 1, Top + parentOffsetY, Height, HighlightColor);
+            graphics.DrawHorizontalLine(ScreenLeft, ScreenBottom - 1, Width, HighlightColor);
+            graphics.DrawVerticalLine(ScreenRight - 1, ScreenTop, Height, HighlightColor);
 
             if (Image != null) // image always wins over text
             {
                 graphics.DrawImage(
-                    Left + ((this.Width - Image.Width) / 2) + ButtonDepth + parentOffsetX,
-                    Top + ((this.Height - Image.Height) / 2) + ButtonDepth + parentOffsetY,
+                    ScreenLeft + ((this.Width - Image.Width) / 2) + ButtonDepth,
+                    ScreenTop + ((this.Height - Image.Height) / 2) + ButtonDepth,
                     Image);
             }
             else if (!string.IsNullOrEmpty(Text))
             {
                 graphics.DrawText(
-                    Left + ButtonDepth + (this.Width / 2) + parentOffsetX,
-                    Top + ButtonDepth + (this.Height / 2) + parentOffsetY,
+                    ScreenLeft + ButtonDepth + (this.Width / 2),
+                    ScreenTop + ButtonDepth + (this.Height / 2),
                     Text,
                     TextColor,
                     scaleFactor: ScaleFactor,
@@ -184,26 +181,26 @@ public class Button : ClickableControl
         }
         else
         {
-            graphics.DrawRectangle(Left + parentOffsetX, Top + parentOffsetY, Width, Height, ForegroundColor, true);
+            graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, ForegroundColor, true);
 
-            graphics.DrawHorizontalLine(Left + parentOffsetX, Top + parentOffsetY, Width, HighlightColor);
-            graphics.DrawVerticalLine(Left + parentOffsetX, Top + parentOffsetY, Height, HighlightColor);
+            graphics.DrawHorizontalLine(ScreenLeft, ScreenTop, Width, HighlightColor);
+            graphics.DrawVerticalLine(ScreenLeft, ScreenTop, Height, HighlightColor);
 
-            graphics.DrawHorizontalLine(Left + parentOffsetX, Bottom + parentOffsetY - 1, Width, ShadowColor);
-            graphics.DrawVerticalLine(Right + parentOffsetX - 1, Top + parentOffsetY, Height, ShadowColor);
+            graphics.DrawHorizontalLine(ScreenLeft, ScreenBottom - 1, Width, ShadowColor);
+            graphics.DrawVerticalLine(ScreenRight - 1, ScreenTop, Height, ShadowColor);
 
             if (Image != null) // image always wins over text
             {
                 graphics.DrawImage(
-                    Left + ((Width - Image.Width) / 2) + parentOffsetX,
-                    Top + ((Height - Image.Height) / 2) + parentOffsetY,
+                    ScreenLeft + ((Width - Image.Width) / 2),
+                    ScreenTop + ((Height - Image.Height) / 2),
                     Image);
             }
             else if (!string.IsNullOrEmpty(Text))
             {
                 graphics.DrawText(
-                    Left + (Width / 2) + parentOffsetX,
-                    Top + (Height / 2) + parentOffsetY,
+                    ScreenLeft + (Width / 2),
+                    ScreenTop + (Height / 2),
                     Text,
                     TextColor,
                     scaleFactor: ScaleFactor,

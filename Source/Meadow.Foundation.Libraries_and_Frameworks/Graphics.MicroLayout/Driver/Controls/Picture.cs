@@ -98,8 +98,8 @@ public class Picture : ThemedControl
         if (BackgroundColor != Color.Transparent)
         {
             graphics.DrawRectangle(
-                Left + (Parent?.Left ?? 0),
-                Top + (Parent?.Top ?? 0),
+                ScreenLeft,
+                ScreenTop,
                 Width,
                 Height,
                 BackgroundColor,
@@ -109,32 +109,29 @@ public class Picture : ThemedControl
         int x, y;
         if (HorizontalAlignment == HorizontalAlignment.Center)
         {
-            x = Left + ((Width - Image.Width) / 2);
+            x = ScreenLeft + ((Width - Image.Width) / 2);
         }
         else if (HorizontalAlignment == HorizontalAlignment.Right)
         {
-            x = Right - Image.Width;
+            x = ScreenRight - Image.Width;
         }
         else // Default to Left alignment
         {
-            x = Left;
+            x = ScreenLeft;
         }
 
         if (VerticalAlignment == VerticalAlignment.Center)
         {
-            y = Top + ((Height - Image.Height) / 2);
+            y = ScreenTop + ((Height - Image.Height) / 2);
         }
         else if (VerticalAlignment == VerticalAlignment.Bottom)
         {
-            y = Bottom - Image.Height;
+            y = ScreenBottom - Image.Height;
         }
         else // Default to Top alignment
         {
-            y = Top;
+            y = ScreenTop;
         }
-
-        x += Parent?.Left ?? 0;
-        y += Parent?.Top ?? 0;
 
         graphics.DrawImage(x, y, Image);
     }

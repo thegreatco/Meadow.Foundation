@@ -114,6 +114,14 @@ public class ControlsCollection : IEnumerable<IControl>
 
                     control.Parent = _container;
                     control.Invalidate();
+
+                    // If the control is a container, recursively invalidate all children
+                    // This ensures nested controls are redrawn when re-added to the display
+                    if (control is IControlContainer container)
+                    {
+                        InvalidateControlsRecursive(container);
+                    }
+
                     _controls.Add(control);
                 }
             }
@@ -196,5 +204,24 @@ public class ControlsCollection : IEnumerable<IControl>
     protected virtual void OnControlRemoved(IControl control)
     {
         ControlRemoved?.Invoke(this, control);
+    }
+
+    /// <summary>
+    /// Recursively invalidates all controls in a container and its nested containers.
+    /// </summary>
+    /// <remarks>This ensures that when a container is re-added to the display,
+    /// all of its children are marked for redrawing, not just the container itself.</remarks>
+    /// <param name="container">The container whose controls should be invalidated.</param>
+    private void InvalidateControlsRecursive(IControlContainer container)
+    {
+        foreach (var child in container.Controls)
+        {
+            child.Invalidate();
+
+            if (child is IControlContainer childContainer)
+            {
+                InvalidateControlsRecursive(childContainer);
+            }
+        }
     }
 }

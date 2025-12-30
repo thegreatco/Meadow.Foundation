@@ -1431,7 +1431,16 @@ namespace Meadow.Foundation.Graphics
             x = GetXForAlignment(x, textSize.Width, alignmentH);
             y = GetYForAlignment(y, textSize.Height, alignmentV);
 
-            DrawBitmap(x, y, text.Length * fontToDraw.Width, fontToDraw.Height, bitMap, color, scaleFactor);
+            // Calculate the byte width to match the stride used in GetBytesForTextBitmap
+            int byteWidth = fontToDraw.Width switch
+            {
+                8 => text.Length,
+                16 => text.Length * 2,
+                12 => ((text.Length + (text.Length % 2)) * 3) >> 1,
+                _ => (text.Length * fontToDraw.Width + 7) / 8  // Round up for other widths
+            };
+
+            DrawBitmap(x, y, byteWidth * 8, fontToDraw.Height, bitMap, color, scaleFactor);
         }
 
         /// <summary>
@@ -1936,20 +1945,47 @@ namespace Meadow.Foundation.Graphics
                 isUpdating = true;
             }
 
+            // If the dirty region covers the entire screen (or close to it),
+            // do a full refresh for better performance
+            int regionWidth = right - left;
+            int regionHeight = bottom - top;
+            int totalArea = Width * Height;
+            int regionArea = regionWidth * regionHeight;
+
+            if (regionArea >= totalArea * 0.9) // 90% threshold
+            {
+                display?.Show();
+                isUpdating = false;
+                return;
+            }
+
             if (_isRotatableDisplay)
             {
                 display?.Show(left, top, right, bottom);
             }
             else
             {
-                int l = GetXForRotation(left, top);
-                int t = GetYForRotation(left, top);
+                // Transform all four corners of the rectangle to handle rotation correctly
+                int x1 = GetXForRotation(left, top);
+                int y1 = GetYForRotation(left, top);
+                int x2 = GetXForRotation(right, top);
+                int y2 = GetYForRotation(right, top);
+                int x3 = GetXForRotation(left, bottom);
+                int y3 = GetYForRotation(left, bottom);
+                int x4 = GetXForRotation(right, bottom);
+                int y4 = GetYForRotation(right, bottom);
 
-                int r = GetXForRotation(right, bottom);
-                int b = GetYForRotation(right, bottom);
+                // Find the bounding box of the transformed rectangle
+                int l = Math.Min(Math.Min(x1, x2), Math.Min(x3, x4));
+                int r = Math.Max(Math.Max(x1, x2), Math.Max(x3, x4));
+                int t = Math.Min(Math.Min(y1, y2), Math.Min(y3, y4));
+                int b = Math.Max(Math.Max(y1, y2), Math.Max(y3, y4));
 
-                if (l > r) { Swap(ref l, ref r); }
-                if (t > b) { Swap(ref t, ref b); }
+                // Clamp to valid buffer bounds to handle edge cases
+                l = Math.Max(0, Math.Min(l, PixelBuffer.Width));
+                r = Math.Max(0, Math.Min(r, PixelBuffer.Width));
+                t = Math.Max(0, Math.Min(t, PixelBuffer.Height));
+                b = Math.Max(0, Math.Min(b, PixelBuffer.Height));
 
                 display?.Show(l, t, r, b);
             }

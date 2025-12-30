@@ -71,7 +71,7 @@ public abstract class Control : IControl
     public int ScreenLeft => Left + (_parent?.ScreenLeft ?? 0);
 
     /// <inheritdoc />
-    public int ScreenTop => Top + Parent?.ScreenTop ?? 0;
+    public int ScreenTop => Top + (_parent?.ScreenTop ?? 0);
 
     /// <inheritdoc />
     public int ScreenRight => ScreenLeft + Width;
@@ -117,11 +117,6 @@ public abstract class Control : IControl
             }
 
             BoundsChanged?.Invoke(this, EventArgs.Empty);
-
-            if (_parent != null && _parent is not DisplayScreen)
-            {
-                IsVisible = _parent.IsVisible;
-            }
             Invalidate();
         }
     }
@@ -176,6 +171,18 @@ public abstract class Control : IControl
     public virtual void Invalidate()
     {
         IsInvalid = true;
+
+        // Walk up parent chain to notify DisplayScreen
+        var current = Parent;
+        while (current != null)
+        {
+            if (current is DisplayScreen screen)
+            {
+                screen.NotifyControlInvalidated();
+                break;
+            }
+            current = current.Parent;
+        }
     }
 
     /// <summary>

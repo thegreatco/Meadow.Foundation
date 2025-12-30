@@ -1,9 +1,11 @@
-﻿namespace Meadow.Foundation.Graphics.MicroLayout;
+﻿using System;
+
+namespace Meadow.Foundation.Graphics.MicroLayout;
 
 /// <summary>
 /// Represents a label display control in the user interface.
 /// </summary>
-public class Label : ClickableControl
+public class Label : ClickableControl, ISelectable
 {
     /// <summary>
     /// Gets or sets the vertical alignment of the label text within the label display control.
@@ -68,6 +70,35 @@ public class Label : ClickableControl
         set => SetInvalidatingProperty(ref _scaleFactor, value);
     }
 
+    /// <summary>
+    /// Gets or sets whether the control can be selected.
+    /// </summary>
+    public bool IsSelectable
+    {
+        get => _isSelectable;
+        set => SetInvalidatingProperty(ref _isSelectable, value);
+    }
+
+    /// <summary>
+    /// Gets or sets whether the control is currently selected (focused).
+    /// </summary>
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set => SetInvalidatingProperty(ref _isSelected, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the selection index used for navigation ordering.
+    /// </summary>
+    public int SelectionIndex { get; set; } = -1;
+
+    /// <summary>
+    /// Gets or sets the action to perform when rendering the control in selected state.
+    /// If null, the default selection rendering (underline when selected, inversion when activated) is used.
+    /// </summary>
+    public Action<MicroGraphics, ISelectable>? SelectionAction { get; set; }
+
     private static Color DefaultTextColor = Color.White;
     private static Color DefaultBackgroundColor = Color.Transparent;
 
@@ -80,6 +111,8 @@ public class Label : ClickableControl
     private HorizontalAlignment _horizontalAlignment;
     private IFont? _font;
     private ScaleFactor _scaleFactor = ScaleFactor.X1;
+    private bool _isSelectable = false;
+    private bool _isSelected = false;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Label"/> class with the specified dimensions.
@@ -124,6 +157,26 @@ public class Label : ClickableControl
     /// <param name="graphics">The <see cref="MicroGraphics"/> surface to draw the label display control on.</param>
     protected override void OnDraw(MicroGraphics graphics)
     {
+        if (!IsSelectable || (IsSelectable && !IsSelected))
+        {
+            // Not selected - normal rendering
+            DrawNormal(graphics);
+            return;
+        }
+
+        // If custom SelectionAction is provided, use it
+        if (SelectionAction != null)
+        {
+            SelectionAction.Invoke(graphics, this);
+            return;
+        }
+
+        // Selected - underline
+        DrawSelected(graphics);
+    }
+
+    private void DrawNormal(MicroGraphics graphics)
+    {
         if (BackgroundColor != Color.Transparent)
         {
             graphics.DrawRectangle(ScreenLeft, ScreenTop, Width, Height, BackgroundColor, true);
@@ -151,5 +204,14 @@ public class Label : ClickableControl
             alignmentH: HorizontalAlignment,
             alignmentV: VerticalAlignment,
             font: Font);
+    }
+
+    private void DrawSelected(MicroGraphics graphics)
+    {
+        // Draw normal, then add underline
+        DrawNormal(graphics);
+
+        // Draw underline at bottom of control
+        graphics.DrawLine(ScreenLeft, ScreenBottom - 1, ScreenRight, ScreenBottom - 1, TextColor);
     }
 }

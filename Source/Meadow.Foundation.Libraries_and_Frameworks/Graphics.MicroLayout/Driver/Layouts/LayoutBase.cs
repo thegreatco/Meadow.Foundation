@@ -22,6 +22,19 @@ public abstract class LayoutBase : ThemedControl, ILayout
             if (base.IsVisible == value) return;
 
             base.IsVisible = value;
+
+            // When becoming visible, invalidate all children since they need to be redrawn
+            if (value == true && Controls != null)
+            {
+                lock (Controls.SyncRoot)
+                {
+                    foreach (var control in Controls)
+                    {
+                        control.Invalidate();
+                    }
+                }
+            }
+
             Invalidate();
         }
     }
@@ -36,7 +49,9 @@ public abstract class LayoutBase : ThemedControl, ILayout
     }
 
     /// <inheritdoc/>
-    public override bool IsInvalid => base.IsInvalid || Controls.Any(c => c.IsInvalid && c.IsVisible);
+    /// A layout is only invalid if its OWN properties changed, not if children are invalid.
+    /// The dirty region calculation will find invalid children directly.
+    public override bool IsInvalid => base.IsInvalid;
 
     private Color? _backgroundColor;
 
@@ -86,16 +101,32 @@ public abstract class LayoutBase : ThemedControl, ILayout
     /// <inheritdoc/>
     public override void Invalidate()
     {
-        if (Controls == null) return;
+        // Only invalidate the layout itself, not all children.
+        // Children will invalidate themselves when their own properties change.
+        // If we need to invalidate children (e.g., due to layout bounds changing),
+        // OnParentBoundsChanged will handle that automatically.
+        base.Invalidate();
+    }
 
-        lock (Controls.SyncRoot)
+    /// <summary>
+    /// Invalidates this layout and all its child controls, forcing a complete redraw.
+    /// Use this when child controls have complex overlapping layouts where the parent's
+    /// background needs to be redrawn before children to maintain proper z-order.
+    /// </summary>
+    public virtual void InvalidateWithChildren()
+    {
+        Invalidate();
+
+        if (Controls != null)
         {
-            foreach (var control in Controls)
+            lock (Controls.SyncRoot)
             {
-                control.Invalidate();
+                foreach (var control in Controls)
+                {
+                    control.Invalidate();
+                }
             }
         }
-        base.Invalidate();
     }
 
     /// <inheritdoc/>
