@@ -19,7 +19,7 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
     public event EventHandler LongClicked = default!;
 
     private bool _pressed = false;
-    private DateTime _pressStartTime;
+    private DateTime? _pressStartTime;
     private TimeSpan _longClickDuration = TimeSpan.FromMilliseconds(500);
 
     /// <summary>
@@ -74,10 +74,10 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
             else
             {
                 // Only calculate duration if we have a valid press start time
-                if (_pressStartTime != default(DateTime))
+                if (_pressStartTime.HasValue)
                 {
                     // Calculate the press duration
-                    var pressDuration = DateTime.UtcNow - _pressStartTime;
+                    var pressDuration = DateTime.UtcNow - _pressStartTime.Value;
 
                     // Determine if it's a long click or a regular click
                     if (pressDuration >= LongClickDuration)
