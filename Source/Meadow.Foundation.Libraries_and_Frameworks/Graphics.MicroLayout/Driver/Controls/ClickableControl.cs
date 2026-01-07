@@ -34,7 +34,14 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
     public TimeSpan LongClickDuration
     {
         get => _longClickDuration;
-        set => _longClickDuration = value;
+        set
+        {
+            if (value < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "LongClickDuration cannot be negative.");
+            }
+            _longClickDuration = value;
+        }
     }
 
     /// <summary>
@@ -66,17 +73,21 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
             }
             else
             {
-                // Calculate the press duration
-                var pressDuration = DateTime.UtcNow - _pressStartTime;
+                // Only calculate duration if we have a valid press start time
+                if (_pressStartTime != default(DateTime))
+                {
+                    // Calculate the press duration
+                    var pressDuration = DateTime.UtcNow - _pressStartTime;
 
-                // Determine if it's a long click or a regular click
-                if (pressDuration >= LongClickDuration)
-                {
-                    LongClicked?.Invoke(this, EventArgs.Empty);
-                }
-                else
-                {
-                    Clicked?.Invoke(this, EventArgs.Empty);
+                    // Determine if it's a long click or a regular click
+                    if (pressDuration >= LongClickDuration)
+                    {
+                        LongClicked?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        Clicked?.Invoke(this, EventArgs.Empty);
+                    }
                 }
             }
 
