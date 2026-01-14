@@ -38,9 +38,9 @@ public class Ftd2xxTests
     public void NoDeviceForSpiCheck()
     {
         // assumes no FT232 is connected
-        var ftdi = FtdiExpanderCollection.Devices[0];
-        Assert.Throws<DeviceNotFoundException>(() =>
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
+            var ftdi = FtdiExpanderCollection.Devices[0];
             var bus = ftdi.CreateSpiBus();
         });
     }
@@ -49,9 +49,9 @@ public class Ftd2xxTests
     public void NoDeviceForI2CCheck()
     {
         // assumes no FT232 is connected
-        var ftdi = FtdiExpanderCollection.Devices[0];
-        Assert.Throws<DeviceNotFoundException>(() =>
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
+            var ftdi = FtdiExpanderCollection.Devices[0];
             var bus = ftdi.CreateI2cBus();
         });
     }
@@ -109,7 +109,7 @@ public class Ftd2xxTests
                     new Frequency(speedMHz, Frequency.UnitType.Megahertz)
                      );
 
-                var testBus = new Ft232hSpiBus(ftdi, config);
+                var testBus = new FtMpsseSpiBus(ftdi, config);
                 testBus.Exchange(null, testByte, readByte);
 
                 if (testByte[0] != readByte[0])

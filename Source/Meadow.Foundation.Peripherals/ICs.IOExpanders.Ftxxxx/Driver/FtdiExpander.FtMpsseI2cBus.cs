@@ -7,11 +7,11 @@ namespace Meadow.Foundation.ICs.IOExpanders;
 public abstract partial class FtdiExpander
 {
     /// <summary>
-    /// Represents an Ft232h expander I2C bus.
+    /// Represents an MPSSE-based I2C bus for FTDI chips with MPSSE support (FT232H, FT2232H, FT4232H).
     /// </summary>
-    public class Ft232hI2cBus : I2CBus
+    public class FtMpsseI2cBus : I2CBus
     {
-        internal Ft232hI2cBus(FtdiExpander expander, I2cBusSpeed busSpeed)
+        internal FtMpsseI2cBus(FtdiExpander expander, I2cBusSpeed busSpeed)
             : base(expander, busSpeed)
         {
         }
@@ -270,7 +270,7 @@ public abstract partial class FtdiExpander
                     uint read = 0;
                     Native.CheckStatus(Native.Ftd2xx.FT_Read(
                         _expander.Handle,
-                        ref buffer[totalRead],
+                        in buffer[totalRead],
                         (uint)toRead,
                         ref read));
                     totalRead += (int)read;
@@ -293,7 +293,7 @@ public abstract partial class FtdiExpander
             {
                 Span<byte> clearBuffer = stackalloc byte[(int)available];
                 uint read = 0;
-                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, ref clearBuffer[0], available, ref read));
+                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, in clearBuffer[0], available, ref read));
             }
         }
     }

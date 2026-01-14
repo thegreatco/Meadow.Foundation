@@ -9,9 +9,9 @@ namespace Meadow.Foundation.ICs.IOExpanders;
 public abstract partial class FtdiExpander
 {
     /// <summary>
-    /// Represents an SPI bus using the FT232H
+    /// Represents an MPSSE-based SPI bus for FTDI chips with MPSSE support (FT232H, FT2232H, FT4232H).
     /// </summary>
-    public class Ft232hSpiBus : SpiBus
+    public class FtMpsseSpiBus : SpiBus
     {
         private readonly FtdiExpander _expander;
         private readonly SpiClockConfiguration _configuration;
@@ -28,7 +28,7 @@ public abstract partial class FtdiExpander
         /// <inheritdoc/>
         public override SpiClockConfiguration Configuration => _configuration;
 
-        internal Ft232hSpiBus(FtdiExpander expander, SpiClockConfiguration configuration)
+        internal FtMpsseSpiBus(FtdiExpander expander, SpiClockConfiguration configuration)
         {
             _configuration = configuration;
             _expander = expander;
@@ -215,6 +215,7 @@ public abstract partial class FtdiExpander
             }
         }
 
+        /// <inheritdoc/>
         public override void Write(IDigitalOutputPort? chipSelect, Span<byte> writeBuffer, ChipSelectMode csMode = ChipSelectMode.ActiveLow)
         {
             if (writeBuffer.Length == 0) return;
@@ -246,6 +247,7 @@ public abstract partial class FtdiExpander
             }
         }
 
+        /// <inheritdoc/>
         public override void Read(IDigitalOutputPort? chipSelect, Span<byte> readBuffer, ChipSelectMode csMode = ChipSelectMode.ActiveLow)
         {
             if (readBuffer.Length == 0) return;
@@ -301,7 +303,7 @@ public abstract partial class FtdiExpander
 
                     Native.CheckStatus(Native.Ftd2xx.FT_Read(
                         _expander.Handle,
-                        ref buffer[totalRead],
+                        in buffer[totalRead],
                         (uint)toRead,
                         ref read));
 
@@ -329,7 +331,7 @@ public abstract partial class FtdiExpander
             {
                 var clearBuffer = new byte[available];
                 uint read = 0;
-                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, ref clearBuffer[0], available, ref read));
+                Native.CheckStatus(Native.Ftd2xx.FT_Read(_expander.Handle, in clearBuffer[0], available, ref read));
             }
         }
     }

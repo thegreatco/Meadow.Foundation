@@ -13,7 +13,8 @@ public abstract partial class FtdiExpander :
     IPinController,
     IDigitalInputOutputController,
     ISpiController,
-    II2cController
+    II2cController,
+    IDisposable
 {
 
     internal byte GpioDirectionLow { get; set; }
@@ -25,7 +26,14 @@ public abstract partial class FtdiExpander :
     internal uint Flags { get; private set; }
     internal uint ID { get; private set; }
     internal uint LocID { get; private set; }
+    /// <summary>
+    /// Gets the serial number of the device.
+    /// </summary>
     public string? SerialNumber { get; private set; }
+
+    /// <summary>
+    /// Gets the description of the device.
+    /// </summary>
     public string? Description { get; private set; }
     internal IntPtr Handle { get; private set; }
 
@@ -52,6 +60,27 @@ public abstract partial class FtdiExpander :
         FtdiExpander expander = deviceType switch
         {
             FtDeviceType.Ft232H => new Ft232h
+            {
+                Index = index,
+                Flags = flags,
+                ID = id,
+                LocID = locid,
+                SerialNumber = serialNumber,
+                Description = description,
+                Handle = handle
+            },
+            // Mac driver sometimes mis-identifies FT232H as FT232B/FT245B (Type 0)
+            FtDeviceType.Ft232BOrFt245B => new Ft232h
+            {
+                Index = index,
+                Flags = flags,
+                ID = id,
+                LocID = locid,
+                SerialNumber = serialNumber,
+                Description = description,
+                Handle = handle
+            },
+            FtDeviceType.UnknownDevice => new Ft232h
             {
                 Index = index,
                 Flags = flags,
@@ -93,13 +122,46 @@ public abstract partial class FtdiExpander :
 
     private void Open()
     {
-        if (Handle == IntPtr.Zero)
+        if (Handle != IntPtr.Zero) return;
+
+        Native.FT_STATUS status;
+        IntPtr handle;
+
+        // 1. Try to open by Location ID
+        // On macOS, LocID might be 0 but FT_OpenEx(0, BY_LOCATION) works!
+        status = FT_OpenEx(LocID, Native.FT_OPEN_TYPE.FT_OPEN_BY_LOCATION, out handle);
+        if (status == Native.FT_STATUS.FT_OK)
         {
-            Native.CheckStatus(
-                FT_OpenEx(LocID, Native.FT_OPEN_TYPE.FT_OPEN_BY_LOCATION, out IntPtr handle)
-                );
             Handle = handle;
+            return;
         }
+
+        // 2. Try to open by Serial Number (if available)
+        if (!string.IsNullOrEmpty(SerialNumber))
+        {
+            status = FT_OpenEx(SerialNumber, Native.FT_OPEN_TYPE.FT_OPEN_BY_SERIAL_NUMBER, out handle);
+            if (status == Native.FT_STATUS.FT_OK)
+            {
+                Handle = handle;
+                return;
+            }
+        }
+
+        // 3. Try to open by Description (if available)
+        if (!string.IsNullOrEmpty(Description))
+        {
+            status = FT_OpenEx(Description, Native.FT_OPEN_TYPE.FT_OPEN_BY_DESCRIPTION, out handle);
+            if (status == Native.FT_STATUS.FT_OK)
+            {
+                Handle = handle;
+                return;
+            }
+        }
+
+        // 4. Fallback: Open by Index
+        status = FT_Open(Index, out handle);
+        Native.CheckStatus(status);
+        Handle = handle;
     }
 
     internal FtdiExpander()
@@ -228,7 +290,7 @@ public abstract partial class FtdiExpander :
                 {
                     var status = Native.Ftd2xx.FT_Read(
                         Handle,
-                        ref MemoryMarshal.GetReference(remainingBuffer), // Correct way to get buffer reference
+                        in MemoryMarshal.GetReference(remainingBuffer), // Correct way to get buffer reference
                         (uint)toRead,
                         ref bytesRead);
 
@@ -241,7 +303,7 @@ public abstract partial class FtdiExpander :
                         Thread.Sleep(1); // Small delay before retry
                     }
                 }
-                catch (Exception ex)
+                catch
                 {
                     throw;
                 }
@@ -309,7 +371,12 @@ public abstract partial class FtdiExpander :
                 GpioStateHigh);
         }
 
-        var channel = p.SupportedChannels.FirstOrDefault(channel => channel is IDigitalChannelInfo) as IDigitalChannelInfo;
+        var channel = p.SupportedChannels?.FirstOrDefault(channel => channel is IDigitalChannelInfo) as IDigitalChannelInfo;
+        if (channel == null)
+        {
+            throw new NotSupportedException($"Pin {pin.Name} does not support digital output");
+        }
+
         return new DigitalOutputPort(this, pin, channel, initialState, initialOutputType);
     }
 
@@ -402,6 +469,27 @@ public abstract partial class FtdiExpander :
                 GpioStateHigh);
         }
 
-        return new DigitalInputPort(this, pin, (pin.SupportedChannels.First() as IDigitalChannelInfo)!, resistorMode);
+        var channel = pin.SupportedChannels?.First() as IDigitalChannelInfo;
+        if (channel == null)
+        {
+            throw new NotSupportedException($"Pin {pin.Name} does not support digital input");
+        }
+
+        return new DigitalInputPort(this, pin, channel, resistorMode);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (Handle != IntPtr.Zero)
+        {
+            Native.Ftd2xx.FT_Close(Handle);
+            Handle = IntPtr.Zero;
+        }
     }
 }

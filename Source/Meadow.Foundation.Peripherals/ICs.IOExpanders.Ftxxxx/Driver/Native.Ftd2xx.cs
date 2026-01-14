@@ -34,7 +34,13 @@ internal static partial class Native
         public static extern FT_STATUS FT_GetDeviceInfoDetail(uint index, out uint flags, out FtDeviceType chiptype, out uint id, out uint locid, in byte serialnumber, in byte description, out IntPtr ftHandle);
 
         [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern FT_STATUS FT_Open(uint index, out IntPtr ftHandle);
+
+        [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern FT_STATUS FT_OpenEx(uint pvArg1, FT_OPEN_TYPE dwFlags, out IntPtr ftHandle);
+
+        [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern FT_STATUS FT_OpenEx(string pvArg1, FT_OPEN_TYPE dwFlags, out IntPtr ftHandle);
 
         [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern FT_STATUS FT_Close(IntPtr ftHandle);
@@ -68,5 +74,11 @@ internal static partial class Native
 
         [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
         public static extern FT_STATUS FT_SetUSBParameters(IntPtr ftHandle, uint dwInTransferSize, uint dwOutTransferSize);
+
+        [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern FT_STATUS FT_SetVIDPID(uint dwVID, uint dwPID);
+
+        [DllImport(FTDI_LIB, CallingConvention = CallingConvention.Cdecl, SetLastError = true)]
+        public static extern FT_STATUS FT_GetLibraryVersion(out uint lpdwVersion);
     }
 }
