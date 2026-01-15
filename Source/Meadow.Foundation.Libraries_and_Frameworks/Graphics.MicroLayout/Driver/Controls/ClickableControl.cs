@@ -13,7 +13,14 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
     /// </summary>
     public event EventHandler Clicked = default!;
 
+    /// <summary>
+    /// Occurs when the clickable control is long-clicked (pressed and held).
+    /// </summary>
+    public event EventHandler LongClicked = default!;
+
     private bool _pressed = false;
+    private DateTime? _pressStartTime;
+    private TimeSpan _longClickDuration = TimeSpan.FromMilliseconds(500);
 
     /// <summary>
     /// Gets or sets the Enabled state of the control
@@ -21,16 +28,28 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
     public bool IsEnabled { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the duration a press must be held to trigger a long click event.
+    /// Default is 500 milliseconds.
+    /// </summary>
+    public TimeSpan LongClickDuration
+    {
+        get => _longClickDuration;
+        set
+        {
+            if (value < TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "LongClickDuration cannot be negative.");
+            }
+            _longClickDuration = value;
+        }
+    }
+
+    /// <summary>
     /// Cycles the Control through the pressed and unpressed state, firing the Clicked event
     /// </summary>
     public void Click()
     {
-        this.Pressed = true;
-        _ = Task.Run(async () =>
-        {
-            await Task.Delay(250);
-            this.Pressed = false;
-        });
+        Clicked?.Invoke(this, EventArgs.Empty);
     }
 
     /// <summary>
@@ -47,9 +66,29 @@ public abstract class ClickableControl : ThemedControl, IClickableControl
 
             _pressed = value;
 
-            if (!Pressed)
+            if (_pressed)
             {
-                Clicked?.Invoke(this, EventArgs.Empty);
+                // Record the time when the button is pressed
+                _pressStartTime = DateTime.UtcNow;
+            }
+            else
+            {
+                // Only calculate duration if we have a valid press start time
+                if (_pressStartTime.HasValue)
+                {
+                    // Calculate the press duration
+                    var pressDuration = DateTime.UtcNow - _pressStartTime.Value;
+
+                    // Determine if it's a long click or a regular click
+                    if (pressDuration >= LongClickDuration)
+                    {
+                        LongClicked?.Invoke(this, EventArgs.Empty);
+                    }
+                    else
+                    {
+                        Clicked?.Invoke(this, EventArgs.Empty);
+                    }
+                }
             }
 
             // Mark the control as invalid, requiring a redraw.
