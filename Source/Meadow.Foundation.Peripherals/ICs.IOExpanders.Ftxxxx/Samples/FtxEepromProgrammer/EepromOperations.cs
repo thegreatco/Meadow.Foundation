@@ -132,10 +132,40 @@ internal static class EepromOperations
             Console.WriteLine("⚠ WARNING: SerialNumber is empty");
         }
 
+        // Validate string lengths per FTDI requirements
+        const int MaxManufacturer = 31;      // 32 bytes including null terminator
+        const int MaxManufacturerId = 15;    // 16 bytes including null terminator  
+        const int MaxDescription = 31;       // 32 bytes including null terminator
+        const int MaxSerialNumber = 15;      // 16 bytes including null terminator
+
+        if ((config.Manufacturer?.Length ?? 0) > MaxManufacturer)
+        {
+            Console.WriteLine($"✗ ERROR: Manufacturer too long ({config.Manufacturer!.Length} chars, max {MaxManufacturer})");
+            hasErrors = true;
+        }
+        
+        if ((config.ManufacturerId?.Length ?? 0) > MaxManufacturerId)
+        {
+            Console.WriteLine($"✗ ERROR: ManufacturerId too long ({config.ManufacturerId!.Length} chars, max {MaxManufacturerId})");
+            hasErrors = true;
+        }
+        
+        if ((config.Description?.Length ?? 0) > MaxDescription)
+        {
+            Console.WriteLine($"✗ ERROR: Description too long ({config.Description!.Length} chars, max {MaxDescription})");
+            hasErrors = true;
+        }
+        
+        if ((config.SerialNumber?.Length ?? 0) > MaxSerialNumber)
+        {
+            Console.WriteLine($"✗ ERROR: SerialNumber too long ({config.SerialNumber!.Length} chars, max {MaxSerialNumber})");
+            hasErrors = true;
+        }
+
         if (hasErrors)
         {
-            Console.WriteLine("\n[CRITICAL ERROR] Configuration has missing critical fields!");
-            Console.WriteLine("Programming with empty VID/PID will BRICK the device!");
+            Console.WriteLine("\n[CRITICAL ERROR] Configuration has validation errors!");
+            Console.WriteLine("Programming with invalid fields may BRICK the device!");
             Console.WriteLine("Please fix the configuration file and try again.\n");
             return;
         }
